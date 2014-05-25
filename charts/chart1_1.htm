@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Highcharts Example</title>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript">
+$(function () {
+
+
+var options = {
+    chart: {
+        renderTo: 'container',
+        defaultSeriesType: 'spline'
+    },
+    title: {
+        text: 'Many apps'
+    },
+    xAxis: {
+        type: 'datetime',
+        labels: {
+            formatter: function() {
+                return Highcharts.dateFormat('%a %d %b', this.value);
+            }
+        },
+        //tickInterval: 7,
+    },
+    yAxis: {
+        title: {
+            text: 'Units'
+        }
+    },
+    series: [],
+    tooltip: {
+    },
+};
+
+$.get('sample-data.tsv', function(data) {
+
+    // Split the lines
+    var lines = data.split('\n');
+
+    // Iterate over the lines and add categories or series
+    $.each(lines, function(lineNo, line) {
+        if (line == "")
+            return;
+
+        var items = line.split(';');
+
+        //// header line containes categories
+        //if (lineNo == 0) {
+        //$.each(items, function(itemNo, item) {
+        //    if (itemNo > 0) options.xAxis.categories.push(new Date(item)); 
+        //    });
+        //}
+
+        // the rest of the lines contain data with their name in the first 
+        // position
+        //else {
+            var series = {
+                data: []
+            };
+
+            //$.each(items, function(itemNo, item) {
+            //    if (itemNo == 0) {
+            //        series.name = item;
+            //    } else {
+            //        series.data.push(parseFloat(item));
+            //    }
+            // });
+
+            $.each(items, function(itemNo, item) {
+                if (itemNo == 0) {
+                    return;
+                } else if (itemNo == 1) {
+                    series.name = item;
+                } else {
+                    var itemData = item.split(":");
+                    var value = parseInt(itemData[1]);
+                    if (value < 500)
+                        return;
+                    var dateItems = itemData[0].split("-");
+                    var month = parseInt(dateItems[1]) - 1;
+                    var runDate = Date.UTC(dateItems[0], month, dateItems[2]);
+                    series.data.push([runDate, value]);
+                }
+             });
+            
+            options.series.push(series);
+        //}
+    });
+
+    // Create the chart
+    var chart = new Highcharts.Chart(options);
+});
+
+
+});
+
+
+</script>
+</head>
+<body>
+<script src="../js/highcharts/highcharts.js"></script>
+<script src="../js/highcharts/modules/data.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+</body>
+</html>
