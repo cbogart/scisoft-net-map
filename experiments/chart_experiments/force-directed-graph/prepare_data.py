@@ -5,7 +5,8 @@ import sys
 import math
 
 counter = 0
-lo, hi = 10, 100 
+limit = 75 
+lo, hi = 10, 20 
 links = []
 apps = {}
 
@@ -31,7 +32,7 @@ with open(sys.argv[1]) as f:
 					"source": new_app(self),
 					"target": new_app(app),
 					"value" : int(math.log(float(value)))})
-		if counter > 100:
+		if counter > limit:
 			break
 print counter
 nodes = []
