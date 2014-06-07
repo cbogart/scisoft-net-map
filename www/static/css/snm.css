@@ -61,3 +61,7 @@ html, body {
 #applications span {
   vertical-align: top;
 }
+
+#current-filters h3 {
+  margin: 0 0 20px 0;
+}
