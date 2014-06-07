@@ -7,6 +7,10 @@ html, body {
     height: 100%;
 }
 
+.content {
+  padding-top: 20px;
+}
+
 #container {
     width: 100%;
 }
@@ -40,4 +44,20 @@ html, body {
 #network {
     margin-top: 20px;
     width: 100%;
+}
+
+.app-image {
+  width: 100px;
+}
+
+#applications h3 {
+  margin: 0;
+}
+
+#applications p {
+  margin-top: 10px;
+}
+
+#applications span {
+  vertical-align: top;
 }
