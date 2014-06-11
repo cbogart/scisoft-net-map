@@ -65,3 +65,36 @@ html, body {
 #current-filters h3 {
   margin: 0 0 20px 0;
 }
+
+#app-description {
+  margin-bottom: 20px;
+}
+
+#app-graphs h4 {
+  margin: 0;
+}
+
+.right {
+  text-align: right;
+}
+
+.app-graph {
+  padding: 0 30px 0 5px;
+}
+
+.app-graph div {
+  padding: 0;
+  margin: 0;
+}
+
+img {
+  width: 100%;
+}
+
+#app-search {
+  margin-top: 20px;
+}
+
+#app-search div {
+  float: right;
+}
