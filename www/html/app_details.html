@@ -69,60 +69,41 @@
             <img src="../static/img/euler.png" />
           </div>
           <div class="panel-body">
-            <button type="button" class="btn btn-primary btn-block">App profile</button>
+            <button type="button" class="btn btn-default btn-block"><a href="application.html">App profile</a></button>
             <button type="button" class="btn btn-default btn-block">Version history</button>
             <button type="button" class="btn btn-default btn-block">Used with</button>
-            <button type="button" class="btn btn-default btn-block"><a href="app_details.html">Usage over time</a></button>
+            <button type="button" class="btn btn-primary btn-block">Usage over time</button>
             <button type="button" class="btn btn-default btn-block">Operating systems</button>
           </div>
         </div>
       </div>
-      <div class="col-md-10">
-        <div class="row" id="app-description">
-          <p>Euler (now Euler Mathematical Toolbox or EuMathT) is a free and open-source numerical software package. It contains a matrix language, a graphical notebook style interface, and a plot window. Euler is designed for higher level math such as calculus, optimization, and statistics.</p>
-          <p>The software can handle real, complex and interval numbers, vectors and matrices, it can produce 2D/3D plots, and uses Maxima for symbolic operations. The software is compilable with Windows. The Unix and Linux versions do not contain a computer algebra subsystem.</p>
-        </div>
-        <div class="row" id="app-graphs">
-          <div class="col-md-4 app-graph">
-            <div class="row">
-              <div class="col-md-6">
-                <h4>Usage</h4>
-              </div>
-              <div class="col-md-6 right">
-                <a href="#">details</a>
-              </div>
-            </div>
-            <div class="row">
-              <img src="../static/img/sample-bar-chart.png" />
-            </div>
-          </div>
-          <div class="col-md-4 app-graph">
-            <div class="row">
-              <div class="col-md-6 app-graph">
-                <h4>Used with</h4>
-              </div>
-              <div class="col-md-6 right">
-                <a href="#">details</a>
-              </div>
-            </div>
-            <div class="row">
-              <img src="../static/img/sample-line-chart.png" />
-            </div>
-          </div>
-          <div class="col-md-4 app-graph">
-            <div class="row">
-              <div class="col-md-6 app-graph">
-                <h4>Used by</h4>
-              </div>
-              <div class="col-md-6 right">
-                <a href="#">details</a>
-              </div>
-            </div>
-            <div class="row">
-              <img src="../static/img/sample-pie-chart.png" />
-            </div>
-          </div>
 
+      <div class="col-md-10">
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <img class="viz_100percent"src="../static/img/sample-line-chart.png">
+
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">Day</button>
+              <button type="button" class="btn btn-default">Week</button>
+              <button type="button" class="btn active btn-default">Month</button>
+            </div>
+            &nbsp&nbsp&nbsp
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">From: October 2013</button>
+              <button type="button" class="btn btn-default">To: April 2014</button>
+            </div>
+            &nbsp&nbsp&nbsp
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">Smoothness</button>
+              <button type="button" class="btn active btn-default">None</button>
+              <button type="button" class="btn btn-default">3</button>
+              <button type="button" class="btn btn-default">5</button>
+              <button type="button" class="btn btn-default">7</button>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
