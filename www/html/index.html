@@ -20,15 +20,15 @@
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-                                                                    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-                                                                          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-                                                                              <![endif]-->
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
   </head>
 
   <body>
 
     <div id="container" class="row container fill">
-      <div class="col-md-3" id="navigation-menu">
+      <div id="navigation-menu">
         <a href="index.html">
           <img id="snm-logo" src="../static/img/snm.gif" />
         </a>
@@ -48,27 +48,29 @@
         </form>
       </div>
 
-      <div class="col-md-6">
-        <img id="network" src="../static/img/network.png" />
-      </div>
+      <div id="content">
+        <div class="col-md-8">
+          <img id="network" src="../static/img/network.png" />
+        </div>
 
-      <div class="col-md-3">
-        <h1>Scientific Network Map</h1>
-        <p>
+        <div class="col-md-4">
+          <h1>Scientific Network Map</h1>
+          <p>
           Have you ever tried to understand the interdependencies of different 
           applications: what applications work together, how often do they interact, 
           what are the typical usage patterns?
-        </p>
-        <p>
+          </p>
+          <p>
           You can answer these and much more questions using Scientific Network Map! 
           Each node represents a single application, connections between them indicate 
           that they were used together. The size of an application indicates the 
           number of runs.
-        </p>
+          </p>
 
-        <p>The diagram is interactive!</p>
+          <p>The diagram is interactive!</p>
 
-        <h2>Play with the data!</h2>
+          <h2>Play with the data!</h2>
+        </div>
       </div>
     </div>
 
