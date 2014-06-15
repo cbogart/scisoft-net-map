@@ -22,9 +22,12 @@ Step 5. `cd SNM-web`
 
 Step 6. `python setup.py develop`
 
-Step 7.Run web server: `pserve development.ini`
+Step 7. Run web server: `pserve development.ini`
 
+Step 8. To leae virtual env type `deactivate`
 
 # How to start web-server
 
-Use Step 3. then Step 5. then Step 7.
+Step 3. 
+Step 5.
+Step 7.
