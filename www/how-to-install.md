@@ -31,3 +31,7 @@ Step 8. To leae virtual env type `deactivate`
 Step 3. 
 Step 5.
 Step 7.
+
+# P.S.
+
+You can also find it useful `pserve --reload --monitor-restart   development.ini`. It will automatically reload or restart the serve if code has changed or if server failed.
