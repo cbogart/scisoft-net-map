@@ -1,3 +1,26 @@
 *.swp
 *~
+*.swp
+*.tsv
+*.egg-info
+.project
 .idea
+.DS_Store
+.pydevproject
+*.pyc
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
