@@ -9,3 +9,24 @@ def view_overview(request):
 @view_config(route_name="home", renderer='templates/index.jinja2')
 def view_home(request):
     return {}
+
+@view_config(route_name="app_details", renderer='templates/app_details.jinja2')
+def view_home(request):
+    return {}
+
+@view_config(route_name="application", renderer='templates/application.jinja2')
+def view_home(request):
+    return {}
+
+@view_config(route_name="compare", renderer='templates/compare.jinja2')
+def view_home(request):
+    return {}
+
+@view_config(route_name="data-sources", renderer='templates/data-sources.jinja2')
+def view_home(request):
+    return {}
+
+@view_config(route_name="explore", renderer='templates/explore.jinja2')
+def view_home(request):
+    return {}
+
