@@ -1,0 +1,96 @@
+{% extends "base.jinja2" %}
+{% block title %}Application details{% endblock %}
+{% block content_title  %}Euler{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  {#  You can add page-specific js here #}
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-7">
+        <h1>Euler <small>version 2.5</small></h1>
+      </div>
+      <div class="col-md-5" id="app-search">
+        <div>
+          <input type="checkbox" />
+          <span>Add to compare list&nbsp;&nbsp;&nbsp;</span>
+          <button type="submit" class="btn btn-default">Compare</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <img src="{{request.static_url('snmweb:static/img/euler.png')}}" />
+          </div>
+          <div class="panel-body">
+            <button type="button" class="btn btn-primary btn-block">App profile</button>
+            <button type="button" class="btn btn-default btn-block">Version history</button>
+            <button type="button" class="btn btn-default btn-block">Used with</button>
+            <button type="button" class="btn btn-default btn-block"><a href="app_details.html">Usage over time</a></button>
+            <button type="button" class="btn btn-default btn-block">Operating systems</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <div class="row" id="app-description">
+          <p>Euler (now Euler Mathematical Toolbox or EuMathT) is a free and open-source numerical software package. It contains a matrix language, a graphical notebook style interface, and a plot window. Euler is designed for higher level math such as calculus, optimization, and statistics.</p>
+          <p>The software can handle real, complex and interval numbers, vectors and matrices, it can produce 2D/3D plots, and uses Maxima for symbolic operations. The software is compilable with Windows. The Unix and Linux versions do not contain a computer algebra subsystem.</p>
+        </div>
+        <div class="row" id="app-graphs">
+          <div class="col-md-4 app-graph">
+            <div class="row">
+              <div class="col-md-6">
+                <h4>Usage</h4>
+              </div>
+              <div class="col-md-6 right">
+                <a href="#">details</a>
+              </div>
+            </div>
+            <div class="row">
+              <img src="{{request.static_url('snmweb:static/img/sample-bar-chart.png')}}" />
+            </div>
+          </div>
+          <div class="col-md-4 app-graph">
+            <div class="row">
+              <div class="col-md-6 app-graph">
+                <h4>Used with</h4>
+              </div>
+              <div class="col-md-6 right">
+                <a href="#">details</a>
+              </div>
+            </div>
+            <div class="row">
+              <img src="{{request.static_url('snmweb:static/img/sample-line-chart.png')}}" />
+            </div>
+          </div>
+          <div class="col-md-4 app-graph">
+            <div class="row">
+              <div class="col-md-6 app-graph">
+                <h4>Used by</h4>
+              </div>
+              <div class="col-md-6 right">
+                <a href="#">details</a>
+              </div>
+            </div>
+            <div class="row">
+              <img src="{{request.static_url('snmweb:static/img/sample-pie-chart.png')}}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.jinja2" %}
+{% block title %}Application details{% endblock %}
+{% block content_title  %}Compare{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  {#  You can add page-specific js here #}
+{% endblock %}
+
+
+{% block content %}
+
+  <div id="page-content-wrapper">
+    <div class="content-header">
+      <h1>Compare tools</h1>
+    </div>
+    <div class="page-content inset">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="panel panel-default">
+            <div class="panel-heading">Options</div>
+            <div class="panel-body">
+
+              Property:
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Usage <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Usage</a></li>
+                  <li><a href="#">Average run-time</a></li>
+                  <li><a href="#">Some other property?</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default viz-list-panel">
+            <div class="panel-heading">Choose visualization</div>
+            <div class="panel-body">
+              <div class="row inset">
+                <a href="#" class="thumbnail viz-option active">
+                  <img src="../static/img/sample-line-chart.png" alt="...">
+                </a>
+                <a href="#" class="thumbnail">
+                  <img src="{{request.static_url('snmweb:static/img/sample-pie-chart.png')}}" alt="...">
+                </a>
+                <a href="#" class="thumbnail">
+                  <img src="{{request.static_url('snmweb:static/img/sample-bar-chart.png')}}" alt="...">
+                </a>
+                <a href="#" class="thumbnail">
+                  <img src="{{request.static_url('snmweb:static/img/sample-table-chart.png')}}" alt="...">
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-md-8">
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <img class="viz_100percent" src="{{request.static_url('snmweb:static/img/sample-line-chart.png')}}">
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-default">Day</button>
+                <button type="button" class="btn btn-default">Week</button>
+                <button type="button" class="btn active btn-default">Month</button>
+              </div>
+              &nbsp&nbsp&nbsp
+              <div class="btn-group">
+                <button type="button" class="btn btn-default">From: October 2013</button>
+                <button type="button" class="btn btn-default">To: April 2014</button>
+              </div>
+              &nbsp&nbsp&nbsp
+              <div class="btn-group">
+                <button type="button" class="btn btn-default">Smoothness</button>
+                <button type="button" class="btn active btn-default">None</button>
+                <button type="button" class="btn btn-default">3</button>
+                <button type="button" class="btn btn-default">5</button>
+                <button type="button" class="btn btn-default">7</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-md-2">
+          <div class="panel panel-default">
+            <div class="panel-heading">Legend</div>
+            <div class="panel-body">
+              <div class="app-tile">
+                <a style="background-color: blue;" href="#x" class="thumbnail">Euler</a>
+              </div>
+              <div class="app-tile">
+                <a style="background-color: purple;" href="#x" class="thumbnail">Freemat</a>
+              </div>
+              <div class="app-tile">
+                <a style="background-color: orange;" href="#x" class="thumbnail">Maxima</a>
+              </div>
+              <div class="app-tile">
+                <a style="background-color: magenta;" href="#x" class="thumbnail">PARI/GP</a>
+              </div>
+              <div class="app-tile">
+                <a href="#x" class="app-tile-add thumbnail">Add to comparison</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
