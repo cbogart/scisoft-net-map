@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block head %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Scientific Network Map project">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{request.static_url('snmweb:static/css/lib/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{request.static_url('snmweb:static/css/snm.css')}}"
+          rel="stylesheet">
+  {% endblock %}
+</head>
+
+<body>
+<div id="container" class="row container fill">
+
+  <!-- Sidebar -->
+  <div class="col-md-3" id="navigation-menu">
+    <a href="index.html">
+      <img id="snm-logo" src="{{request.static_url('snmweb:static/img/snm.gif')}}"/>
+    </a>
+
+    <ul id="main-navigation" class="nav nav-pills nav-stacked">
+      <li><a href="{{request.route_url('home')}}">Home</a></li>
+      <li><a href="#">Browse</a></li>
+      <li><a href="#">Compare</a></li>
+      <li><a href="{{request.route_url('overview')}}">Overview</a></li>
+      <li><a href="#">Data sources</a></li>
+    </ul>
+    <form id="search-form" class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input id="search" type="text" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+  </div>
+
+  <!-- Page content wrapper -->
+  <div id="content">
+    <div class="col-md-12">
+      <div class="row">
+        <!-- Page header -->
+        <div class="col-md-7">
+          <h1>{% block content_title %}{% endblock %}</h1>
+        </div>
+      </div>
+      <!-- Page content -->
+      <div class="row">
+        {% block content %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page scripts -->
+<script src="{{request.static_url('snmweb:static/js/lib/jquery-1.11.0.min.js')}}"></script>
+<script src="{{request.static_url('snmweb:static/js/lib/bootstrap.min.js')}}"></script>
+{# child specific js will be included here #}
+{% block js %}{% endblock %}
+</body>
+</html>
+
