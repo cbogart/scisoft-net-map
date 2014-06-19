@@ -26,10 +26,10 @@
 
     <ul id="main-navigation" class="nav nav-pills nav-stacked">
       <li><a href="{{request.route_url('home')}}">Home</a></li>
-      <li><a href="#">Browse</a></li>
-      <li><a href="#">Compare</a></li>
+      <li><a href="{{request.route_url('explore')}}">Browse</a></li>
+      <li><a href="{{request.route_url('compare')}}">Compare</a></li>
       <li><a href="{{request.route_url('overview')}}">Overview</a></li>
-      <li><a href="#">Data sources</a></li>
+      <li><a href="{{request.route_url('data-sources')}}">Data sources</a></li>
     </ul>
     <form id="search-form" class="navbar-form navbar-left" role="search">
       <div class="form-group">
