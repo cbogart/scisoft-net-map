@@ -11,22 +11,22 @@ def view_home(request):
     return {}
 
 @view_config(route_name="app_details", renderer='templates/app_details.jinja2')
-def view_home(request):
+def view_app_details(request):
     return {}
 
 @view_config(route_name="application", renderer='templates/application.jinja2')
-def view_home(request):
+def view_application(request):
     return {}
 
 @view_config(route_name="compare", renderer='templates/compare.jinja2')
-def view_home(request):
+def view_compare(request):
     return {}
 
 @view_config(route_name="data-sources", renderer='templates/data-sources.jinja2')
-def view_home(request):
+def view_data_sources(request):
     return {}
 
 @view_config(route_name="explore", renderer='templates/explore.jinja2')
-def view_home(request):
+def view_explore(request):
     return {}
 

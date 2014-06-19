@@ -29,7 +29,6 @@
     </div>
     <div class="row">
       <div class="col-md-3">
-
         <div class="panel panel-default">
           <div class="panel-heading">
             <img src="{{request.static_url('snmweb:static/img/euler.png')}}" />
@@ -38,7 +37,7 @@
             <button type="button" class="btn btn-primary btn-block">App profile</button>
             <button type="button" class="btn btn-default btn-block">Version history</button>
             <button type="button" class="btn btn-default btn-block">Used with</button>
-            <button type="button" class="btn btn-default btn-block"><a href="app_details.html">Usage over time</a></button>
+            <button type="button" class="btn btn-default btn-block"><a href="{{request.route_url('app_details')}}">Usage over time</a></button>
             <button type="button" class="btn btn-default btn-block">Operating systems</button>
           </div>
         </div>
