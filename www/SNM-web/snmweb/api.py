@@ -1,4 +1,6 @@
-import sys, os
+import sys
+import os
+import json
 
 from pyramid.view import (
     view_config,
@@ -57,7 +59,7 @@ class ApiViews:
             path = "snmweb/static/stat/usage_over_time"
             filename = "group_by_{}.json"
             with open(os.path.join(path, filename.format(group_by)), 'r') as f:
-                data = f.read()
+                data = json.load(f)
             return data
 
         def unknown_stat(*args, **kwargs):

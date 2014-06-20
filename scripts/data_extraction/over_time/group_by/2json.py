@@ -23,7 +23,7 @@ def daily(filename):
 	while start <= end:
 		str_repr = start.strftime("%Y-%m-%d")
 		dates.append(str_repr)
-		times.append(data.get(str_repr, 0))
+		times.append(int(data.get(str_repr, 0)))
 		start += delta
 	json.dump({"dates":dates, "runs": times} ,nf)
 
