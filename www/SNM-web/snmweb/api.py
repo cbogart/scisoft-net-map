@@ -39,21 +39,21 @@ class ApiViews:
 
         return response
 
-    def apps(request, app_id):
+    def apps(self,request, app_id):
         """ Return list of applications available
         or find specific one "api/apps/:app"
         """
         if app_id is None:
             return [{"name": "app1"}, {"name": "app2"}, {"name": "app3"}]
         return {"id": app_id,
-                "name": "app" + app_id}
+                "name": "app" }
 
-    def viz(request, viz_id):
+    def stat(self,request, type):
         """ Return list of data sources available
         or find specific one "api/apps/:app"
         """
-        if viz_id is None:
+        if type is None:
             return [{"id": "over_time"}, {"id": "count_users"}]
-        if viz_id == "usage_over_time":
+        if type == "usage_over_time":
             return "this is faked data"
         raise Exception('No visualization {} found'.format(viz_id))
