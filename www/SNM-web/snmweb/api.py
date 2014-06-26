@@ -1,4 +1,6 @@
 import sys
+import os
+import json
 
 from pyramid.view import (
     view_config,
@@ -39,21 +41,31 @@ class ApiViews:
 
         return response
 
-    def apps(request, app_id):
+    def apps(self,request, app_id):
         """ Return list of applications available
         or find specific one "api/apps/:app"
         """
         if app_id is None:
             return [{"name": "app1"}, {"name": "app2"}, {"name": "app3"}]
         return {"id": app_id,
-                "name": "app" + app_id}
+                "name": "app" }
 
-    def viz(request, viz_id):
+    def stat(self,request, type):
         """ Return list of data sources available
-        or find specific one "api/apps/:app"
+        or find specific one "api/stat/:some_stat"
         """
-        if viz_id is None:
+        def usage_over_time(group_by='day', **kwargs):
+            # TODO: substitute with db query
+            path = "snmweb/static/stat/usage_over_time"
+            filename = "group_by_{}.json"
+            with open(os.path.join(path, filename.format(group_by)), 'r') as f:
+                data = json.load(f)
+            return data
+
+        def unknown_stat(*args, **kwargs):
+            raise Exception('Unknown request type')
+
+        if type is None:
             return [{"id": "over_time"}, {"id": "count_users"}]
-        if viz_id == "usage_over_time":
-            return "this is faked data"
-        raise Exception('No visualization {} found'.format(viz_id))
+
+        return locals().get(type, unknown_stat)(**request.params)
