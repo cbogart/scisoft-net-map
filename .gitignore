@@ -16,7 +16,7 @@ build/
 develop-eggs/
 dist/
 eggs/
-lib/
+# lib/ - WTF
 lib64/
 parts/
 sdist/
