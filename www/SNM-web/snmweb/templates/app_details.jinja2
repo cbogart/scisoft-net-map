@@ -5,10 +5,70 @@
 {% block head %}
   {{ super() }}
   {#You can include your specific css here#}
+  <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
+  <style>
+    #chart svg {
+      height: 400px;
+    }
+  </style>
 {% endblock %}
 
 {% block js %}
   {#  You can add page-specific js here #}
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.min.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.min.js')}}"></script>
+  <script>
+    function data() {
+      var sin = [],
+          cos = [];
+    
+      for (var i = 0; i < 100; i++) {
+        sin.push({x: i, y: Math.sin(i/10)});
+        cos.push({x: i, y: .5 * Math.cos(i/10)});
+      }
+    
+      return [
+        {
+          values: sin,
+          key: 'Sine Wave',
+          color: '#ff7f0e'
+        },
+        {
+          values: cos,
+          key: 'Cosine Wave',
+          color: '#2ca02c'
+        }
+      ];
+    }
+
+    nv.addGraph(function() {
+        var chart = nv.models.lineChart()
+        .useInteractiveGuideline(true)
+        ;
+    
+        chart.xAxis
+        .axisLabel('Time (ms)')
+        .tickFormat(d3.format(',r'))
+        ;
+    
+        chart.yAxis
+        .axisLabel('Voltage (v)')
+        .tickFormat(d3.format('.02f'))
+        ;
+    
+        d3.select('#chart svg')
+        .datum(data())
+        .transition().duration(500)
+        .call(chart)
+        ;
+    
+        nv.utils.windowResize(chart.update);
+    
+        return chart;
+    });
+
+  </script>
+
 {% endblock %}
 
 
@@ -46,7 +106,9 @@
       <div class="col-md-9">
         <div class="panel panel-default">
           <div class="panel-body">
-            <img class="viz_100percent" src="{{request.static_url('snmweb:static/img/sample-line-chart.png')}}">
+            <div id="chart">
+              <svg></svg>
+            </div>
             <div class="btn-group">
               <button type="button" class="btn btn-default">Day</button>
               <button type="button" class="btn btn-default">Week</button>
