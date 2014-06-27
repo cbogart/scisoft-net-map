@@ -4,11 +4,74 @@
 
 {% block head %}
   {{ super() }}
-  {#You can include your specific css here#}
+  <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
+  <style>
+    #chart svg {
+      height: 400px;
+    }
+  </style>
 {% endblock %}
 
 {% block js %}
-  {#  You can add page-specific js here #}
+  {{ super() }}
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.min.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.min.js')}}"></script>
+  <script>
+    function data() {
+      var appData = [];
+ 
+      $.ajaxSetup({
+        async: false
+      });
+
+      $.getJSON("http://localhost:6543/api/stat/usage_over_time?group_by=day", function(data) {
+            var dates = data["data"]["dates"];
+            var runs = data["data"]["runs"]; 
+
+            for (i = 0; i < dates.length; i++) {
+                parseDate = d3.time.format("%Y-%m-%d").parse
+                appData.push({x: parseDate(dates[i]), y: runs[i]});
+            }
+          });
+    
+      return [
+        {
+          values: appData,
+          key: "Application",
+          color: "#ff7f0e"
+        },
+      ];
+    }
+
+    nv.addGraph(function() {
+      var chart = nv.models.lineChart()
+      .useInteractiveGuideline(true)
+      ;
+    
+      chart.xAxis
+      .axisLabel("Date")
+      .tickFormat(function(d) {
+          return d3.time.format("%x")(new Date(d));
+          });
+
+      chart.yAxis
+      .axisLabel("Runs")
+      .tickFormat(d3.format(".0f"))
+      ;
+    
+      d3.select("#chart svg")
+      .datum(data())
+      .transition().duration(500)
+      .call(chart)
+      ;
+    
+      nv.utils.windowResize(chart.update);
+    
+      return chart;
+    });
+
+  </script>
+
 {% endblock %}
 
 
@@ -46,16 +109,18 @@
       <div class="col-md-9">
         <div class="panel panel-default">
           <div class="panel-body">
-            <img class="viz_100percent" src="{{request.static_url('snmweb:static/img/sample-line-chart.png')}}">
+            <div id="chart">
+              <svg></svg>
+            </div>
             <div class="btn-group">
               <button type="button" class="btn btn-default">Day</button>
               <button type="button" class="btn btn-default">Week</button>
-              <button type="button" class="btn active btn-default">Month</button>
+              <button type="button" class="btn btn-default">Month</button>
             </div>
             &nbsp&nbsp&nbsp
             <div class="btn-group">
-              <button type="button" class="btn btn-default">From: October 2013</button>
-              <button type="button" class="btn btn-default">To: April 2014</button>
+              <button type="button" class="btn active btn-default">From: May 2012</button>
+              <button type="button" class="btn active btn-default">To: Jan 2013</button>
             </div>
             &nbsp&nbsp&nbsp
             <div class="btn-group">
