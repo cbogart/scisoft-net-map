@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
 {% block title %}Application details{% endblock %}
-{% block content_title  %}Euler{% endblock %}
+{% block content_title  %}Software profile{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -21,9 +21,9 @@
       </div>
       <div class="col-md-5" id="app-search">
         <div>
-          <input type="checkbox" />
-          <span>Add to compare list&nbsp;&nbsp;&nbsp;</span>
-          <button type="submit" class="btn btn-default">Compare</button>
+          <button type="button" class="btn btn-success pull-right"> Added to
+            comparison
+            <span class="glyphicon glyphicon-ok"></span></button>
         </div>
       </div>
     </div>
@@ -37,8 +37,10 @@
             <button type="button" class="btn btn-primary btn-block">App profile</button>
             <button type="button" class="btn btn-default btn-block">Version history</button>
             <button type="button" class="btn btn-default btn-block">Used with</button>
-            <button type="button" class="btn btn-default btn-block"><a href="{{request.route_url('app_details')}}">Usage over time</a></button>
+            <a href="{{request.route_url('app_details')}}"><button type="button" class="btn btn-default btn-block">Usage over time</button></a>
             <button type="button" class="btn btn-default btn-block">Operating systems</button>
+            <button type="button" class="btn btn-default
+            btn-block">Users over time</button>
           </div>
         </div>
       </div>

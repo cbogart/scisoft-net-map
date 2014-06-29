@@ -16,42 +16,36 @@
 
   <div class="col-md-3">
     <div class="panel panel-default">
-      <div class="panel-heading">Options</div>
+      <div class="panel-heading">Choose property</div>
       <div class="panel-body">
-        Property:
-        <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            Usage <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Usage</a></li>
-            <li><a href="#">Average run-time</a></li>
-            <li><a href="#">Some other property?</a></li>
-          </ul>
-        </div>
+        <button type="button" class="btn btn-default
+        btn-block">Average runtime </button>
+        <button type="button" class="btn btn-primary btn-block">Usage over time</button>
+        <button type="button" class="btn btn-default btn-block">Users over time</button>
       </div>
     </div>
-    <div class="panel panel-default viz-list-panel">
-      <div class="panel-heading">Choose visualization</div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Legend</div>
       <div class="panel-body">
-        <div class="row inset">
-          <a href="#" class="thumbnail viz-option active">
-            <img src="../static/img/sample-line-chart.png" alt="...">
-          </a>
-          <a href="#" class="thumbnail">
-            <img src="{{request.static_url('snmweb:static/img/sample-pie-chart.png')}}" alt="...">
-          </a>
-          <a href="#" class="thumbnail">
-            <img src="{{request.static_url('snmweb:static/img/sample-bar-chart.png')}}" alt="...">
-          </a>
-          <a href="#" class="thumbnail">
-            <img src="{{request.static_url('snmweb:static/img/sample-table-chart.png')}}" alt="...">
-          </a>
+        <div class="app-tile">
+          <a style="background-color: blue;" href="#x" class="thumbnail">Euler</a>
+        </div>
+        <div class="app-tile">
+          <a style="background-color: purple;" href="#x" class="thumbnail">Freemat</a>
+        </div>
+        <div class="app-tile">
+          <a style="background-color: orange;" href="#x" class="thumbnail">Maxima</a>
+        </div>
+        <div class="app-tile">
+          <a style="background-color: magenta;" href="#x" class="thumbnail">PARI/GP</a>
+        </div>
+        <div class="app-tile">
+          <a href="#x" class="app-tile-add thumbnail">Add to comparison <span class="glyphicon glyphicon-plus"></span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-md-7">
+  <div class="col-md-9">
     <div class="panel panel-default">
       <div class="panel-body">
         <img class="viz_100percent" src="{{request.static_url('snmweb:static/img/sample-line-chart.png')}}">
@@ -72,28 +66,6 @@
           <button type="button" class="btn btn-default">3</button>
           <button type="button" class="btn btn-default">5</button>
           <button type="button" class="btn btn-default">7</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">Legend</div>
-      <div class="panel-body">
-        <div class="app-tile">
-          <a style="background-color: blue;" href="#x" class="thumbnail">Euler</a>
-        </div>
-        <div class="app-tile">
-          <a style="background-color: purple;" href="#x" class="thumbnail">Freemat</a>
-        </div>
-        <div class="app-tile">
-          <a style="background-color: orange;" href="#x" class="thumbnail">Maxima</a>
-        </div>
-        <div class="app-tile">
-          <a style="background-color: magenta;" href="#x" class="thumbnail">PARI/GP</a>
-        </div>
-        <div class="app-tile">
-          <a href="#x" class="app-tile-add thumbnail">Add to comparison</a>
         </div>
       </div>
     </div>
