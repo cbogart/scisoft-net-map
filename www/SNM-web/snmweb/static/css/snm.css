@@ -108,3 +108,11 @@ img {
 #app-search div {
   float: right;
 }
+
+.app-tile a{
+    color: white;
+}
+
+.app-tile .app-tile-add {
+    color:black;
+}
