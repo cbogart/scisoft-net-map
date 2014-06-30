@@ -1,0 +1,7 @@
+#sort-by-panel {
+    margin-bottom: 15px;
+}
+
+#filters-panel h4.panel-title{
+    cursor: pointer;
+}
