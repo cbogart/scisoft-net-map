@@ -15,7 +15,7 @@ def main(global_config, **settings):
     config.add_route('application', '/application')
     config.add_route('compare', '/compare')
     config.add_route('data-sources', '/data-sources')
-    config.add_route('explore', '/explore')
+    config.add_route('browse', '/browse')
     config.add_route('overview', '/overview')
     config.add_route('api_home', '/api')
     config.add_route('api_home.category', '/api/{category}')

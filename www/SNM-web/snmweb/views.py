@@ -26,7 +26,7 @@ def view_compare(request):
 def view_data_sources(request):
     return {}
 
-@view_config(route_name="explore", renderer='templates/explore.jinja2')
+@view_config(route_name="browse", renderer='templates/browse.jinja2')
 def view_explore(request):
     return {}
 
