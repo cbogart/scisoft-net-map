@@ -25,6 +25,7 @@ html, body {
   width: 300px;
   float: left;
   padding: 0;
+  position: fixed;
 }
 
 #content {
@@ -44,11 +45,11 @@ html, body {
 
 #search-form {
   padding: 0;
-  padding-left: 20px;
 }
 
 #search {
-  width: 175px;
+  width: 275px;
+  padding-left: 15px;
 }
 
 #network {
@@ -97,6 +98,10 @@ html, body {
   margin: 0;
 }
 
+.app-graph img {
+  margin-top: 10px;
+}
+
 img {
   width: 100%;
 }
@@ -115,4 +120,27 @@ img {
 
 .app-tile .app-tile-add {
     color:black;
+}
+
+#legend .panel-body a, #legend .panel-body a:hover {
+  color: #fff;
+  margin-top: 5px;
+}
+
+#legend .panel-body #add-to-comparison {
+  color: #000;
+}
+
+#filters {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+#filters .btn-group {
+  margin-right: 15px;
+  margin-top: 10px;
+}
+
+.viz-list-panel .panel-body {
+  padding: 25px;
 }
