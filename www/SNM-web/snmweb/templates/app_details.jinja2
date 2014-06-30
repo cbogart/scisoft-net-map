@@ -96,7 +96,7 @@
       </div>
       <div class="col-md-5" id="app-search">
         <div>
-          <button type="button" class="btn btn-success pull-right"> Added to
+          <button type="button" class="btn disabled btn-success pull-right"> Added to
             comparison
             <span class="glyphicon glyphicon-ok"></span></button>
         </div>
@@ -109,14 +109,12 @@
             <img src="{{request.static_url('snmweb:static/img/euler.png')}}" />
           </div>
           <div class="panel-body">
-            <a href="{{request.route_url('application')}}"><button
-              type="button" class="btn btn-default btn-block">App profile</button></a>
-            <button type="button" class="btn btn-default btn-block">Version history</button>
-            <button type="button" class="btn btn-default btn-block">Used with</button>
+            <a href="{{request.route_url('application')}}" class="btn btn-default btn-block">App profile</a>
+            <button type="button" class="btn disabled btn-default btn-block">Version history</button>
+            <button type="button" class="btn disabled btn-default btn-block">Used with</button>
             <button type="button" class="btn btn-primary btn-block">Usage over time</button>
-            <button type="button" class="btn btn-default btn-block">Operating systems</button>
-                        <button type="button" class="btn btn-default
-            btn-block">Users over time</button>
+            <button type="button" class="btn disabled btn-default btn-block">Operating systems</button>
+            <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
           </div>
         </div>
       </div>
@@ -127,16 +125,27 @@
             <div id="chart">
               <svg></svg>
             </div>
-            <div class="btn-group">
-              <button type="button" class="btn active btn-default">Day</button>
-              <button type="button" class="btn btn-default">Week</button>
-              <button type="button" class="btn btn-default">Month</button>
+            <div class="row" id="filters">
+              <div class="btn-group">
+                <button type="button" class="btn disabled">Period:</button>
+                <button type="button" class="btn disabled btn-default">Day</button>
+                <button type="button" class="btn disabled btn-default">Week</button>
+                <button type="button" class="btn active btn-default">Month</button>
+              </div>
+              <div class="btn-group">
+                <button type="button" class="btn disabled">Time range:</button>
+                <button type="button" class="btn disabled btn-default">From: October 2013</button>
+                <button type="button" class="btn disabled btn-default">To: April 2014</button>
+              </div>
+              <div class="btn-group">
+                <button type="button" class="btn disabled">Smoothness:</button>
+                <button type="button" class="btn active btn-default">None</button>
+                <button type="button" class="btn disabled btn-default">3</button>
+                <button type="button" class="btn disabled btn-default">5</button>
+                <button type="button" class="btn disabled btn-default">7</button>
+              </div>
             </div>
-            &nbsp&nbsp&nbsp
-            <div class="btn-group">
-              <button type="button" class="btn active btn-default">From: May 2012</button>
-              <button type="button" class="btn active btn-default">To: Jan 2013</button>
-            </div>
+
           </div>
         </div>
         <table class="table" id="graph-data">
@@ -147,10 +156,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-          </tr>
         </tbody>
       </table>
       </div>
