@@ -4,9 +4,9 @@
 import sys, time, os, json
 from datetime import datetime as dt, timedelta
 
-def daily(filename):
+def jsonsify(filename, format, delta):
 	def parsedt(str):
-		time_struct = time.strptime(str, "%Y-%m-%d")
+		time_struct = time.strptime(str, format)
 		return dt.fromtimestamp(time.mktime(time_struct))
 
 	data = {}
@@ -18,21 +18,28 @@ def daily(filename):
 		data[date] = count
 	start, end = min(data.keys()), max(data.keys())
 	start, end = parsedt(start), parsedt(end)
-	delta = timedelta(days=1)
+	delta = timedelta(**delta)
 	dates, times = [], []
-	while start <= end:
-		str_repr = start.strftime("%Y-%m-%d")
-		dates.append(str_repr)
+	while start < end+delta:
+		dates.append(start.strftime("%Y-%m-%d"))
+		str_repr = start.strftime(format)
 		times.append(int(data.get(str_repr, 0)))
 		start += delta
 	json.dump({"dates":dates, "runs": times} ,nf)
 
 def main():
-	if len(sys.argv) < 2:
-		print "Need one arg"
+	formats = {'daily'  : "%Y-%m-%d",
+		   'weekly' : "%Y-%W"}
+	kwargs = {'daily'  : {'days' : 1},
+		  'weekly' : {'weeks': 1}}
+	if len(sys.argv) < 3:
+		print "hash [daily|weekly]"
 		exit(1)
 	hash = sys.argv[1]
-	daily("{}-daily.tsv".format(hash))
+	fmt = sys.argv[2]
+	jsonsify("{}-{}.tsv".format(hash,fmt)
+		, formats[fmt]
+		, kwargs[fmt])
 
 
 main()
