@@ -31,7 +31,8 @@
         async: false
       });
 
-      $.getJSON("http://localhost:6543/api/stat/usage_over_time?group_by="+period,
+      $.getJSON("{{request.route_path('api_home')}}" +
+        "/stat/usage_over_time?group_by="+period,
         function(data) {
           function addRow(date, value) {
             $("#graph-data tbody").append(
