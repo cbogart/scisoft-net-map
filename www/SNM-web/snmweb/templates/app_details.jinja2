@@ -1,6 +1,4 @@
-{% extends "base.jinja2" %}
-{% block title %}Software details{% endblock %}
-{% block content_title  %}Overview{% endblock %}
+{% extends "app_base.jinja2" %}
 
 {% block head %}
   {{ super() }}
@@ -106,40 +104,9 @@
 {% endblock %}
 
 
-{% block content %}
+{% block details %}
+    <h2>Usage over time</h2>
 
-  <div class="col-md-12">
-    <div class="row">
-      <div class="col-md-7">
-        <h1>Euler <small>version 2.5</small></h1>
-      </div>
-      <div class="col-md-5" id="app-search">
-        <div>
-          <button type="button" class="btn disabled btn-success pull-right"> Added to
-            comparison
-            <span class="glyphicon glyphicon-ok"></span></button>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-3">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <img src="{{request.static_url('snmweb:static/img/euler.png')}}" />
-          </div>
-          <div class="panel-body">
-            <a href="{{request.route_url('application')}}" class="btn btn-default btn-block">App profile</a>
-            <button type="button" class="btn disabled btn-default btn-block">Version history</button>
-            <button type="button" class="btn disabled btn-default btn-block">Used with</button>
-            <button type="button" class="btn btn-primary btn-block">Usage over time</button>
-            <button type="button" class="btn disabled btn-default btn-block">Operating systems</button>
-            <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-9">
-        <div class="panel panel-default">
           <div class="panel-body">
             <div id="chart">
               <svg></svg>
@@ -168,8 +135,6 @@
               </div>
             </div>
 
-          </div>
-        </div>
         <table class="table" id="graph-data">
         <thead>
           <tr>
@@ -180,8 +145,5 @@
         <tbody>
         </tbody>
       </table>
-      </div>
-    </div>
-  </div>
   
 {% endblock %}

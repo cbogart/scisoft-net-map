@@ -11,12 +11,12 @@ def view_home(request):
     return {}
 
 @view_config(route_name="app_details", renderer='templates/app_details.jinja2')
-def view_app_details(request, name):
-    return {}
+def view_app_details(request):
+    return { "name": request.matchdict["name"] }
 
 @view_config(route_name="application", renderer='templates/application.jinja2')
 def view_application(request):
-    return { 'name': request.matchdict["name"] }
+    return { "name": request.matchdict["name"] }
 
 @view_config(route_name="compare", renderer='templates/compare.jinja2')
 def view_compare(request):
