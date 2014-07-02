@@ -3,7 +3,7 @@
 {% block content_title  %}
   <div class="row">
     <div class="col-md-7">
-      <h1><a href="{{request.route_url('browse')}}">Applications</a> > {{ self.title() }} <small>version {% block version_number %}{% endblock %}</small></h1>
+      <h1><a href="{{request.route_url('browse')}}">Applications</a> > {{ self.title() }} <small>version 2.5 <!-- should be taken from db --></small></h1>
     </div>
     <div class="col-md-5" id="app-search">
       <div>
@@ -33,13 +33,13 @@
       <div class="col-md-3">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <img src="{% block image_uri %}{% endblock %}" />
+            <img src="{{request.static_url('snmweb:static/img/' + name.lower() +'.png')}}" />
           </div>
           <div class="panel-body">
-            <button type="button" class="btn btn-primary btn-block">App profile</button>
+            <a href="{{request.route_url('application', name=name)}}" class="btn btn-default btn-block">App profile</a>
             <button type="button" class="btn disabled btn-default btn-block">Version history</button>
             <button type="button" class="btn disabled btn-default btn-block">Used with</button>
-            <a href="{{request.route_url('app_details')}}" class="btn btn-default btn-block">Usage over time</a>
+            <a href="{{request.route_url('app_details', name=name)}}" class="btn btn-default btn-block">Usage over time</a>
             <button type="button" class="btn disabled btn-default btn-block">Operating systems</button>
             <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
           </div>
@@ -47,7 +47,7 @@
       </div>
       <div class="col-md-9">
         <div class="row" id="app-description">
-          {% block description %}{% endblock %}
+          {% block details %}{% endblock %}
         </div>
       </div>
     </div>
