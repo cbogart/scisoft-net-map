@@ -18,6 +18,15 @@
   <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.min.js')}}"></script>
   <script>
 
+  $.vizLineChart(
+    $("#chart"),
+    {
+      table   : $("#graph-data"),
+      stat_id : "usage_over_time",
+      height  : "400px"
+    });
+
+
     function clear_diagram(){
       $("#graph-data tbody").empty();
       $("#chart svg").empty();
