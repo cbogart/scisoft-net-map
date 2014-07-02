@@ -12,7 +12,7 @@ def main(global_config, **settings):
 
     config.add_route('home', '/')
     config.add_route('app_details', '/app_details')
-    config.add_route('application', '/application')
+    config.add_route('application', '/application/{name}')
     config.add_route('compare', '/compare')
     config.add_route('data-sources', '/data-sources')
     config.add_route('browse', '/browse')
