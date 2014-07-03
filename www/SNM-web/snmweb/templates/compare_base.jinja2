@@ -1,0 +1,43 @@
+{% extends "base.jinja2" %}
+{% block title %}Compare chosen applications{% endblock %}
+{% block content_title  %}<h1>Compare chosen applications</h1>{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  {#  You can add page-specific js here #}
+{% endblock %}
+
+{% block content %}
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">Choose property</div>
+      <div class="panel-body">
+        <button type="button" class="btn disabled btn-default btn-block">Average runtime </button>
+        <button type="button" class="btn btn-primary btn-block">Usage over time</button>
+        <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
+      </div>
+    </div>
+    <div id="legend" class="panel panel-default">
+      <div class="panel-heading">Legend</div>
+      <div class="panel-body">
+        <a style="background-color: blue;" href="#" class="btn disabled btn-default btn-block">Euler</a>
+        <a style="background-color: purple;" href="#" class="btn btn-block">Freemat</a>
+        <a style="background-color: orange;" href="#" class="btn btn-default btn-block">Maxima</a>
+        <a style="background-color: magenta;" href="#" class="btn btn-default btn-block">PARI/GP</a>
+        <a id="add-to-comparison"href="#x" class="btn btn-default btn-block">Add to comparison <span class="glyphicon glyphicon-plus"></span></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% block graph %}{% endblock %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
