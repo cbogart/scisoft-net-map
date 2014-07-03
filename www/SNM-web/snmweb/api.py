@@ -54,13 +54,19 @@ class ApiViews:
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
-        def usage_over_time(group_by='day', **kwargs):
+        def usage_over_time(group_by='day', id=None, **kwargs):
+            if id is None:
+                raise Exception("Please specify application id")
+            id = id.split(",")
+            group = {'day':'daily', 'week':'weekly', 'month':'monthly'}[group_by]
             # TODO: substitute with db query
             path = "snmweb/static/stat/usage_over_time"
-            filename = "group_by_{}.json"
-            with open(os.path.join(path, filename.format(group_by)), 'r') as f:
-                data = json.load(f)
-            return data
+            result = []
+            for i in id:
+                filename = "{}-{}.json".format(i, group)
+                with open(os.path.join(path, filename), 'r') as f:
+                    result.append(json.load(f))
+            return result
 
         def unknown_stat(*args, **kwargs):
             raise Exception('Unknown request type')

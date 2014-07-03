@@ -32,34 +32,33 @@
       });
 
       $.getJSON("{{request.route_path('api_home')}}" +
-        "/stat/usage_over_time?group_by="+period,
-        function(data) {
+        "/stat/usage_over_time?group_by="+period+"&id=90d90e04d0",
+        function(r) {
           function addRow(date, value) {
             $("#graph-data tbody").append(
               $('<tr>')
-                .append($('<td>').text(date))
+                .append($('<td>').text(d3.time.format("%x")(new Date(date))))
                 .append($('<td>').text(value))
             )
           }
-          var dates = data["data"]["dates"];
-          var runs = data["data"]["runs"];
+          var data = r.data[0].data;
           var parseDate = d3.time.format("%Y-%m-%d").parse;
-          var x, y;
-            for (var i = 0; i < dates.length; i++) {
-                x = parseDate(dates[i]);
-                y = runs[i];
-                appData.push({'x': x, 'y': y});
-                addRow(dates[i],y);
+          var x, y, entry;
+            for (var i = 0; i < data.length; i++) {
+                entry = data[i];
+                data[i].x = parseDate(entry.x);
+                addRow(entry.x, entry.y);
             }
-          });
 
-      return [
-        {
-          values: appData,
-          key: "Application",
-          color: "#ff7f0e"
-        }
-      ];
+          var d = data.sort(
+            function(a, b){
+              if (a.x > b.x) return 1;
+              else return -1;
+            }
+          );
+          appData = [{values: d , key: r.data[0].id,  color: "#ff7f0e"}];
+      })
+      return appData;
     }
 
     nv.addGraph(function() {
