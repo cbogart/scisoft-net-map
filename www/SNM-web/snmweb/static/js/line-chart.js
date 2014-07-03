@@ -1,35 +1,35 @@
 /*
-This is a component that allows to draw line-chart visualizations.
-It depends on jQuery as it is a jQuery plugin.
-It also uses nv.d3 library that uses d3.js framework.
-The diagram uses div container to put svg frame in it
-and another container to hold  table with values.
+ This is a component that allows to draw line-chart visualizations.
+ It depends on jQuery as it is a jQuery plugin.
+ It also uses nv.d3 library that uses d3.js framework.
+ The diagram uses div container to put svg frame in it
+ and another container to hold  table with values.
  */
 
 (function($) {
-    $.vizLineChart = function(svg_container, options) {
-        var svg = $("<svg>").appendTo(svg_container);
+    $.vizLineChart = function(svg_selector, options) {
+        var svg = $(svg_selector);
         var options = $.extend({ //Default or expected options go here
-            xLabel : "Date",
-            yLabel : "#Runs",
-            table  : svg_container.find("table"),
-            stat_id: "",
-            height : "400px"
-            }, options);
+            xLabel : "",
+            yLabel : "",
+            table  : "", //table selector
+            stat_id: ""  // api/stat/{stat_id}
+        }, options);
 
-        var tab = $(table);
+        var tab = $(options.table);
         var chart = nv.models.lineChart()
-        .useInteractiveGuideline(true);
+                .useInteractiveGuideline(true)
+            ;
 
         chart.xAxis
-        .axisLabel(options.xLabel)
-        .tickFormat(function(d) {
-          return d3.time.format("%x")(new Date(d));
-        });
+            .axisLabel("Date")
+            .tickFormat(function(d) {
+                return d3.time.format("%x")(new Date(d));
+            });
 
         chart.yAxis
-        .axisLabel(options.yLabel)
-        .tickFormat(d3.format(".0f"))
+            .axisLabel("Runs")
+            .tickFormat(d3.format(".0f"))
         ;
 
 
@@ -40,48 +40,52 @@ and another container to hold  table with values.
 
         function addRow(date, value) {
             tab.find("tbody").append(
-              $('<tr>')
-                .append($('<td>').text(date))
-                .append($('<td>').text(value))
+                $('<tr>')
+                    .append($('<td>').text(d3.time.format("%x")(new Date(date))))
+                    .append($('<td>').text(value))
             )
         }
-        function draw_diagram(period) {
-            function data(period) {
-                var appData = [];
-                snmapi.getStat(options.stat_id, {"group_by": period},
-                    function(data) {
-                  var dates = data["data"]["dates"];
-                  var runs = data["data"]["runs"];
-                  var parseDate = d3.time.format("%Y-%m-%d").parse;
-                  var x, y;
-                    for (var i = 0; i < dates.length; i++) {
-                        x = parseDate(dates[i]);
-                        y = runs[i];
-                        appData.push({'x': x, 'y': y});
-                        addRow(dates[i],y);
+        function data(args) {
+            var appData = [];
+            snmapi.getStat(options.stat_id, args,
+                function(r) {
+                    var data = r.data[0].data;
+                    var parseDate = d3.time.format("%Y-%m-%d").parse;
+                    var x, y, entry;
+                    for (var i = 0; i < data.length; i++) {
+                        entry = data[i];
+                        data[i].x = parseDate(entry.x);
+                        addRow(entry.x, entry.y);
                     }
-                  });
 
-                  return [
-                    {
-                      values: appData,
-                      key: "Application",
-                      color: "#ff7f0e"
-                    }
-                  ];
-            }
+                    var d = data.sort(
+                        function(a, b){
+                            if (a.x > b.x) return 1;
+                            else return -1;
+                        }
+                    );
+                    appData = [{values: d , key: r.data[0].id,  color: "#ff7f0e"}];
+                });
+            return appData;
+        }
+
+        function drawDiagram(args) {
+            //TODO: Smooth transition between datasets, fill table with d3
+            clear_diagram();
             nv.addGraph(function() {
-              d3.select(svg)
-              .datum(data(period))
-              .transition().duration(500)
-              .call(chart);
-              nv.utils.windowResize(chart.update);
-              return chart;
+
+                d3.select(svg[0])
+                    .datum(data(args))
+                    .transition().duration(500)
+                    .call(chart)
+                ;
+                nv.utils.windowResize(chart.update);
+                return chart;
             });
         }
 
         return {
-
+            drawDiagram: drawDiagram
         };
     };
 })(jQuery);

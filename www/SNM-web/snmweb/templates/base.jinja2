@@ -66,9 +66,9 @@
 <!-- Page scripts -->
 <script src="{{request.static_url('snmweb:static/js/lib/jquery-1.11.0.min.js')}}"></script>
 <script src="{{request.static_url('snmweb:static/js/lib/bootstrap.min.js')}}"></script>
-<script src="{{request.static_url('snmweb:static/js/api.js')}}}}"></script>
+<script src="{{request.static_url('snmweb:static/js/api.js')}}"></script>
 <script>
-  snmapi = initAPI({{request.route_path('api_home')}})
+  snmapi = initAPI("{{request.route_path('api_home')}}");
 </script>
 {# child specific js will be included here #}
 {% block js %}{% endblock %}

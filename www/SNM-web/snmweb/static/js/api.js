@@ -3,9 +3,12 @@
  */
 initAPI = function(base) {
     var api = {
-        url: base,
+        base: base,
         stat: "stat"
     }
+    $.ajaxSetup({
+        async: false
+    });
 
     function getStat(id, args, callback) {
         var url = [api.base, api.stat, id].join("/");
