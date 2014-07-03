@@ -12,91 +12,31 @@
 
 {% block js %}
   {{ super() }}
-  <script src="{{request.static_url('snmweb:static/js/lib/d3.min.js')}}"></script>
-  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.min.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.js')}}"></script>
+  <script src="
+  {{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
 
-    function clear_diagram(){
-      $("#graph-data tbody").empty();
-      $("#chart svg").empty();
-    }
 
-    function draw_diagram(period) {
-    function data(period) {
-      var appData = [];
-
-      $.ajaxSetup({
-        async: false
-      });
-
-      $.getJSON("{{request.route_path('api_home')}}" +
-        "/stat/usage_over_time?group_by="+period+"&id=90d90e04d0",
-        function(r) {
-          function addRow(date, value) {
-            $("#graph-data tbody").append(
-              $('<tr>')
-                .append($('<td>').text(d3.time.format("%x")(new Date(date))))
-                .append($('<td>').text(value))
-            )
-          }
-          var data = r.data[0].data;
-          var parseDate = d3.time.format("%Y-%m-%d").parse;
-          var x, y, entry;
-            for (var i = 0; i < data.length; i++) {
-                entry = data[i];
-                data[i].x = parseDate(entry.x);
-                addRow(entry.x, entry.y);
-            }
-
-          var d = data.sort(
-            function(a, b){
-              if (a.x > b.x) return 1;
-              else return -1;
-            }
-          );
-          appData = [{values: d , key: r.data[0].id,  color: "#ff7f0e"}];
-      })
-      return appData;
-    }
-
-    nv.addGraph(function() {
-      var chart = nv.models.lineChart()
-      .useInteractiveGuideline(true)
-      ;
-
-      chart.xAxis
-      .axisLabel("Date")
-      .tickFormat(function(d) {
-          return d3.time.format("%x")(new Date(d));
-          });
-
-      chart.yAxis
-      .axisLabel("Runs")
-      .tickFormat(d3.format(".0f"))
-      ;
-
-      d3.select("#chart svg")
-      .datum(data(period))
-      .transition().duration(500)
-      .call(chart)
-      ;
-
-      nv.utils.windowResize(chart.update);
-
-      return chart;
-    });
-
-    }
 
   $(function main() {
+    var app_id = "90d90e04d0";
+    var chart = $.vizLineChart("#chart svg",
+      {
+        table   : $("#graph-data"),
+        stat_id : "usage_over_time"
+      });
     var btns = $("#filters-group button");
     btns.click(function(){
       btns.removeClass("active");
       $(this).addClass("active");
-      clear_diagram();
-      draw_diagram($(this).data("period"));
+      chart.drawDiagram({
+        group_by: $(this).data("period"),
+        id: app_id}
+      );
     });
-    draw_diagram("day");
+    chart.drawDiagram({group_by: "day", id: app_id});
   });
   </script>
 {% endblock %}
