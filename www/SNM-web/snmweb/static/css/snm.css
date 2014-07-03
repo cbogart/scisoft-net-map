@@ -2,6 +2,10 @@ html, body {
   height: 100%;
 }
 
+h2 {
+  margin-top: 0;  
+}
+
 .fill { 
   min-height: 100%;
   height: 100%;

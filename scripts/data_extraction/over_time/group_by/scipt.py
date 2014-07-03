@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import json, sys, os 
-import datetime
+import datetime, time
 import collections
+from datetime import date, timedelta
 from os import walk
 
 class App:
@@ -13,17 +14,31 @@ class App:
 		self.monthly= collections.defaultdict(int)
 
 	def addRun(self, run):
-		dt = datetime.datetime.fromtimestamp(float(run["startEpoch"]))
-		day = dt.date().__str__()
+		dt = datetime.datetime.fromtimestamp(float(run["startEpoch"])).date()
+		# the day
+		day = dt.__str__()
 		self.daily[day] += 1
-
-		iso = dt.isocalendar()
-		week = "{}-{}".format(iso[0], iso[1])
+		# nearest 
+		week = dt + datetime.timedelta(days=-dt.weekday(), weeks=1)
+		week = week.__str__()
 		self.weekly[week] += 1
-
-		month = "{}-{}".format(iso[0], dt.month)
+		
+		# Month first day
+		month = date(dt.year, dt.month, 1).__str__()
 		self.monthly[month] += 1
-
+	def fill_empty_dates(self):
+		def parsedt(str):
+			time_struct = time.strptime(str, "%Y-%m-%d")
+			return datetime.datetime.fromtimestamp(time.mktime(time_struct))
+		# yet by day only
+		data = self.daily
+		start, end = min(data.keys()), max(data.keys())
+		start, end = parsedt(start), parsedt(end)
+		delta = timedelta(days=1)
+		while start < end+delta:
+			str_repr = start.strftime("%Y-%m-%d")
+			self.daily[str_repr] = int(data.get(str_repr, 0))
+			start += delta
 def process_file(filename, app, app_hash):
 	f = open(filename)
 	j = json.load(f)
@@ -45,13 +60,18 @@ def get_list_of_files(path):
 	return files
 
 def writeResults(app):
+	app.fill_empty_dates()
+	j = {
+	  "id"	: "",
+	  "data": [ ]
+	}
 	for prop in ['daily', 'weekly', 'monthly']:
-		f = open("{}-{}.tsv".format(app.hash, prop), 'w')
-		data = getattr(app,prop)
-		for dt in sorted(data):
-			f.write("{}:{}\n".format(dt,data[dt]))
+		j["id"] = app.hash
+		j["data"] = [{"x":k, "y": v} for k,v in getattr(app,prop).iteritems()]
+		f = open("{}-{}.json".format(app.hash[:10], prop), 'w')
+		json.dump(j, f)
 		f.close()
-	
+
 def main():
 	if len(sys.argv) < 3:
 		print "usage: {} AHHA_MSIT-project2014_Root/\[General\]\ From\ Client/data\ for\ MSI\ team/lariatData APPHASH".format(sys.argv[0])
