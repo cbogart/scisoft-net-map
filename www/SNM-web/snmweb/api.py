@@ -48,7 +48,7 @@ class ApiViews:
         if app_id is None:
             return [{"name": "app1"}, {"name": "app2"}, {"name": "app3"}]
         return {"id": app_id,
-                "name": "app" }
+                "name": "app"}
 
     def stat(self,request, type):
         """ Return list of data sources available
