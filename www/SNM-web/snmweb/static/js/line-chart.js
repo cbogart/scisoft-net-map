@@ -17,9 +17,7 @@
         }, options);
 
         var tab = $(options.table);
-        var chart = nv.models.lineChart()
-                .useInteractiveGuideline(true)
-            ;
+        var chart = nv.models.lineChart().useInteractiveGuideline(true);
 
         chart.xAxis
             .axisLabel("Date")
@@ -29,13 +27,19 @@
 
         chart.yAxis
             .axisLabel("Runs")
-            .tickFormat(d3.format(".0f"))
-        ;
+            .tickFormat(d3.format(".0f"));
 
 
-        function clear_diagram(){
+        function clear_diagram() {
             tab.find("tbody").empty();
             svg.empty();
+        }
+
+        function addRowApp(appName) {
+            tab.find("tbody").append(
+                $('<tr>')
+                    .append($('<td colspan="2" class="app-name">').text(appName))
+            );
         }
 
         function addRow(date, value) {
@@ -43,28 +47,33 @@
                 $('<tr>')
                     .append($('<td>').text(d3.time.format("%x")(new Date(date))))
                     .append($('<td>').text(value))
-            )
+            );
         }
+
         function data(args) {
             var appData = [];
             snmapi.getStat(options.stat_id, args,
                 function(r) {
-                    var data = r.data[0].data;
-                    var parseDate = d3.time.format("%Y-%m-%d").parse;
-                    var x, y, entry;
-                    for (var i = 0; i < data.length; i++) {
-                        entry = data[i];
-                        data[i].x = parseDate(entry.x);
-                        addRow(entry.x, entry.y);
-                    }
-
-                    var d = data.sort(
-                        function(a, b){
-                            if (a.x > b.x) return 1;
-                            else return -1;
+                    for (var i = 0; i < r.data.length; i++) {
+                        addRowApp(r.data[i].id);
+                        var data = r.data[i].data;
+                        var parseDate = d3.time.format("%Y-%m-%d").parse;
+                        var x, y, entry;
+                        for (var j = 0; j < data.length; j++) {
+                            entry = data[j];
+                            data[j].x = parseDate(entry.x);
+                            addRow(entry.x, entry.y);
                         }
-                    );
-                    appData = [{values: d , key: r.data[0].id,  color: "#ff7f0e"}];
+
+                        var d = data.sort(
+                            function(a, b) {
+                                if (a.x > b.x) return 1;
+                                else return -1;
+                            }
+                        );
+
+                        appData.push({values: d, key: r.data[i].id});
+                    }
                 });
             return appData;
         }
@@ -73,12 +82,10 @@
             //TODO: Smooth transition between datasets, fill table with d3
             clear_diagram();
             nv.addGraph(function() {
-
                 d3.select(svg[0])
                     .datum(data(args))
                     .transition().duration(500)
-                    .call(chart)
-                ;
+                    .call(chart);
                 nv.utils.windowResize(chart.update);
                 return chart;
             });
