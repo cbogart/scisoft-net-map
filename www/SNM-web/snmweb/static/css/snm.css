@@ -148,3 +148,8 @@ img {
 .viz-list-panel .panel-body {
   padding: 25px;
 }
+
+td.app-name {
+  color: #fff;
+  background-color: #000;
+}
