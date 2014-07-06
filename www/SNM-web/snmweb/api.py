@@ -34,8 +34,7 @@ class ApiViews:
             _id = matchdict.get("id")
             response["data"] = getattr(self, category)(request, _id)
             response["status"] = self.STATUS_OK
-        except:
-            e = sys.exc_info()[0]  # TODO: Specify different types of exceptions
+        except Exception,e:
             response["status"] = self.STATUS_ERROR
             response["data"] = str(e)
 
@@ -66,6 +65,12 @@ class ApiViews:
                 filename = "{}-{}.json".format(i, group)
                 with open(os.path.join(path, filename), 'r') as f:
                     result.append(json.load(f))
+            return result
+
+        def co_occurence(**kwargs):
+            path = "snmweb/static/stat/co_occurence"
+            with open(os.path.join(path, "data.json"), 'r') as f:
+                    result = json.load(f)
             return result
 
         def unknown_stat(*args, **kwargs):
