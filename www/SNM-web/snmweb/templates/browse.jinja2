@@ -8,7 +8,20 @@
 {% endblock %}
 
 {% block js %}
-  {#  You can add page-specific js here #}
+  {{ super() }}
+  <script>
+    $(".change").mouseenter(function() {
+      //setting these through adding css class doesn't work - it flickers
+      $(this).css("background-color", "red");
+      $(this).css("border", "1px solid red");
+      $(this).html("Remove <span class='glyphicon glyphicon-minus'></span>");
+    })
+    .mouseleave(function() {
+      $(this).css("background-color", "green");
+      $(this).css("border", "1px solid green");
+      $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -35,8 +48,8 @@
                   <h3><a href="{{request.route_url('application', name='Euler')}}">Euler</a></h3>
                 </div>
                 <div class="col-md-3">
-                  <button type="button" class="btn disabled btn-success pull-right
-                  ">Added <span class="glyphicon glyphicon-ok"></span></button>
+                  <a class="change btn btn-success pull-right
+                  ">Added <span class="glyphicon glyphicon-ok"></span></a>
                 </div>
               </div>
               <p>Numerical application designed for higher level math such as calculus, optimization, and statistics that uses Maxima for symbolic operations.</p>
@@ -50,7 +63,7 @@
                   <h3>Freemat</h3>
                 </div>
                 <div class="col-md-3">
-                  <button type="button" class="btn disabled btn-success pull-right
+                  <button type="button" class="btn btn-success pull-right
                   ">Added <span class="glyphicon glyphicon-ok"></span></button>
                 </div>
               </div>
@@ -65,7 +78,7 @@
                   <h3>Maxima</h3>
                 </div>
                 <div class="col-md-3">
-                  <button type="button" class="btn disabled btn-success pull-right
+                  <button type="button" class="btn btn-success pull-right
                   ">Added <span class="glyphicon glyphicon-ok"></span></button>
                 </div>
               </div>
@@ -80,7 +93,7 @@
                   <h3>PARI/GP</h3>
                 </div>
                 <div class="col-md-3">
-                  <button type="button" class="btn disabled btn-success pull-right
+                  <button type="button" class="btn btn-success pull-right
                   ">Added <span class="glyphicon glyphicon-ok"></span></button>
                 </div>
               </div>
