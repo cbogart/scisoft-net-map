@@ -1,0 +1,11 @@
+svg {
+  font: 10px sans-serif;
+}
+
+.background {
+    fill: #eee;
+}
+
+line {
+    stroke: #fff;
+}
