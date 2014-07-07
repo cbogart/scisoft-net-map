@@ -12,32 +12,14 @@
   <script>
     var clicked = false;
     var prevText = "";
-    $(".change").mouseenter(function() {
-    //setting these through adding css class doesn't work - it flickers
-      prevText = $(this).html(); 
+    $(".change").click(function() {
       if ($(this).html().indexOf("Compare") > -1) {
-        $(this).html("Add <span class='glyphicon glyphicon-plus'></span>");
-        $(this).click(function() {
-          $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
-          $(this).addClass("btn-success");
-          clicked = true;
-        });
+        $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
+        $(this).addClass("btn-success");
+      } else {
+        $(this).html("Compare");
+        $(this).removeClass("btn-success");
       }
-      else if ($(this).html().indexOf("Added") > -1) {
-        $(this).html("Remove <span class='glyphicon glyphicon-minus'></span>");
-        //$(this).addClass("btn-danger");
-        $(this).click(function() {
-          $(this).html("Compare");
-          $(this).removeClass("btn-success");
-          clicked = true;
-        });
-      }
-    })
-    .mouseleave(function() {
-      if (!clicked) {
-        $(this).html(prevText);
-      }
-      clicked = false;
     });
   </script>
 {% endblock %}
