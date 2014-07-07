@@ -10,16 +10,23 @@
 {% block js %}
   {{ super() }}
   <script>
+    var clicked = false;
     $(".change").mouseenter(function() {
-      //setting these through adding css class doesn't work - it flickers
-      $(this).css("background-color", "red");
-      $(this).css("border", "1px solid red");
-      $(this).html("Remove <span class='glyphicon glyphicon-minus'></span>");
+    //setting these through adding css class doesn't work - it flickers
+      if ($(this).html().indexOf("Compare") > -1) {
+        $(this).html("Add <span class='glyphicon glyphicon-plus'></span>");
+        $(this).click(function() {
+          $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
+          $(this).addClass("btn-success");
+          clicked = true;
+        });
+      }
     })
     .mouseleave(function() {
-      $(this).css("background-color", "green");
-      $(this).css("border", "1px solid green");
-      $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
+      if (!clicked) {
+        $(this).html("Compare");
+      }
+      clicked = false;
     });
   </script>
 {% endblock %}
@@ -48,8 +55,8 @@
                   <h3><a href="{{request.route_url('application', name='Euler')}}">Euler</a></h3>
                 </div>
                 <div class="col-md-3">
-                  <a class="change btn btn-success pull-right
-                  ">Added <span class="glyphicon glyphicon-ok"></span></a>
+                  <a class="change btn btn-default change pull-right
+                  ">Compare</a>
                 </div>
               </div>
               <p>Numerical application designed for higher level math such as calculus, optimization, and statistics that uses Maxima for symbolic operations.</p>
@@ -108,7 +115,7 @@
                   <h3>R</h3>
                 </div>
                 <div class="col-md-3">
-                  <button type="button" class="btn disabled btn-default pull-right
+                  <button type="button" class="btn change btn-default pull-right
                   ">Compare</button>
                 </div>
               </div>
