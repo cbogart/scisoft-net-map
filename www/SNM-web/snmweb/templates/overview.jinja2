@@ -4,33 +4,14 @@
 
 {% block head %}
   {{ super() }}
-  <link href="
-  {{request.static_url('snmweb:static/css/dsm.css')}}" rel="stylesheet">
+  <link href="{{request.static_url('snmweb:static/css/dsm.css')}}" rel="stylesheet">
 
 {% endblock %}
 
 {% block js %}
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script>
-    ids = ['d06f6defc0', 'a4a08f986e', '90d90e04d0', '5b0209c8d3'];
-    var data = {nodes:
-      [{"name": "Euler"},   //0
-        {"name": "Freemat"}, //1
-        {"name": "Maxima"},  //2
-        {"name": "PARI/GP"}  //3
-      ],
-      links:  //matrix sparse representation
-        [{"source": 0, "target": 1, "value": 3},
-          {"source": 1, "target": 0, "value": 2},
-          {"source": 3, "target": 2, "value": 5},
-          {"source": 2, "target": 3, "value": 7},
-          {"source": 1, "target": 3, "value": 5},
-          {"source": 3, "target": 3, "value": 3},
-          {"source": 2, "target": 1, "value": 8}
-
-        ] };
-
-    snmapi.getStat("co_occurence", {},
+   snmapi.getStat("co_occurence", {},
       function(r) {
         var data = r.data;
         var container = $("#chart"),
@@ -167,14 +148,12 @@
     </div>
   </div>
   <div class="col-md-9">
-    <div class="panel-body">
       <div id="chart">
         <svg></svg>
       </div>
       <div class="row" id="filters">
 
       </div>
-    </div>
   </div>
 
 {% endblock %}
