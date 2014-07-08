@@ -8,7 +8,8 @@ def view_overview(request):
 
 @view_config(route_name="home", renderer='templates/index.jinja2')
 def view_home(request):
-    return {}
+    return {"status": "200 OK"}
+
 
 @view_config(route_name="app_details", renderer='templates/app_details.jinja2')
 def view_app_details(request):
