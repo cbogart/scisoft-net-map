@@ -57,7 +57,8 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get("/browse",  status=200)
         self.assertTrue("<h1>" in res.body)
 
-class APITests(unittest.TestCase):
+
+class ApiFunctionalTests(unittest.TestCase):
     def setUp(self):
         from snmweb import main
         app = main({})
