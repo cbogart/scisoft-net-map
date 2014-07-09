@@ -28,6 +28,8 @@ class ApiViews:
         category = matchdict.get("category")
 
         if category is None:
+            response["status"] = self.STATUS_OK
+            response["data"] = "#TODO: Return list of available api calls "
             return response
 
         try:  # TODO: Handle non existing path

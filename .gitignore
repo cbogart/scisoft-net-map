@@ -25,3 +25,5 @@ var/
 .installed.cfg
 *.egg
 .ropeproject/
+test_output
+.coverage
