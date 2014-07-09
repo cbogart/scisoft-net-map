@@ -14,6 +14,7 @@ requires = [
     'pyramid_debugtoolbar',
     'waitress',
     'nose'
+    'WebTest'
     ]
 
 setup(name='SNM-web',
