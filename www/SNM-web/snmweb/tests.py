@@ -29,4 +29,21 @@ class FunctionalTests(unittest.TestCase):
 
     def test_root(self):
         res = self.testapp.get("/", status=200)
-        self.assertTrue("Scientific Network Map" in res.body)
+        self.assertTrue("<h1>Scientific Network Map</h1>" in res.body)
+
+class ApiFunctionalTests(unittest.TestCase):
+    def setUp(self):
+        from snmweb import main
+        app = main({})
+        from webtest import TestApp
+        self.testapp = TestApp(app)
+
+    def tearDown(self):
+        del self.testapp
+
+    def test_apps(self):
+        res = self.testapp.get("/api/apps", status=200)
+        import json
+        jsonRes = json.loads(res.body)
+        print(jsonRes["status"])
+        self.assertEqual(jsonRes["status"], "OK1")
