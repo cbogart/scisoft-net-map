@@ -55,23 +55,28 @@ class ApiViews:
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
+        path = "snmweb/static/stat/"
         def usage_over_time(group_by='day', id=None, **kwargs):
             if id is None:
                 raise Exception("Please specify application id")
             id = id.split(",")
             group = {'day':'daily', 'week':'weekly', 'month':'monthly'}[group_by]
             # TODO: substitute with db query
-            path = "snmweb/static/stat/usage_over_time"
             result = []
             for i in id:
                 filename = "{}-{}.json".format(i, group)
-                with open(os.path.join(path, filename), 'r') as f:
+                with open(os.path.join(path, 'usage_over_time', filename), 'r') as f:
                     result.append(json.load(f))
             return result
 
         def co_occurence(**kwargs):
-            path = "snmweb/static/stat/co_occurence"
-            with open(os.path.join(path, "data.json"), 'r') as f:
+            with open(os.path.join(path, 'co_occurence', "data.json"), 'r') as f:
+                    result = json.load(f)
+            return result
+
+        def force_directed(id=None):
+            with open(os.path.join(path, "force_directed", "data.json"),
+                      'r') as f:
                     result = json.load(f)
             return result
 
