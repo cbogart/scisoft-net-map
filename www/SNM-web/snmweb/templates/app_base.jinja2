@@ -37,10 +37,14 @@
           </div>
           <div class="panel-body">
             <a href="{{request.route_url('application', name=name)}}" class="btn btn-default btn-block">App profile</a>
-            <button type="button" class="btn disabled btn-default btn-block">Version history</button>
-            <button type="button" class="btn disabled btn-default btn-block">Used with</button>
-            <a href="{{request.route_url('app_details', name=name)}}" class="btn btn-default btn-block">Usage over time</a>
-            <button type="button" class="btn disabled btn-default btn-block">Operating systems</button>
+            <a href="{{request.route_url('app_used_with', name=name)}}"
+               class="btn btn-default btn-block">
+              Used with
+            </a>
+            <a href="{{request.route_url('app_usage', name=name)}}"
+               class="btn btn-default btn-block">
+              Usage over time
+            </a>
             <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
           </div>
         </div>

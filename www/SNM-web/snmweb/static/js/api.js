@@ -13,7 +13,13 @@ initAPI = function(base) {
 
     function getStat(id, args, callback) {
         var url = [api.base, api.stat, id].join("/");
-        $.getJSON(url, args, callback);
+        $.getJSON(url, args, function(r) {
+            if (r.status == "ERROR") {
+                console.log(url + ": " + r.data);
+                return;
+            }
+            callback(r);
+        });
     }
 
     return {
