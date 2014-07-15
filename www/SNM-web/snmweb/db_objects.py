@@ -7,9 +7,9 @@ class Tag(Document):
 
 class Application(Document):
     title = StringField(required=True)
-    description = StringField()
+    description = StringField(required=True)
     image = StringField()
-    version = FloatField()
+    version = FloatField(required=True)
     tags = ListField(ReferenceField(Tag))
 
 

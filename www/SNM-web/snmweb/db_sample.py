@@ -15,9 +15,9 @@ def EraseData():
 def LoadData():
     print("Loading information about Euler")
     euler = Application(title="Euler")
-    euler.description = "Euler description"
-    image = "euler.png"
-    version = 2.5
+    euler.description = "Euler (now Euler Mathematical Toolbox or EuMathT) is a free and open-source numerical software package. It contains a matrix language, a graphical notebook style interface, and a plot window. Euler is designed for higher level math such as calculus, optimization, and statistics. The software can handle real, complex and interval numbers, vectors and matrices, it can produce 2D/3D plots, and uses Maxima for symbolic operations. The software is compilable with Windows. The Unix and Linux versions do not contain a computer algebra subsystem."
+    euler.image  = "euler.png"
+    euler.version = 2.5
     euler.save()
 
     eulerUsageDaily = UsageOverTimeDaily()
