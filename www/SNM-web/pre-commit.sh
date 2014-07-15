@@ -1,7 +1,8 @@
 #!/bin/sh
 
+pwd
 git stash -q --keep-index
-python ../../www/SNM-web/setup.py test -q
+python setup.py test -q
 RESULT=$?
 git stash pop -q
 [ $RESULT -ne 0 ] && exit 1
