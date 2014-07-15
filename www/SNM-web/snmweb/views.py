@@ -16,18 +16,22 @@ def view_home(request):
 
 @view_config(route_name="app_usage", renderer='templates/app_usage.jinja2')
 def view_app_usage(request):
-    return {"name": request.matchdict["name"]}
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    return {"app": app}
 
 
 @view_config(route_name="app_used_with", renderer='templates/app_used_with.jinja2')
 def view_app_used_with(request):
-    return {"name": request.matchdict["name"]}
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    return {"app": app}
 
 
 @view_config(route_name="application", renderer='templates/application.jinja2')
 def view_application(request):
     name = request.matchdict["name"]
-    app = Application.objects(title=name)[0]
+    app = Application.objects(title=name).first()
     return {"app": app}
 
 
