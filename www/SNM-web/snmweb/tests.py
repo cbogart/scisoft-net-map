@@ -1,5 +1,8 @@
+from mock import patch
 import unittest
 from pyramid import testing
+import mongoengine
+from db_objects import *
 
 
 class ViewTests(unittest.TestCase):
@@ -32,13 +35,21 @@ class FunctionalTests(unittest.TestCase):
         res = self.testapp.get("/", status=200)
         self.assertTrue("Scientific Network Map" in res.body)
 
-    def test_get_app(self):
+    @patch.object(mongoengine.queryset.QuerySet, "first")
+    def test_get_app(self, mock_first):
+        mock_first.return_value = Application(title="Euler", description="a", image="a", version=1.0)
+
         res = self.testapp.get("/application/Euler", status=200)
+
         self.assertTrue("Euler" in res.body)
 
-    def test_app_usage(self):
+    @patch.object(mongoengine.queryset.QuerySet, "first")
+    def test_app_usage(self, mock_first):
+        mock_first.return_value = Application(title="Euler", description="a", image="a", version=1.0)
+
         res = self.testapp.get("/application/Euler/usage",
                                status=200)
+
         self.assertTrue("<svg>" in res.body)
         self.assertTrue("Euler" in res.body)
 
