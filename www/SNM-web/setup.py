@@ -15,7 +15,8 @@ requires = [
     "waitress",
     "nose",
     "WebTest",
-    "mongoengine"
+    "mongoengine",
+    "mock"
     ]
 
 setup(name="SNM-web",
