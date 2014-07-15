@@ -1,11 +1,10 @@
 import unittest
-
 from pyramid import testing
 
 
 class ViewTests(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
+        self.config = testing.setUp(settings={"db_name": "snm-test"})
 
     def tearDown(self):
         testing.tearDown()
@@ -20,9 +19,11 @@ class ViewTests(unittest.TestCase):
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
         from snmweb import main
-        app = main({})
+        settings = {"db_name": "snm-test"}
+        app = main({}, **settings)
         from webtest import TestApp
         self.testapp = TestApp(app)
+        self.config = testing.setUp()
 
     def tearDown(self):
         del self.testapp
@@ -32,14 +33,14 @@ class FunctionalTests(unittest.TestCase):
         self.assertTrue("Scientific Network Map" in res.body)
 
     def test_get_app(self):
-        res = self.testapp.get("/application/THIS_IS_APP_NAME_TEST", status=200)
-        self.assertTrue("THIS_IS_APP_NAME_TEST" in res.body)
+        res = self.testapp.get("/application/Euler", status=200)
+        self.assertTrue("Euler" in res.body)
 
     def test_app_usage(self):
-        res = self.testapp.get("/application/THIS_IS_APP_NAME_TEST/usage",
+        res = self.testapp.get("/application/Euler/usage",
                                status=200)
         self.assertTrue("<svg>" in res.body)
-        self.assertTrue("THIS_IS_APP_NAME_TEST" in res.body)
+        self.assertTrue("Euler" in res.body)
 
     def test_compare(self):
         res = self.testapp.get("/compare",  status=200)
@@ -61,11 +62,13 @@ class FunctionalTests(unittest.TestCase):
 class ApiFunctionalTests(unittest.TestCase):
     def setUp(self):
         from snmweb import main
-        app = main({})
+        settings = {"db_name": "snm-test"}
+        app = main({}, **settings)
         from webtest import TestApp
         self.testapp = TestApp(app)
         from json import loads
         self.parse = loads
+        self.config = testing.setUp(settings={"db_name": "snm-test"})
 
     def tearDown(self):
         del self.testapp
@@ -79,7 +82,6 @@ class ApiFunctionalTests(unittest.TestCase):
         res = self.testapp.get("/api/SOME_UNKNOWN_STUFF", status=200).body
         res = self.parse(res)
         self.assertEqual(res["status"], "ERROR")
-
 
     def test_api_apps(self):
         res = self.testapp.get("/api/apps", status=200).body
