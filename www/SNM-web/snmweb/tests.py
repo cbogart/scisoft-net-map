@@ -16,7 +16,7 @@ class ViewTests(unittest.TestCase):
         from .views import view_home
         request = testing.DummyRequest()
         response = view_home(request)
-        self.assertEquals(response["status3"], "200 OK")
+        self.assertEquals(response["status"], "200 OK")
 
 
 class FunctionalTests(unittest.TestCase):
