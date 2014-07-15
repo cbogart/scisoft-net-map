@@ -1,11 +1,11 @@
 {% extends "base.jinja2" %}
 
-{% block title %}{{ name }}{% endblock %}
+{% block title %}{{ app.title }}{% endblock %}
 
 {% block content_title  %}
   <div class="row">
     <div class="col-md-7">
-      <h1><a href="{{request.route_url('browse')}}">Applications</a> > {{ self.title() }} <small>version 2.5 <!-- should be taken from db --></small></h1>
+      <h1><a href="{{request.route_url('browse')}}">Applications</a> > {{ self.title() }} <small>version {{app.version if app.version != None}} <!-- should be taken from db --></small></h1>
     </div>
     <div class="col-md-5" id="app-search">
       <div>
@@ -33,15 +33,15 @@
       <div class="col-md-3">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <img src="{{request.static_url('snmweb:static/img/' + name.lower() +'.png')}}" />
+            <img src="{{request.static_url('snmweb:static/img/' + app.image)}}" />
           </div>
           <div class="panel-body">
-            <a href="{{request.route_url('application', name=name)}}" class="btn btn-default btn-block">App profile</a>
-            <a href="{{request.route_url('app_used_with', name=name)}}"
+            <a href="{{request.route_url('application', name=app.title)}}" class="btn btn-default btn-block">App profile</a>
+            <a href="{{request.route_url('app_used_with', name=app.title)}}"
                class="btn btn-default btn-block">
               Used with
             </a>
-            <a href="{{request.route_url('app_usage', name=name)}}"
+            <a href="{{request.route_url('app_usage', name=app.title)}}"
                class="btn btn-default btn-block">
               Usage over time
             </a>

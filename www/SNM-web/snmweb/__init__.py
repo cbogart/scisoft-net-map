@@ -1,7 +1,9 @@
 from pyramid.config import Configurator
+from mongoengine import connect
 
 
 def main(global_config, **settings):
+
     """ This function returns a Pyramid WSGI application.
     """
     config = Configurator(settings=settings)
@@ -24,6 +26,8 @@ def main(global_config, **settings):
     config.add_route("api_home", "/api")
     config.add_route("api_home.category", "/api/{category}")
     config.add_route("api_home.category.id", "/api/{category}/{id}")
+
+    connect(settings['db_name'])
 
     config.scan()
     return config.make_wsgi_app()
