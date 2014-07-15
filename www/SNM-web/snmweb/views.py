@@ -26,9 +26,8 @@ def view_app_used_with(request):
 
 @view_config(route_name="application", renderer='templates/application.jinja2')
 def view_application(request):
-    connect("snm-test")
     name = request.matchdict["name"]
-    app = Application.objects(title=name)
+    app = Application.objects(title=name)[0]
     return {"app": app}
 
 
