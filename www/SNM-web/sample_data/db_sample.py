@@ -1,6 +1,7 @@
 from snmweb.db_objects import *
 from datetime import datetime as dt
 import json
+import sys
 
 
 def erase_data():
@@ -36,7 +37,11 @@ def retrieve_data():
     print("Daily usage over time: {} entries loaded".format(x))
 
 if __name__ == "__main__":
-    connect("snm-test")
+    db = "snm-test"
+    if len(sys.argv) > 1:
+	db = sys.argv[1]
+    print "Using database: `{}`. You can specidy db with first argument".format(db)
+    connect(db)
     erase_data()
     load_data()
     retrieve_data()
