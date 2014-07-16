@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from db_objects import *
 
 from pyramid.view import (
     view_config,
@@ -8,7 +9,7 @@ from pyramid.view import (
 )
 
 
-@view_defaults(renderer='json')
+@view_defaults(renderer="json")
 class ApiViews:
     def __init__(self, request):
         self.request = request
@@ -18,9 +19,9 @@ class ApiViews:
         self.STATUS_OK = "OK"
         self.STATUS_ERROR = "ERROR"
 
-    @view_config(route_name='api_home')
-    @view_config(route_name='api_home.category')
-    @view_config(route_name='api_home.category.id')
+    @view_config(route_name="api_home")
+    @view_config(route_name="api_home.category")
+    @view_config(route_name="api_home.category.id")
     def home(self):
         request = self.request
         response = self.TEMPLATE.copy()
@@ -48,35 +49,45 @@ class ApiViews:
         """
         if app_id is None:
             return [{"name": "app1"}, {"name": "app2"}, {"name": "app3"}]
-        return {"id": app_id,
-                "name": "app"}
+        return {"id": app_id, "name": "app"}
 
     def stat(self,request, type):
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
-        def usage_over_time(group_by='day', id=None, **kwargs):
+        path = "snmweb/static/stat/"
+        def usage_over_time(group_by="day", id=None, **kwargs):
             if id is None:
                 raise Exception("Please specify application id")
+            if group_by != "day":
+                raise Exception("Under construction: currently groupings "
+                                "other than 'day' are not supported")
             id = id.split(",")
-            group = {'day':'daily', 'week':'weekly', 'month':'monthly'}[group_by]
-            # TODO: substitute with db query
-            path = "snmweb/static/stat/usage_over_time"
             result = []
-            for i in id:
-                filename = "{}-{}.json".format(i, group)
-                with open(os.path.join(path, filename), 'r') as f:
-                    result.append(json.load(f))
+            subres = []
+            for entry in UsageOverTimeDaily.objects(application__in=id).all():
+                subres.append({
+                    "x": entry.date.strftime('%Y-%m-%d'),
+                    "y": entry.value
+                })
+            result.append({
+                "id": entry.application.title,
+                "data": subres
+            })
             return result
 
         def co_occurence(**kwargs):
-            path = "snmweb/static/stat/co_occurence"
-            with open(os.path.join(path, "data.json"), 'r') as f:
-                    result = json.load(f)
+            with open(os.path.join(path, "co_occurence", "data.json"), "r") as f:
+                result = json.load(f)
+            return result
+
+        def force_directed(id=None):
+            with open(os.path.join(path, "force_directed", "data.json"), "r") as f:
+                result = json.load(f)
             return result
 
         def unknown_stat(*args, **kwargs):
-            raise Exception('Unknown request type')
+            raise Exception("Unknown request type")
 
         if type is None:
             return [{"id": "over_time"}, {"id": "count_users"}]
