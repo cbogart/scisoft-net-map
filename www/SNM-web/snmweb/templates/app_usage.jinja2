@@ -17,7 +17,6 @@
   <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
     $(function main() {
-      var app_id = "90d90e04d0";
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
@@ -29,7 +28,7 @@
         $(this).addClass("active");
         chart.drawDiagram({
           group_by: $(this).data("period"),
-          id: app_id
+          id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
         });
       });
       chart.drawDiagram({group_by: "day", id: app_id});
@@ -54,13 +53,6 @@
         <button type="button" class="btn disabled">Time range:</button>
         <button type="button" class="btn disabled btn-default">From: October 2013</button>
         <button type="button" class="btn disabled btn-default">To: April 2014</button>
-      </div>
-      <div class="btn-group">
-        <button type="button" class="btn disabled">Smoothness:</button>
-        <button type="button" class="btn active btn-default">None</button>
-        <button type="button" class="btn disabled btn-default">3</button>
-        <button type="button" class="btn disabled btn-default">5</button>
-        <button type="button" class="btn disabled btn-default">7</button>
       </div>
     </div>
 

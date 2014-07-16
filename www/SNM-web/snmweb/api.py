@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from db_objects import *
 
 from pyramid.view import (
     view_config,
@@ -58,14 +59,21 @@ class ApiViews:
         def usage_over_time(group_by="day", id=None, **kwargs):
             if id is None:
                 raise Exception("Please specify application id")
+            if group_by != "day":
+                raise Exception("Under construction: currently groupings "
+                                "other than 'day' are not supported")
             id = id.split(",")
-            group = {"day":"daily", "week":"weekly", "month":"monthly"}[group_by]
-            # TODO: substitute with db query
             result = []
-            for i in id:
-                filename = "{}-{}.json".format(i, group)
-                with open(os.path.join(path, "usage_over_time", filename), "r") as f:
-                    result.append(json.load(f))
+            subres = []
+            for entry in UsageOverTimeDaily.objects(application__in=id).all():
+                subres.append({
+                    "x": entry.date.strftime('%Y-%m-%d'),
+                    "y": entry.value
+                })
+            result.append({
+                "id": entry.application.title,
+                "data": subres
+            })
             return result
 
         def co_occurence(**kwargs):
