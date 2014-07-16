@@ -1,6 +1,4 @@
 from snmweb.db_objects import *
-from random import randrange
-import datetime
 from datetime import datetime as dt
 import json
 
@@ -23,9 +21,9 @@ def load_data(filename="db_sample.json"):
             app.save()
             for entry in a["usage_over_time"]:
                 ud = UsageOverTimeDaily(
-						date=dt.strptime(entry["x"], "%Y-%m-%d"),
-						value=entry["y"],
-						application = app)
+                    date=dt.strptime(entry["x"], "%Y-%m-%d"),
+                    value=entry["y"],
+                    application=app)
                 ud.save()
 
 
@@ -33,8 +31,8 @@ def retrieve_data():
     print("Retrieving information about applications and their usage")
     print("List of applications")
     for app in Application.objects:
-        print " * ",app.title
-	x = UsageOverTimeDaily.objects().count()
+        print " * ", app.title
+    x = UsageOverTimeDaily.objects().count()
     print("Daily usage over time: {} entries loaded".format(x))
 
 if __name__ == "__main__":
