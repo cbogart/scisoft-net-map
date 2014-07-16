@@ -24,7 +24,10 @@
 {% endblock %}
 
 {% block js %}
-  {#  You can add page-specific js here #}
+  <script>
+    /* TODO: Replace with current app object to represent the information */
+    var app_id = "{{ app.id }}";
+  </script>
 {% endblock %}
 
 {% block content %}
