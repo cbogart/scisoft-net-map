@@ -47,4 +47,5 @@ def view_data_sources(request):
 
 @view_config(route_name="browse", renderer='templates/browse.jinja2')
 def view_explore(request):
-    return {"status": "200 OK"}
+    apps = Application.objects.all()
+    return {"apps": apps}

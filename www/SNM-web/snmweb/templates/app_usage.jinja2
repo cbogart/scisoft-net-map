@@ -17,7 +17,6 @@
   <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
     $(function main() {
-      var app_id = "90d90e04d0";
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
@@ -29,7 +28,7 @@
         $(this).addClass("active");
         chart.drawDiagram({
           group_by: $(this).data("period"),
-          id: app_id
+          id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
         });
       });
       chart.drawDiagram({group_by: "day", id: app_id});
