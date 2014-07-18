@@ -1,5 +1,5 @@
 
-#How to install pyramide
+#How to install the web-site for development
 
 
 Before you proceed with these Steps, please first do `how-to-setup-db.md` in order to install mongodb.
