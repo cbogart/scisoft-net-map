@@ -1,6 +1,8 @@
 
 #How to install pyramide
 
+Step 0. Navigate yo the `SNM/www` folder
+
 Step 1. Install virtenv if needed: `sudo easy_install virtualenv`
 
 Step 2. Create virtual environment in this folder `virtualenv env` you will see:
