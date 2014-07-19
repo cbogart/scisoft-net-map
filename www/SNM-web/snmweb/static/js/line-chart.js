@@ -72,7 +72,7 @@
                             }
                         );
 
-                        appData.push({values: d, key: r.data[i].id});
+                        appData.push({values: d, key: r.data[i].title});
                     }
                 });
             return appData;

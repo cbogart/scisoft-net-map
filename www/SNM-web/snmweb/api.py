@@ -71,7 +71,8 @@ class ApiViews:
 
             result = []
             for entry in Usage.objects(application__in=id.split(",")).all():
-                result.append({"data": entry.to_mongo()[group]})
+                result.append({"data": entry.to_mongo()[group],
+                               "title": entry.application.title})
             return result
 
         def co_occurence(**kwargs):
