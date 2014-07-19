@@ -57,23 +57,21 @@ class ApiViews:
         """
         path = "snmweb/static/stat/"
         def usage_over_time(group_by="day", id=None, **kwargs):
+            d = {"day": "daily",
+                 "week": "weekly",
+                 "month": "monthly"}
+            group = d.get(group_by)
+            if group is None:
+                raise Exception("Group_by argument"
+                                "should be one of {}".format(
+                                [","].join(d.keys())))
+
             if id is None:
                 raise Exception("Please specify application id")
-            if group_by != "day":
-                raise Exception("Under construction: currently groupings "
-                                "other than 'day' are not supported")
-            id = id.split(",")
+
             result = []
-            subres = []
-            for entry in UsageOverTimeDaily.objects(application__in=id).all():
-                subres.append({
-                    "x": entry.date.strftime('%Y-%m-%d'),
-                    "y": entry.value
-                })
-            result.append({
-                "id": entry.application.title,
-                "data": subres
-            })
+            for entry in Usage.objects(application__in=id.split(",")).all():
+                result.append({"data": entry.to_mongo()[group]})
             return result
 
         def co_occurence(**kwargs):
