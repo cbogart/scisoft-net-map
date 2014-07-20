@@ -64,7 +64,7 @@ class ApiViews:
             if group is None:
                 raise Exception("Group_by argument"
                                 "should be one of {}".format(
-                                [","].join(d.keys())))
+                                ",".join(d.keys())))
 
             if id is None:
                 raise Exception("Please specify application id")

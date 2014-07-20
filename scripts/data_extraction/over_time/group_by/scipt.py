@@ -32,21 +32,23 @@ class App:
         self.monthly[month] += 1
 
     def fill_empty_dates(self):
-        def parsedt(str):
-            time_struct = time.strptime(str, "%Y-%m-%d")
+        def parsedt(s):
+            time_struct = time.strptime(s, "%Y-%m-%d")
             return datetime.datetime.fromtimestamp(time.mktime(time_struct))
 
-        # by day
+        end = parsedt(max(self.daily.keys()))
+        print "by day"
         data = self.daily
-        start, end = min(data.keys()), max(data.keys())
-        start, end = parsedt(start), parsedt(end)
+
+        start = min(data.keys())
+        start = parsedt(start)
         delta = timedelta(days=1)
         while start < end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
             self.daily[str_repr] = int(data.get(str_repr, 0))
             start += delta
-        # by week
+        print "by week"
         data = self.weekly
         start, end = min(data.keys()), max(data.keys())
         start, end = parsedt(start), parsedt(end)
@@ -54,21 +56,23 @@ class App:
         while start < end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
-            self.daily[str_repr] = int(data.get(str_repr, 0))
+            self.weekly[str_repr] = int(data.get(str_repr, 0))
             start += delta
-        # by month
+        print "by month"
         data = self.monthly
         start, end = min(data.keys()), max(data.keys())
         start, end = parsedt(start).date(), parsedt(end).date()
-        while start <= end:
+        delta = timedelta(days=31)
+        while start <= end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
-            self.daily[str_repr] = int(data.get(str_repr, 0))
+            self.monthly[str_repr] = int(data.get(str_repr, 0))
             month = start.month + 1
             start = date(start.year + (month/12), 1 + ((month-1)%12), 1)
 
 
-def process_file(filename, app, app_hash):
+def process_file(filename, app):
+    app_hash = app.hash
     f = open(filename)
     j = json.load(f)
 
@@ -108,19 +112,22 @@ def writeResults(app):
 def main():
     if len(sys.argv) < 3:
         print "usage: {} AHHA_MSIT-project2014_Root/\[General\]\ From\ " \
-              "Client/data\ for\ MSI\ team/lariatData APPHASH".format(sys.argv[0])
+              "Client/data\ for\ MSI\ team/lariatData HASH_LIST_FILE".format(
+            sys.argv[0])
         return
     files = get_list_of_files(sys.argv[1])
-    app_hash = sys.argv[2]
-    app = App(app_hash)
-    progress = 0
-    l = len(files)
-    for f in get_list_of_files(sys.argv[1]):
-        progress += 1
-        print "[{}%]\tprocessing {}".format(int(progress * 100 / l),
-                                            os.path.basename(f))
-        process_file(f, app, app_hash)
-    writeResults(app)
+    with open(sys.argv[2]) as f:
+        hash_list = f.readlines()
+    for app_hash in hash_list:
+        app = App(app_hash[:-1])
+        progress = 0
+        l = len(files)
+        for f in get_list_of_files(sys.argv[1]):
+            progress += 1
+            print "[{}%]\tprocessing {}".format(int(progress * 100 / l),
+                                                os.path.basename(f))
+            process_file(f, app)
+        writeResults(app)
 
 
 if __name__ == '__main__':

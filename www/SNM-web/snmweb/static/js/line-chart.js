@@ -55,7 +55,7 @@
             snmapi.getStat(options.stat_id, args,
                 function(r) {
                     for (var i = 0; i < r.data.length; i++) {
-                        addRowApp(r.data[i].id);
+                        addRowApp(r.data[i].title);
                         var data = r.data[i].data;
                         var parseDate = d3.time.format("%Y-%m-%d").parse;
                         var x, y, entry;
