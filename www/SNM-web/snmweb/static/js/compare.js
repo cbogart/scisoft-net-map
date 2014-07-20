@@ -55,12 +55,18 @@ var compare = function(){
         return (id in dict);
     }
 
+    function clearStorage() {
+        saveObj(COMPARE_KEY, {});
+         counter.innerHTML = "0";
+    }
+
    /* public methods */
    return {
        add      : addApp,
        remove   : removeApp,
        get      : getCommaList,
-       check    : checkApp
+       check    : checkApp,
+       clear    : clearStorage
    }
 
 }();
