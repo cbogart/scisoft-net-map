@@ -1,5 +1,10 @@
 
-#How to install pyramide
+#How to install the web-site for development
+
+
+Before you proceed with these Steps, please first do `how-to-setup-db.md` in order to install mongodb.
+
+Step 0. Navigate yo the `SNM/www` folder
 
 Step 1. Install virtenv if needed: `sudo easy_install virtualenv`
 
