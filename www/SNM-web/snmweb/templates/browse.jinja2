@@ -10,16 +10,18 @@
 {% block js %}
   {{ super() }}
   <script>
-    var clicked = false;
-    var prevText = "";
     $(".change").click(function() {
+      var id = $(this).data("id");
       if ($(this).html().indexOf("Compare") > -1) {
         $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
         $(this).addClass("btn-success");
+        compare.add(id);
       } else {
+        compare.remove(id);
         $(this).html("Compare");
         $(this).removeClass("btn-success");
       }
+      console.log(compare.get());
     });
   </script>
 {% endblock %}
@@ -56,7 +58,9 @@
                     </h3>
                   </div>
                   <div class="col-md-3">
-                    <button class="change btn btn-default change pull-right">Compare</button>
+                    <button data-id="{{ app.id }}" class="change btn
+                    btn-default change
+                    pull-right">Compare</button>
                   </div>
                 </div>
                 <p>
