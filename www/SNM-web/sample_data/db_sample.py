@@ -5,6 +5,7 @@ import datetime
 from datetime import datetime as dt
 import json
 import os
+import sys
 
 
 def erase_data():
@@ -18,13 +19,13 @@ def erase_data():
 def any_usage(usage_path, hash):
     result = {}
     for field in ["daily", "weekly", "monthly"]:
-        with open(os.path.join(usage_path, "group_by",
+        with open(os.path.join(usage_path,
                                "{}-{}.json".format(hash, field))) as f:
             result[field] = json.load(f)["data"]
     return result
 
 
-def load_data(filename="db_sample.json", usage_path="../../../scripts/data_extraction/over_time"):
+def load_data(filename="db_sample.json", usage_path="sample_usage"):
     print("Loading information from {}".format(filename))
     f = open(os.path.join(usage_path, "30-applications"))
     hash_list = f.readlines()
@@ -57,7 +58,7 @@ def retrieve_data():
 if __name__ == "__main__":
     db = "snm-test"
     if len(sys.argv) > 1:
-	db = sys.argv[1]
+        db = sys.argv[1]
     print "Using database: `{}`. You can specidy db with first argument".format(db)
     connect(db)
     erase_data()
