@@ -38,22 +38,21 @@ var compare = function(){
             }
         });
 
+        $(".change").click(function() {
+            var id = $(this).data("id");
+            if ($(this).html().indexOf("Compare") > -1) {
+                $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
+                $(this).addClass("btn-success");
+                compare.add(id);
+            } else {
+                compare.remove(id);
+                $(this).html("Compare");
+                $(this).removeClass("btn-success");
+            }
+            console.log(compare.get());
+        });
     });
     
-    $(".change").click(function() {
-      var id = $(this).data("id");
-      if ($(this).html().indexOf("Compare") > -1) {
-        $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
-        $(this).addClass("btn-success");
-        compare.add(id);
-      } else {
-        compare.remove(id);
-        $(this).html("Compare");
-        $(this).removeClass("btn-success");
-      }
-      console.log(compare.get());
-    });
-
 
     /* public methods */
 
