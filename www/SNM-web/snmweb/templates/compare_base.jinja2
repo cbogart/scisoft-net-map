@@ -9,6 +9,17 @@
 
 {% block js %}
   {#  You can add page-specific js here #}
+  <script>
+    snmapi.getApps("53cd803a83297424dfe37699,53cd803a83297424dfe376b5", function(r) {
+        var links = "";
+        r.data.forEach(function(entry) {
+            console.log(entry.name);
+            //links += "<li><a href='#'>" + entry.name + "</a><br /></li>";
+            links += "<a class='btn btn-primary btn-block'> href=" + {{request.route_url('application', name=entry.name)}} + ">" + entry.name + "</a>";
+        });
+        $("#selected-applications-panel").html(links);
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -22,13 +33,12 @@
       </div>
     </div>
     <div id="legend" class="panel panel-default">
-      <div class="panel-heading">Legend</div>
-      <div class="panel-body">
+      <div class="panel-heading">Selected applications</div>
+      <div class="panel-body" id="selected-applications-panel">
         <a style="background-color: blue;" href="#" class="btn disabled btn-default btn-block">Euler</a>
         <a style="background-color: purple;" href="#" class="btn btn-block">Freemat</a>
         <a style="background-color: orange;" href="#" class="btn btn-default btn-block">Maxima</a>
         <a style="background-color: magenta;" href="#" class="btn btn-default btn-block">PARI/GP</a>
-        <a id="add-to-comparison"href="#x" class="btn btn-default btn-block">Add to comparison <span class="glyphicon glyphicon-plus"></span></a>
       </div>
     </div>
   </div>
