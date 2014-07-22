@@ -9,29 +9,13 @@
 
 {% block js %}
   {{ super() }}
-  <script>
-    $(".change").click(function() {
-      var id = $(this).data("id");
-      if ($(this).html().indexOf("Compare") > -1) {
-        $(this).html("Added <span class='glyphicon glyphicon-ok'></span>");
-        $(this).addClass("btn-success");
-        compare.add(id);
-      } else {
-        compare.remove(id);
-        $(this).html("Compare");
-        $(this).removeClass("btn-success");
-      }
-      console.log(compare.get());
-    });
-  </script>
 {% endblock %}
 
 {% block content %}
-  <div id="applications" class="col-md-8">
+  <div id="applications" class="col-md-12">
     <div id="sort-by-panel">
       <div class="btn-group">
-        <button type="button" class="btn btn-default active">Most used
-          first</button>
+        <button type="button" class="btn btn-default active">Most used first</button>
         <button type="button" class="btn disabled btn-default">Trending first</button>
         <button type="button" class="btn disabled btn-default">Alphabetically</button>
       </div>
@@ -58,9 +42,7 @@
                     </h3>
                   </div>
                   <div class="col-md-3">
-                    <button data-id="{{ app.id }}" class="change btn
-                    btn-default change
-                    pull-right">Compare</button>
+                    <button data-id="{{ app.id }}" class="change btn btn-default change pull-right">Compare</button>
                   </div>
                 </div>
                 <p>
@@ -73,63 +55,5 @@
       </div>
     </div>
   </div>
-
-
-  <div class="col-md-4" id="filters-panel">
-
-    <div class="panel-group" id="accordion">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-            Filter by tag
-            <span class="badge pull-right">Algebra </span>
-            <span class="badge pull-right"> Structural</span>
-          </h4>
-        </div>
-        <div id="collapseOne" class="panel-collapse collapse in">
-          <div class="panel-body">
-            <button type="button" class="btn btn-default
-                active btn-block">Algebra</button>
-            <button type="button" class="btn disabled btn-default btn-block">Statistical</button>
-            <button type="button" class="btn btn-default active
-                btn-block">Structural</button>
-            <button type="button" class="btn disabled btn-default btn-block">Mixed-effects</button>
-          </div>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-            Filter by organization
-          </h4>
-        </div>
-        <div id="collapseTwo" class="panel-collapse collapse">
-          <div class="panel-body">
-            <button type="button" class="btn disabled btn-default btn-block">CMU</button>
-            <button type="button" class="btn disabled btn-default btn-block">TACC</button>
-            <button type="button" class="btn disabled btn-default btn-block">PITT</button>
-            <button type="button" class="btn disabled btn-default btn-block">MIT</button>
-          </div>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-              Filter by developer
-            </a>
-          </h4>
-        </div>
-        <div id="collapseThree" class="panel-collapse collapse">
-          <div class="panel-body">
-            <button type="button" class="btn disabled btn-default btn-block">Biao Ma</button>
-            <button type="button" class="btn disabled btn-default btn-block">Nikita Chepanov</button>
-            <button type="button" class="btn disabled btn-default btn-block">Slava Kovtunenko</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 {% endblock %}
