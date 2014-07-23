@@ -40,7 +40,7 @@ def view_compare(request):
     return {"status": "200 OK"}
 
 
-@view_config(route_name="data-sources", renderer='templates/data-sources.jinja2')
+@view_config(route_name="about", renderer='templates/about.jinja2')
 def view_data_sources(request):
     return {"status": "200 OK"}
 
