@@ -6,11 +6,11 @@ var compare = function(){
     /* private functions */
 
     function getObj(key) {
-        return JSON.parse(localStorage.getItem(key) || "{}");
+        return JSON.parse(sessionStorage.getItem(key) || "{}");
     }
 
     function saveObj(key, obj) {
-        localStorage.setItem(key, JSON.stringify(obj));
+        sessionStorage.setItem(key, JSON.stringify(obj));
     }
 
     function count(dict){
