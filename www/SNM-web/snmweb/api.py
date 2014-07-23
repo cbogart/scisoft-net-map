@@ -47,12 +47,17 @@ class ApiViews:
         or find specific one "api/apps/:app"
         """
         result = []
+        apps = [];
         if app_id is None:
-            for app in Application.objects().all():
-                result.append({"id": str(app.id), "name": app.title})
-            return result
-        for app in Application.objects(id__in=app_id.split(",")).all():
-            result.append({"id": str(app.id), "name": app.title})
+            apps = Application.objects().all()
+        else:
+            apps = Application.objects(id__in=app_id.split(",")).all()
+        for app in apps:
+            result.append({
+                "id": str(app.id),
+                "name": app.title,
+                "link": request.route_url('application', name=app.title)
+            })
         return result
 
     def stat(self, request, type):
