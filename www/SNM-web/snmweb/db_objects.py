@@ -7,6 +7,9 @@ class Application(Document):
     short_description = StringField()
     image = StringField()
     version = StringField()
+    usage = IntField()
+    trend = IntField()
+    website = StringField()
 
 
 class ByDateStat(EmbeddedDocument):

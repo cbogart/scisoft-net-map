@@ -47,5 +47,9 @@ def view_data_sources(request):
 
 @view_config(route_name="browse", renderer='templates/browse.jinja2')
 def view_explore(request):
-    apps = Application.objects.all()
+    try:
+        order = request.params["order"]
+    except:
+        order = "usage"
+    apps = Application.objects.order_by(order)
     return {"apps": apps}
