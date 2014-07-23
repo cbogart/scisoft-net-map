@@ -28,7 +28,7 @@ initAPI = function(base) {
       if (id == null)
         url = [api.base, api.apps].join("/");
       else
-        url = [api.base, api.apps, id].join("/");
+        url = [api.base, api.apps].join("/") + "?ids=" + id;
 
       console.log(url);
 
