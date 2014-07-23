@@ -68,7 +68,7 @@ class FunctionalTests(unittest.TestCase):
         self.assertTrue("source" in res.body)
 
     def test_browse(self):
-        res = self.testapp.get("/browse",  status=200)
+        res = self.testapp.get("/browse?order=title",  status=200)
         self.assertTrue("<h1>" in res.body)
 
 
