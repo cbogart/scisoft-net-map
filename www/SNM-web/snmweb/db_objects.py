@@ -19,3 +19,13 @@ class Usage(Document):
     daily = ListField(EmbeddedDocumentField(ByDateStat))
     weekly = ListField(EmbeddedDocumentField(ByDateStat))
     monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+
+class Link(EmbeddedDocument):
+    app = ReferenceField(Application, required=True)
+    power = IntField()
+
+
+class CoOccurence(Document):
+    application = ReferenceField(Application, required=True)
+    links = ListField(EmbeddedDocumentField(Link))

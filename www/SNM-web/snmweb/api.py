@@ -72,7 +72,7 @@ class ApiViews:
                  "month": "monthly"}
             group = d.get(group_by)
             if group is None:
-                raise Exception("Group_by argument"
+                raise Exception("Group_by argument "
                                 "should be one of {}".format(
                                     ",".join(d.keys())))
 
@@ -85,15 +85,30 @@ class ApiViews:
                                "title": entry.application.title})
             return result
 
-        def co_occurence(**kwargs):
-            with open(os.path.join(path, "co_occurence", "data.json"), "r") as f:
-                result = json.load(f)
-            return result
+        def co_occurence(id=None):
+            if id is None:
+                raise Exception("Please, specify application id")
+            app = Application.objects.get(id=id)
+            cooc = CoOccurence.objects.get(application=id)
+            nodes = [{"name": app.title, "id": app.id.__str__()}]
+            links = []
+            reverse_dict = {app.id: 0}
+            i = 1
+            for l in cooc.links:
+                nodes.append({"name": l.app.title, "id": l.app.id.__str__()})
+                reverse_dict[l.app.id] = i
+                i += 1
+            for l in cooc.links:
+                links.append({
+                    "source": 0,
+                    "target": reverse_dict[l.app.id],
+                    "value": l.power
+                })
+
+            return {"nodes": nodes, "links": links}
 
         def force_directed(id=None):
-            with open(os.path.join(path, "force_directed", "data.json"), "r") as f:
-                result = json.load(f)
-            return result
+            return co_occurence(id)
 
         def unknown_stat(*args, **kwargs):
             raise Exception("Unknown request type")
