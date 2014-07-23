@@ -9,15 +9,23 @@
 
 {% block js %}
   {{ super() }}
+  <script>
+    var order = SNM.getParameterByName("order");
+    $(".btn").each(function() {
+        $(this).removeClass("active");
+    });
+
+    $("#order-" + order).addClass("active");
+  </script>
 {% endblock %}
 
 {% block content %}
   <div id="applications" class="col-md-12">
     <div id="sort-by-panel">
       <div class="btn-group">
-        <a class="btn btn-default active" href="{{request.route_url('browse', _query={'order': 'usage'})}}">Most used first</a>
-        <a class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'trend'})}}">Trending first</a>
-        <a class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
+        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': 'usage'})}}">Most used first</a>
+        <a id="order-trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'trend'})}}">Trending first</a>
+        <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>
     <div class="panel panel-default">
