@@ -9,6 +9,18 @@
 
 {% block js %}
   {#  You can add page-specific js here #}
+  <script>
+    snmapi.getApps(compare.get(), function(r) {
+        var links = "";
+        r.data.forEach(function(entry) {
+            console.log(entry.name);
+            console.log(entry);
+            links += "<a class='btn btn-default btn-block' href='" + entry.link + "'>" + entry.name + "</a>";
+        });
+        links += "<br /><p>Click to navigate to Application page</p>";
+        $("#selected-applications-panel").html(links);
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -22,13 +34,14 @@
       </div>
     </div>
     <div id="legend" class="panel panel-default">
-      <div class="panel-heading">Legend</div>
-      <div class="panel-body">
+      <div class="panel-heading">Selected applications</div>
+      <div class="panel-body" id="selected-applications-panel">
+        <!--
         <a style="background-color: blue;" href="#" class="btn disabled btn-default btn-block">Euler</a>
         <a style="background-color: purple;" href="#" class="btn btn-block">Freemat</a>
         <a style="background-color: orange;" href="#" class="btn btn-default btn-block">Maxima</a>
         <a style="background-color: magenta;" href="#" class="btn btn-default btn-block">PARI/GP</a>
-        <a id="add-to-comparison"href="#x" class="btn btn-default btn-block">Add to comparison <span class="glyphicon glyphicon-plus"></span></a>
+        -->
       </div>
     </div>
   </div>
