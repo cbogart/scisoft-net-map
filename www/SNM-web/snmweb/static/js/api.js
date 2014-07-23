@@ -4,7 +4,8 @@
 initAPI = function(base) {
     var api = {
         base: base,
-        stat: "stat"
+        stat: "stat",
+        apps: "apps"
     }
 
     $.ajaxSetup({
@@ -22,8 +23,27 @@ initAPI = function(base) {
         });
     }
 
+    function getApps(id, callback) {
+      var url = "";
+      if (id == null)
+        url = [api.base, api.apps].join("/");
+      else
+        url = [api.base, api.apps, id].join("/");
+
+      console.log(url);
+
+      $.getJSON(url, function(r) {
+          if (r.status == "ERROR") {
+              console.log(url + ": " + r.data);
+              return;
+          }
+          callback(r);
+      });
+    }
+
     return {
         getStat: getStat,
+        getApps: getApps,
         getBase: function() { return api.base; }
     }
 }

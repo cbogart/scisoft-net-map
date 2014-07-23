@@ -126,14 +126,7 @@ img {
     color:black;
 }
 
-#legend .panel-body a, #legend .panel-body a:hover {
-  color: #fff;
-  margin-top: 5px;
-}
 
-#legend .panel-body #add-to-comparison {
-  color: #000;
-}
 
 #filters {
   margin-top: 10px;

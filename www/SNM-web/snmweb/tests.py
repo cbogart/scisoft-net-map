@@ -2,7 +2,9 @@ from mock import patch
 import unittest
 from pyramid import testing
 import mongoengine
+
 from db_objects import *
+from mongoengine import *
 
 
 class ViewTests(unittest.TestCase):
@@ -100,8 +102,11 @@ class ApiFunctionalTests(unittest.TestCase):
         self.assertEqual(res["status"], "OK")
         self.assertTrue(isinstance(res["data"], list))
 
-    def test_api_get_app(self):
-        res = self.testapp.get("/api/apps/SOME_UNKNOWN_ID", status=200).body
+    @patch.object(mongoengine.queryset.QuerySet, "all")
+    def test_api_get_app(self, mock_all):
+        mock_all.return_value = [Application(id="53cd803a83297424dfe37699", title="Test", description="a", image="a", version=1.0)]
+
+        res = self.testapp.get("/api/apps/Test", status=200).body
         res = self.parse(res)
         self.assertEqual(res["status"], "OK")
         #TODO: check for unknown id later
