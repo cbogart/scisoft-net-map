@@ -52,11 +52,11 @@ class ApiViews:
             apps = []
             if not (ids is None) and not (query is None):
                 apps = Application.objects(
-                    Q(title__istartswith=query) &
+                    Q(title__icontains=query) &
                     Q(id__in=ids.split(","))
                 ).all()
             elif (ids is None) and not (query is None):
-                apps = Application.objects(title__istartswith=query).all()
+                apps = Application.objects(title__icontains=query).all()
             elif not (ids is None) and (query is None):
                 apps = Application.objects(id__in=ids.split(",")).all()
             else:

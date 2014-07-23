@@ -49,5 +49,5 @@ def view_data_sources(request):
 def view_explore(request):
     order = request.params.get("order", "usage")
     query = request.params.get("query", "")
-    apps = Application.objects(title__istartswith=query).order_by(order)
+    apps = Application.objects(title__icontains=query).order_by(order)
     return {"apps": apps}
