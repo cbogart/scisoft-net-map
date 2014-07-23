@@ -30,6 +30,8 @@ initAPI = function(base) {
       else
         url = [api.base, api.apps, id].join("/");
 
+      console.log(url);
+
       $.getJSON(url, function(r) {
           if (r.status == "ERROR") {
               console.log(url + ": " + r.data);
