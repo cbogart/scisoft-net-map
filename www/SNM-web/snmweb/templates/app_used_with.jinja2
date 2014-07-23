@@ -16,7 +16,7 @@
 
     #chart {
       width: 100%;
-      height: 70%;
+      height: 300px;
     }
 
   </style>
@@ -28,14 +28,11 @@
   <script>
 
     var container = $("#chart"),
-      width = container.width(),
       height = container.height(),
-      side = Math.min(width, height),
-      height = side,
-      width = side;
+      width = container.width();
     var svg = d3.select("#chart svg")
-      .attr("width", side)
-      .attr("height", side)
+      .attr("width", width)
+      .attr("height", height)
 
     var color = d3.scale.category20();
 
@@ -96,8 +93,6 @@
         gnodes.attr("transform", function(d) {
           return 'translate(' + [d.x, d.y] + ')';
         });
-
-
 
       });
     });
