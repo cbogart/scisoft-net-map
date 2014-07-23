@@ -9,6 +9,7 @@ class Application(Document):
     version = StringField()
     usage = IntField()
     trend = IntField()
+    website = StringField()
 
 
 class ByDateStat(EmbeddedDocument):
