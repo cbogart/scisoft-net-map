@@ -16,18 +16,34 @@
     });
 
     $("#order-" + order).addClass("active");
+    $("#order-input").val(order);
+
+    var query = SNM.getParameterByName("query");
+    $("#query-input").val(query);
   </script>
 {% endblock %}
 
 {% block content %}
   <div id="applications" class="col-md-12">
-    <div id="sort-by-panel">
+    <div id="sort-by-panel" style="float:left">
       <div class="btn-group">
         <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': 'usage'})}}">Most used first</a>
         <a id="order-trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'trend'})}}">Trending first</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
-    </div>
+    </div>    
+    <form class="form-group">
+      <div id="search" class="input-group" style="float: right">
+        <input id="query-input" name="query" type="text" class="form-control">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" style="margin-left: -5px">Search</button>
+        </span>
+        <input name="order" type="hidden" id="order-input" />
+      </div>
+    </form>
+    
+    <div style="clear: both"></div>
+
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 >Applications</h3>

@@ -42,23 +42,35 @@ class ApiViews:
 
         return response
 
-    def apps(self, request, app_id):
+    def apps(self, request, type):
         """ Return list of applications available
         or find specific one "api/apps/:app"
         """
-        result = []
-        apps = [];
-        if app_id is None:
-            apps = Application.objects().all()
-        else:
-            apps = Application.objects(id__in=app_id.split(",")).all()
-        for app in apps:
-            result.append({
-                "id": str(app.id),
-                "name": app.title,
-                "link": request.route_url('application', name=app.title)
-            })
-        return result
+
+        def list(ids=None, query=None):
+            result = []
+            apps = []
+            if not (ids is None) and not (query is None):
+                apps = Application.objects(
+                    Q(title__icontains=query) &
+                    Q(id__in=ids.split(","))
+                ).all()
+            elif (ids is None) and not (query is None):
+                apps = Application.objects(title__icontains=query).all()
+            elif not (ids is None) and (query is None):
+                apps = Application.objects(id__in=ids.split(",")).all()
+            else:
+                apps = Application.objects().all()
+
+            for app in apps:
+                result.append({
+                    "id": str(app.id),
+                    "name": app.title,
+                    "link": request.route_url('application', name=app.title)
+                })
+            return result
+
+        return list(**request.params)
 
     def stat(self, request, type):
         """ Return list of data sources available
