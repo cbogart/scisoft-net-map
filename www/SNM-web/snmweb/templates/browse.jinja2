@@ -15,9 +15,9 @@
   <div id="applications" class="col-md-12">
     <div id="sort-by-panel">
       <div class="btn-group">
-        <button type="button" class="btn btn-default active">Most used first</button>
-        <button type="button" class="btn disabled btn-default">Trending first</button>
-        <button type="button" class="btn disabled btn-default">Alphabetically</button>
+        <a class="btn btn-default active" href="{{request.route_url('browse', _query={'order': 'usage'})}}">Most used first</a>
+        <a class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'trend'})}}">Trending first</a>
+        <a class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>
     <div class="panel panel-default">
