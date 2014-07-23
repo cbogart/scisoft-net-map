@@ -44,7 +44,7 @@
       .linkStrength(1)
       .size([width, height]);
 
-    snmapi.getStat('force_directed', {},function(result) {
+    snmapi.getStat('force_directed', {"id": app_id},function(result) {
       var graph = result.data
       var nodes = graph.nodes.slice(),
         links = [],
