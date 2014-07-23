@@ -17,6 +17,9 @@
 
     $("#order-" + order).addClass("active");
     $("#order-input").val(order);
+
+    var query = SNM.getParameterByName("query");
+    $("#query-input").val(query);
   </script>
 {% endblock %}
 
@@ -31,7 +34,7 @@
     </div>    
     <form class="form-group">
       <div id="search" class="input-group" style="float: right">
-        <input name="query" type="text" class="form-control">
+        <input id="query-input" name="query" type="text" class="form-control">
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" style="margin-left: -5px">Search</button>
         </span>
