@@ -1,7 +1,7 @@
 from snmweb.db_objects import *
 import random
-from random import randrange, randint
 import datetime
+from random import randrange, randint
 from datetime import datetime as dt
 import json
 import os
@@ -67,6 +67,22 @@ def load_stat(app, hash, dir_path, stat_type):
     stat_obj.save()
 
 
+def load_usage_summary(app):
+    app_usage = 0
+    app_trend = 0
+    usage = Usage.objects(application=app).first()
+    if usage is not None:
+        for entry in usage.daily:
+            date = dt.strptime(entry.x, "%Y-%m-%d")
+            current_date = datetime.datetime(2013, 1, 27)  #should be current date, for now the last date we have data
+            if (current_date - date).days < 60:
+                app_trend += entry.y
+            app_usage += entry.y
+        app.usage = app_usage
+        app.trend = app_trend
+        app.save()
+
+
 def load_data(filename="db_sample.json", hash_file_path="sample_usage/30-applications", usage_path="sample_usage",
               usage_users_path="sample_usage_users"):
     all_apps = load_apps(filename)
@@ -75,8 +91,10 @@ def load_data(filename="db_sample.json", hash_file_path="sample_usage/30-applica
     for app in all_apps:
         hash = random.choice(hash_list)[:10]
         load_stat(app, hash, usage_path, "Usage")
+        load_usage_summary(app)
         load_stat(app, hash, usage_users_path, "UsersUsage")
     generate_links(all_apps)
+
 
 def retrieve_data():
     print("Done:")
