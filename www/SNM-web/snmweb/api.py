@@ -97,30 +97,29 @@ class ApiViews:
                                "title": entry.application.title})
             return result
 
-        def co_occurence(id=None):
-            if id is None:
-                raise Exception("Please, specify application id")
-            app = Application.objects.get(id=id)
-            cooc = CoOccurence.objects.get(application=id)
-            nodes = [{"name": app.title, "id": app.id.__str__()}]
+        def force_directed(id=None):
+            nodes = []
             links = []
-            reverse_dict = {app.id: 0}
-            i = 1
-            for l in cooc.links:
-                nodes.append({"name": l.app.title, "id": l.app.id.__str__()})
-                reverse_dict[l.app.id] = i
-                i += 1
-            for l in cooc.links:
-                links.append({
-                    "source": 0,
-                    "target": reverse_dict[l.app.id],
-                    "value": l.power
-                })
+
+            if id is None:
+                cooc = CoOccurence.objects().all()
+            else:
+                app = Application.objects.get(id=id)
+                cooc = [CoOccurence.objects.get(application=id)]
+                app_id = app.id.__str__()
+                nodes.append({"name": app.title, "id": app_id})
+            for c in cooc:
+                app_id = c.application.id.__str__()
+                for l in c.links:
+                    nodes.append({"name": l.app.title, "id": l.app.id.__str__()})
+                for l in c.links:
+                    links.append({
+                        "source": app_id,
+                        "target": l.app.id.__str__(),
+                        "value": l.power
+                    })
 
             return {"nodes": nodes, "links": links}
-
-        def force_directed(id=None):
-            return co_occurence(id)
 
         def unknown_stat(*args, **kwargs):
             raise Exception("Unknown request type")
