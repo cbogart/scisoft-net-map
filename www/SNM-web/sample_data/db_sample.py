@@ -41,7 +41,7 @@ def generate_links(app_list):
         coo.save()
 
 
-def load_data(filename="db_sample.json", usage_path="sample_usage"):
+def load_data(filename="db_sample.json", usage_path="sample_usage", usage_users_path="sample_usage_users"):
     print("Loading information from {}".format(filename))
     f = open(os.path.join(usage_path, "30-applications"))
     hash_list = f.readlines()
