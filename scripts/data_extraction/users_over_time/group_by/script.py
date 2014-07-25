@@ -47,7 +47,7 @@ class App:
         while start < end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
-            self.daily[str_repr] = int(data.get(str_repr, 0))
+            self.daily[str_repr] = data.get(str_repr, set())
             start += delta
         print "by week"
         data = self.weekly
@@ -57,7 +57,7 @@ class App:
         while start < end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
-            self.weekly[str_repr] = int(data.get(str_repr, 0))
+            self.weekly[str_repr] = data.get(str_repr, set())
             start += delta
         print "by month"
         data = self.monthly
@@ -67,7 +67,7 @@ class App:
         while start <= end + delta:
             str_repr = start.strftime("%Y-%m-%d")
             print str_repr
-            self.monthly[str_repr] = int(data.get(str_repr, 0))
+            self.monthly[str_repr] = data.get(str_repr, set())
             month = start.month + 1
             start = date(start.year + (month / 12), 1 + ((month - 1) % 12), 1)
 
