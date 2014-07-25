@@ -76,8 +76,6 @@ class ApiViews:
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
-        path = "snmweb/static/stat/"
-
         def usage_over_time(group_by="day", id=None, **kwargs):
             d = {"day": "daily",
                  "week": "weekly",
@@ -102,7 +100,7 @@ class ApiViews:
             links = []
 
             if id is None:
-                cooc = CoOccurence.objects().all()
+                cooc = CoOccurence.objects()
             else:
                 app = Application.objects.get(id=id)
                 cooc = [CoOccurence.objects.get(application=id)]
@@ -110,6 +108,7 @@ class ApiViews:
                 nodes.append({"name": app.title, "id": app_id})
             for c in cooc:
                 app_id = c.application.id.__str__()
+                nodes.append({"name": c.application.title, "id": app_id})
                 for l in c.links:
                     nodes.append({"name": l.app.title, "id": l.app.id.__str__()})
                 for l in c.links:

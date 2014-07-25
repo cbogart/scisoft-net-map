@@ -4,6 +4,7 @@
   {{ super() }}
   <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
   <style>
+  /*TODO: move to a separate css file*/
     .node {
       stroke: #fff;
       stroke-width: 1.5px;
@@ -28,7 +29,7 @@
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
   <script>
       var force_chart = vizForceChart($("#chart"));
-      force_chart .start(app_id);
+      force_chart.start(app_id);
   </script>
 {% endblock %}
 
