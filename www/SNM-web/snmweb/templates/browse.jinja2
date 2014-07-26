@@ -10,13 +10,19 @@
 {% block js %}
   {{ super() }}
   <script>
-    var order = SNM.getParameterByName("order");
     $(".btn").each(function() {
         $(this).removeClass("active");
     });
 
-    $("#order-" + order).addClass("active");
+    var order = SNM.getParameterByName("order");
     $("#order-input").val(order);
+    console.log(order.charAt(0));
+    if (order.charAt(0) == "-") {
+        console.log("Hi");
+        order = order.substring(1, order.length);
+        console.log(order);
+    }
+    $("#order-" + order).addClass("active");
 
     var query = SNM.getParameterByName("query");
     $("#query-input").val(query);
