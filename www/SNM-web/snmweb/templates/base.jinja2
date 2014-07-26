@@ -28,7 +28,7 @@
 
     <ul id="main-navigation" class="nav nav-pills nav-stacked">
       <li><a href="{{request.route_url('home')}}">Home</a></li>
-      <li><a href="{{request.route_url('browse', _query={'order': 'usage'})}}">Browse applications</a></li>
+      <li><a href="{{request.route_url('browse', _query={'order': '-usage'})}}">Browse applications</a></li>
       <li><a href="{{request.route_url('compare')}}">
         <span id="compare-count" class="badge pull-right"></span>Compare
         chosen

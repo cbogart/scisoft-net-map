@@ -13,5 +13,6 @@
 {% block details %}
   <h2>App profile</h2>
   <p><a href="{{ app.website }}">website</a></p>
+  <p>Usage: {{app.usage}}; Trend: {{app.trend}}</p>
   <p>{{ app.description }}</p>
 {% endblock %}
