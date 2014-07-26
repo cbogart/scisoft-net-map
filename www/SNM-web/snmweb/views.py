@@ -21,6 +21,13 @@ def view_app_usage(request):
     return {"app": app}
 
 
+@view_config(route_name="app_users", renderer='templates/app_users.jinja2')
+def view_app_users(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    return {"app": app}
+
+
 @view_config(route_name="app_used_with", renderer='templates/app_used_with.jinja2')
 def view_app_used_with(request):
     name = request.matchdict["name"]

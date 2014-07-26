@@ -1,0 +1,89 @@
+{% extends "app_base.jinja2" %}
+
+{% block head %}
+  {{ super() }}
+  <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
+  <style>
+    #chart svg {
+      height: 400px;
+    }
+  </style>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
+  <script>
+    $(function main() {
+      var chart = $.vizLineChart("#chart svg",
+        {
+          table   : $("#graph-data"),
+          stat_id : "users_over_time"
+        });
+      var btns = $("#filters-group button");
+      btns.click(function() {
+        btns.removeClass("active");
+        $(this).addClass("active");
+        chart.drawDiagram({
+          group_by: $(this).data("period"),
+          id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
+        });
+      });
+      chart.drawDiagram({group_by: "day", id: app_id});
+    });
+
+    $('#myTab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })
+  </script>
+
+  </script>
+{% endblock %}
+
+{% block details %}
+  <h2>Usage over time</h2>
+  <div class="panel-body">
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
+    <li><a href="#graph-data-wrapper" role="tab" data-toggle="tab">Data</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="chart-wrapper" class="tab-pane active">
+      <div id="chart">
+        <svg></svg>
+      </div>
+      <div class="row" id="filters">
+        <div id="filters-group" class="btn-group">
+          <button type="button" class="btn disabled">Period:</button>
+          <button data-period="day" type="button" class="btn active btn-default">Day</button>
+          <button data-period="week" type="button" class="btn btn-default">Week</button>
+          <button data-period="month" type="button" class="btn btn-default">Month</button>
+        </div>
+        <!--
+        <div class="btn-group">
+          <button type="button" class="btn disabled">Time range:</button>
+          <button type="button" class="btn disabled btn-default">From: October 2013</button>
+          <button type="button" class="btn disabled btn-default">To: April 2014</button>
+        </div>
+        -->
+      </div>
+    </div>
+
+    <div id="graph-data-wrapper" class="tab-pane">
+      <table class="table" id="graph-data">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
