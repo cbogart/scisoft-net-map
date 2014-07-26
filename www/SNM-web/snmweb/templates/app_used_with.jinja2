@@ -35,19 +35,36 @@
 
 {% block details %}
   <h2>Application dependencies</h2>
-  <div class="panel-body">
-    <div id="chart">
-      <svg></svg>
+<div class="panel-body">
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
+    <li><a href="#graph-desc-wrapper" role="tab" data-toggle="tab">
+      Chart description
+    </a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="chart-wrapper" class="tab-pane active">
+      <div id="chart">
+        <svg></svg>
+      </div>
+      <div class="row" id="filters">
+        <div id="filters-group" class="btn-group">
+          <button type="button" class="btn disabled">Period:</button>
+          <button data-period="day" type="button" class="btn active btn-default">Day</button>
+          <button data-period="week" type="button" class="btn btn-default">Week</button>
+          <button data-period="month" type="button" class="btn btn-default">Month</button>
+        </div>
+      </div>
     </div>
-    <table class="table" id="graph-data">
-      <thead>
-      <tr>
-        <th>App name</th>
-        <th>Number of co-occurrences</th>
-      </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+    <div id="graph-desc-wrapper" class="tab-pane">
+      <h4>Description</h4>
+      Each node represents an application.Link between nodes shows that these
+      applications happened to be in the same working session. For example,
+      in order to achieve his or her result researcher had to run application
+      A then process results with application B and then C,
+      meaning A was used with B and C.
+    </div>
   </div>
+</div>
 {% endblock %}
