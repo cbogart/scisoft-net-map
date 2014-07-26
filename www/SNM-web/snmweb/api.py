@@ -78,7 +78,7 @@ class ApiViews:
         """
         path = "snmweb/static/stat/"
 
-        def usage_over_time(group_by="day", id=None, **kwargs):
+        def data_over_time(group_by, id, stat_type):
             d = {"day": "daily",
                  "week": "weekly",
                  "month": "monthly"}
@@ -92,10 +92,19 @@ class ApiViews:
                 raise Exception("Please specify application id")
 
             result = []
-            for entry in Usage.objects(application__in=id.split(",")).all():
+            stat_object = globals()[stat_type]
+            for entry in stat_object.objects(application__in=id.split(",")).all():
                 result.append({"data": entry.to_mongo()[group],
                                "title": entry.application.title})
             return result
+
+        def usage_over_time(group_by="day", id=None):
+           return data_over_time(group_by, id, "Usage")
+
+
+        def users_over_time(group_by="day", id=None):
+            return data_over_time(group_by, id, "UsersUsage")
+
 
         def co_occurence(id=None):
             if id is None:
