@@ -27,8 +27,8 @@
   <div id="applications" class="col-md-12">
     <div id="sort-by-panel" style="float:left">
       <div class="btn-group">
-        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': 'usage'})}}">Most used first</a>
-        <a id="order-trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'trend'})}}">Trending first</a>
+        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-usage'})}}">Most used first</a>
+        <a id="order-trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-trend'})}}">Trending first</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>    
@@ -64,6 +64,7 @@
                         {{app.title}}
                       </a>
                     </h3>
+                    <span>Usage: {{app.usage}}; Trend: {{app.trend}}</span>
                   </div>
                   <div class="col-md-3">
                     <button data-id="{{ app.id }}" class="change btn btn-default change pull-right">Compare</button>
