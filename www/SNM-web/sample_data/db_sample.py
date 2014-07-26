@@ -28,7 +28,7 @@ def any_usage(usage_path, hash):
 
 def generate_links(app_list):
     print("Generate random links")
-    max_links = int(len(app_list) / 1.5)
+    max_links = int(5)
     min_links = 1
     for app in app_list:
         links = []
