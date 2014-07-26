@@ -71,7 +71,8 @@ function vizForceChart(container, options) {
             .data(force.nodes())
             .enter()
             .append('g')
-            .classed('gnode', true);
+            .classed('gnode', true)
+            .call(force.drag);
 
         var labels = allGNodes.append("text")
             .attr("transform", "translate(10,0)")
