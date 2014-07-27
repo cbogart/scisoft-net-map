@@ -76,7 +76,6 @@ class ApiViews:
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
-        path = "snmweb/static/stat/"
 
         def data_over_time(group_by, id, stat_type):
             d = {"day": "daily",
@@ -135,13 +134,14 @@ class ApiViews:
                         "target": l.app.id.__str__(),
                         "value": l.power
                     })
-
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
             raise Exception("Unknown request type")
 
         if type is None:
-            return [{"id": "over_time"}, {"id": "count_users"}]
+            return [{"id": "usage_over_time"},
+                    {"id": "users_over_time"},
+                    {"id": "force_directed"}]
 
         return locals().get(type, unknown_stat)(**request.params)
