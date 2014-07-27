@@ -1,12 +1,20 @@
-function vizForceChart(container) {
-    var height = container.height();
-    var width = container.width();
+function vizForceChart(container, options) {
+    var options = $.extend({ //Default or expected options go here
+        height  : container.height(),
+        width   : container.width(),
+        linkDistance  : 30, //table selector
+        charge  : -1000,
+        stat_id: "force_directed",  // api/stat/{stat_id},
+        clickable: true
+    }, options);
+    var height = options.height;
+    var width = options.width;
     var svg = d3.select("#chart svg")
-        .attr("width", container.width())
-        .attr("height", container.height());
+        .attr("width", width)
+        .attr("height", height);
     var force = d3.layout.force()
-        .charge(-220)
-        .linkDistance(90)
+        .charge(options.charge)
+        .linkDistance(options.linkDistance)
         .linkStrength(1)
         .size([width, height]);
     var app_dict = {},
@@ -25,7 +33,7 @@ function vizForceChart(container) {
             return 'translate(' + [d.x, d.y] + ')';
         });
     });
-    function loadData(id) {snmapi.getStat('force_directed', {"id": id},
+    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
         function(result) {
             var data = result.data,
                 node, link;
@@ -37,7 +45,6 @@ function vizForceChart(container) {
                     nodes.push(node);
                 }
             }
-            console.log(nodes.length, nodes);
             // The link could be added twice. Should check here if a link already exists
             for (i in data.links) {
                 link = data.links[i];
@@ -47,9 +54,6 @@ function vizForceChart(container) {
                     "value"  : link.value
                 });
             }
-            console.log(links.length, links);
-            console.log(app_dict.length, app_dict);
-
             updateChart();
         });
     }
@@ -67,18 +71,19 @@ function vizForceChart(container) {
             .data(force.nodes())
             .enter()
             .append('g')
-            .classed('gnode', true);
-
-        var allNodes = allGNodes.append("circle")
-            .attr("class", "node")
-            .attr("r", 9)
-            .on("click", function(d) {
-                loadData(d.id);
-            });
+            .classed('gnode', true)
+            .call(force.drag);
 
         var labels = allGNodes.append("text")
             .attr("transform", "translate(10,0)")
             .text(function(d) { return d.name; });
+
+        var allNodes = allGNodes.append("circle")
+            .attr("class", "node")
+            .attr("r", 9)
+        if (options.clickable) {
+            allNodes.on("click", function(d) {loadData(d.id);});
+        }
 
     }
 

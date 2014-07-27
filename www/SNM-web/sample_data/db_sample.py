@@ -8,15 +8,6 @@ import os
 import sys
 
 
-def erase_data():
-    print("Deleting existing information")
-    for usage in Usage.objects:
-        usage.delete()
-
-    for app in Application.objects:
-        app.delete()
-
-
 def any_usage(usage_path, hash):
     result = {}
     for field in ["daily", "weekly", "monthly"]:
@@ -28,8 +19,8 @@ def any_usage(usage_path, hash):
 
 def generate_links(app_list):
     print("Generate random links")
-    max_links = int(5)
-    min_links = 1
+    max_links = 3
+    min_links = 0
     for app in app_list:
         links = []
         for link in random.sample(
@@ -101,7 +92,7 @@ def retrieve_data():
     for app in Application.objects:
         print " * ", app.title
         x = Usage.objects().count()
-    print("Daily usage over time: {} entries loaded".format(x))
+    print("Done: {} sample applications loaded".format(x))
 
 
 if __name__ == "__main__":
@@ -109,7 +100,9 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         db = sys.argv[1]
     print "Using database: `{}`. You can specidy db with first argument".format(db)
-    connect(db)
-    erase_data()
+    mongo = connect(db)
+    print "All data from `{}` will be erased.".format(db)
+    raw_input("Press Enter to continue...")
+    mongo.drop_database(db)
     load_data()
     retrieve_data()
