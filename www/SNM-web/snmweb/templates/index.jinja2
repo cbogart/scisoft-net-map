@@ -7,14 +7,42 @@
 {% endblock %}
 
 {% block js %}
-  {#  You can add page-specific js here #}
+    <style>
+  /*TODO: move to a separate css file*/
+    .node {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+
+    .link {
+      fill: none;
+      stroke: #bbb;
+    }
+
+    #chart {
+      height: 600px;
+    }
+
+  </style>
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
+  <script>
+      var force_chart = vizForceChart($("#chart"),{
+        linkDistance: 100,
+        charge: -300,
+        clickable: false
+      });
+      force_chart.start();
+  </script>
 {% endblock %}
 
 
 {% block content %}
 
   <div class="col-md-8">
-    <img id="network" src="{{request.static_url('snmweb:static/img/network.png')}}" />
+    <div id="chart">
+      <svg></svg>
+    </div>
   </div>
   <div class="col-md-4">
     <h1>Scientific Network Map</h1>
