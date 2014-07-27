@@ -76,9 +76,8 @@ class ApiViews:
         """ Return list of data sources available
         or find specific one "api/stat/:some_stat"
         """
-        path = "snmweb/static/stat/"
 
-        def usage_over_time(group_by="day", id=None, **kwargs):
+        def data_over_time(group_by, id, stat_type):
             d = {"day": "daily",
                  "week": "weekly",
                  "month": "monthly"}
@@ -92,10 +91,27 @@ class ApiViews:
                 raise Exception("Please specify application id")
 
             result = []
-            for entry in Usage.objects(application__in=id.split(",")).all():
+            stat_object = globals()[stat_type]
+            for entry in stat_object.objects(application__in=id.split(",")).all():
                 result.append({"data": entry.to_mongo()[group],
                                "title": entry.application.title})
             return result
+
+        def usage_over_time(group_by="day", id=None):
+           return data_over_time(group_by, id, "Usage")
+
+
+        def users_over_time(group_by="day", id=None):
+            return data_over_time(group_by, id, "UsersUsage")
+
+
+        def co_occurence(id=None):
+            if id is None:
+                raise Exception("Please, specify application id")
+            app = Application.objects.get(id=id)
+            cooc = CoOccurence.objects.get(application=id)
+            nodes = [{"name": app.title, "id": app.id.__str__()}]
+
 
         def force_directed(id=None):
             nodes = []
@@ -118,13 +134,14 @@ class ApiViews:
                         "target": l.app.id.__str__(),
                         "value": l.power
                     })
-
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
             raise Exception("Unknown request type")
 
         if type is None:
-            return [{"id": "over_time"}, {"id": "count_users"}]
+            return [{"id": "usage_over_time"},
+                    {"id": "users_over_time"},
+                    {"id": "force_directed"}]
 
         return locals().get(type, unknown_stat)(**request.params)
