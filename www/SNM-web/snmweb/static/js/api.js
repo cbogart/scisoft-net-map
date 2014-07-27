@@ -13,7 +13,9 @@ initAPI = function(base) {
     });
 
     function getStat(id, args, callback) {
+        console.log("1")
         var url = [api.base, api.stat, id].join("/");
+        console.log(url)
         $.getJSON(url, args, function(r) {
             if (r.status == "ERROR") {
                 console.log(url + ": " + r.data);

@@ -16,6 +16,7 @@ def main(global_config, **settings):
 
     config.add_route("app_used_with",   "/application/{name}/used_with")
     config.add_route("app_usage",       "/application/{name}/usage")
+    config.add_route("app_users",       "/application/{name}/users")
     config.add_route("application",     "/application/{name}")
 
     config.add_route("compare", "/compare")

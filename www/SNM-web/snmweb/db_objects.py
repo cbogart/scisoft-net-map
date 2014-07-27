@@ -24,6 +24,13 @@ class Usage(Document):
     monthly = ListField(EmbeddedDocumentField(ByDateStat))
 
 
+class UsersUsage(Document):
+    application = ReferenceField(Application, required=True)
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+
 class Link(EmbeddedDocument):
     app = ReferenceField(Application, required=True)
     power = IntField()
