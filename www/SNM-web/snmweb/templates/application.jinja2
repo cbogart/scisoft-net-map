@@ -12,6 +12,10 @@
 
 {% block details %}
   <h2>App profile</h2>
-  <p><a href="{{ app.website }}">website</a></p>
+  <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
+  <p>
+  <a href="#" class="snm-tooltip" title="Number of runs from 2012-04-09 to 2013-01-27">Usage:</a><span> {{app.usage}}; </span>
+  <a href="#" class="snm-tooltip" title="Number of runs for the last 60 days">Trend:</a><span> {{app.trend}}</span>
+  </p>
   <p>{{ app.description }}</p>
 {% endblock %}
