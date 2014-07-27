@@ -5,9 +5,7 @@
   "short_description": "Amira® is a powerful, multifaceted 3D software platform for visualizing, manipulating, and understanding biomedical data",
   "image": "fei.png",
   "version": "2.8",
-  "website": "http://www.vsg3d.com/amira/amira",
-  "usage": 1000,
-  "trend": 100
+  "website": "http://www.vsg3d.com/amira/amira"
 },
 
 {
@@ -16,9 +14,7 @@
   "short_description": "Goblin is a full-featured tool chain for handling graphs.",
   "image": "goblin.gif",
   "version": "2.8",
-  "website": "http://goblin2.sourceforge.net/",
-  "usage": 1000,
-  "trend": 100
+  "website": "http://goblin2.sourceforge.net/"
 },
 {
   "title":"Euler",
@@ -26,9 +22,7 @@
   "short_description": "Numerical application designed for higher level math such as calculus, optimization, and statistics that uses Maxima for symbolic operations.",
   "image": "euler.png",
   "version": "2.5",
-  "website": "http://euler.rene-grothmann.de/",
-  "usage": 1000,
-  "trend": 100
+  "website": "http://euler.rene-grothmann.de/"
 },
 {
   "title":"Freemat",
@@ -36,9 +30,7 @@
   "short_description": "Matlab-like program that supports many of its functions and features a codeless interface to external C, C++, and Fortran code, further parallel distributed algorithm development (via MPI), and 3D visualization capabilities.",
   "image": "freemat.png",
   "version": "4.0",
-  "website": "http://freemat.sourceforge.net/",
-  "usage": 1003,
-  "trend": 9
+  "website": "http://freemat.sourceforge.net/"
 },
 {
   "title":"Maxima",
@@ -46,9 +38,7 @@
   "short_description": "Maple/Mathematica-like program with a wxWidgets based frontend.",
   "image": "maxima.png",
   "version": "5.33.0",
-  "website": "http://maxima.sourceforge.net/",
-  "usage": 988,
-  "trend": 110
+  "website": "http://maxima.sourceforge.net/"
 },
 {
   "title":"PARIGP",
@@ -56,9 +46,7 @@
   "short_description": "Computer algebra system designed for fast computations in number theory.",
   "image": "parigp.png",
   "version": "4.3",
-  "website": "http://pari.math.u-bordeaux.fr/",
-  "usage": 1002,
-  "trend": 90
+  "website": "http://pari.math.u-bordeaux.fr/"
 },
 {
   "title":"R",
@@ -66,9 +54,7 @@
   "short_description": "Software environment for statistical computing and graphics.",
   "image": "r.jpg",
   "version": "3.1.1",
-  "website": "http://www.r-project.org/",
-  "usage": 978,
-  "trend": 130
+  "website": "http://www.r-project.org/"
 },
 
 {
@@ -77,9 +63,7 @@
   "short_description": "A package for data processing of 2DX crystals developed by the Stahlberg laboratory at the University of Basel.",
   "image": "3DNA.jpg",
   "version": "3.4.1",
-  "website": "http://x3dna.org",
-  "usage": 1049,
-  "trend": 76
+  "website": "http://x3dna.org"
 },
 
 {
@@ -88,9 +72,7 @@
   "short_description": "An Any-to-PostScript filter. It processes plain text files, but also pretty prints quite a few popular languages.",
   "image": "A2PS.jpg", 
   "version": "4.14",
-  "website": "http://www.gnu.org/software/a2ps/#introduction",
-  "usage": 1015,
-  "trend": 59
+  "website": "http://www.gnu.org/software/a2ps/#introduction"
 },
 
 {
@@ -99,9 +81,7 @@
   "short_description": "A CTF Estimator (ACE) 2. ACE2 is a completely rewritten version of ACE. ACE2 adds the additional feature of robust astigmatism estimation and CTF correction with astigmatism using either a mild Weiner filter (recommended) or phase-flipping. Since ACE2 in written in objective C, it no longer requires MATLAB to work.",
   "image": "ACE2.jpg", 
   "version": "5.5.1",
-  "website": "http://ami.scripps.edu/redmine/projects/ami/wiki/ACE2",
-  "usage": 996,
-  "trend": 106
+  "website": "http://ami.scripps.edu/redmine/projects/ami/wiki/ACE2"
 },
 
 {
@@ -110,9 +90,7 @@
   "short_description": "ACEMD is heavily optimized molecular dynamics (MD) engine specially designed to run on NVIDA GPUs.",
   "image": "ACEMD.jpg", 
   "version": "2306",
-  "website": "http://www.acellera.com/?arg=acemd",
-  "usage": 954,
-  "trend": 81
+  "website": "http://www.acellera.com/?arg=acemd"
 },
 
 {
@@ -121,9 +99,7 @@
   "short_description": "Displays protein crystallography X-ray diffraction data. The data may be displayed as a 2-D image, 3-D wire mesh or as integer pixel values. Data files may be saved in tiff or postscript format. adxv was written by Andrew Arvai.",
   "image": "ADVX.jpg", 
   "version": "2.1",
-  "website": "http://www.scripps.edu/tainer/arvai/adxv.html",
-  "usage": 1022,
-  "trend": 110
+  "website": "http://www.scripps.edu/tainer/arvai/adxv.html"
 },
 
 {
@@ -132,9 +108,7 @@
   "short_description": "An interactive perl/tk application that can read common sequence alignment formats that the user can then alter, embellish, markup, etc. to produce the kind of sequence figure commonly found in biochemical articles. Developed by Charlie Bond and Alex Schüttelkopf.",
   "image": "Aline.jpg", 
   "version": "2.1",
-  "website": "http://crystal.scb.uwa.edu.au/charlie/software/aline/",
-  "usage": 960,
-  "trend": 6
+  "website": "http://crystal.scb.uwa.edu.au/charlie/software/aline/"
 },
 
 {
@@ -143,9 +117,7 @@
   "short_description": "A program to format multiple sequence alignments in PostScript for publication and to assist in analysis. Alscript does not support point-and-click, but has a scripting language to allow complex effects.",
   "image": "Alscript.jpg", 
   "version": "2.07a",
-  "website": "http://www.csb.yale.edu/userguides/seq/alscript/",
-  "usage": 1013,
-  "trend": 103
+  "website": "http://www.csb.yale.edu/userguides/seq/alscript/"
 },
 
 {
@@ -154,9 +126,7 @@
   "short_description": "AmberTools consists of several independently developed packages that work well by themselves, and with Amber itself. The suite can also be used to carry out complete (non-periodic) molecular dynamics simulations (using NAB), with generalized Born solvent models",
   "image": "AmberTools.jpg", 
   "version": "14",
-  "website": "http://ambermd.org/#AmberTools",
-  "usage": 988,
-  "trend": 47
+  "website": "http://ambermd.org/#AmberTools"
 },
 
 
@@ -166,9 +136,7 @@
   "short_description": "Allows the user to perform interactive comparisons between RNA structures and to conduct database searches for specific RNA structures or substructures. AMIGOS II was authored by Leven Wadley in the lab of Anna Marie Pyle at Yale University.",
   "image": "AMIGOS.jpg", 
   "version": "3",
-  "website": "http://pylelab.org/software",
-  "usage": 956,
-  "trend": 49
+  "website": "http://pylelab.org/software"
 },
 
 {
@@ -177,9 +145,7 @@
   "short_description": "A suite of programs designed for the alignment of multiple protein sequences and flexible pattern matching.",
   "image": "AMPS.jpg", 
   "version": "d2.0",
-  "website": "http://www.compbio.dundee.ac.uk/manuals/amps/tableofcontents3_1.html#SECTION0001000000000000000",
-  "usage": 1080,
-  "trend": 112
+  "website": "http://www.compbio.dundee.ac.uk/manuals/amps/tableofcontents3_1.html#SECTION0001000000000000000"
 },
 
 {
@@ -188,9 +154,7 @@
   "short_description": "A software package designed for the numerical solution of the Poisson-Boltzmann equation (PBE). This software was written by Nathan Baker in collaboration with J. Andrew McCammon and Michael Holst and enhanced by several others.",
   "image": "APBS.jpg", 
   "version": "1.1.3",
-  "website": "http://www.poissonboltzmann.org/apbs",
-  "usage": 1053,
-  "trend": 69
+  "website": "http://www.poissonboltzmann.org/apbs"
 },
 
 {
@@ -199,9 +163,7 @@
   "short_description": "Appion is a pipeline for processing and analysis of EM images. ",
   "image": "Appion.jpg", 
   "version": "11.37",
-  "website": "http://ami.scripps.edu/redmine/projects/appion/wiki/Appion_Home",
-  "usage": 916,
-  "trend": 34
+  "website": "http://ami.scripps.edu/redmine/projects/appion/wiki/Appion_Home"
 },
 
 {
@@ -210,8 +172,6 @@
   "short_description": "A suite of programs that analyze the quality of biomolecular structures determined via NMR spectroscopy. ",
   "image": "AQUA.jpg", 
   "version": "5.1",
-  "website": "http://aria.pasteur.fr/documentation/use-aria/version-2.2/",
-  "usage": 1199,
-  "trend": 169
+  "website": "http://aria.pasteur.fr/documentation/use-aria/version-2.2/"
 }
 ]
