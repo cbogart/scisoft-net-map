@@ -179,6 +179,10 @@ td.app-name {
   background-color: #000;
 }
 
-/*.btn {
-  width: 100px;
-} */
+.app-extra-info {
+    margin-top: 5px;
+}
+
+.app-extra-info a:hover {
+    text-decoration: none;
+}
