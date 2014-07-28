@@ -186,3 +186,7 @@ td.app-name {
 .app-extra-info a:hover {
     text-decoration: none;
 }
+
+.monospace {
+    font-family: Consolas, Lucida Console, monospace;
+}
