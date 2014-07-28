@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block js %}
-    <style>
-  /*TODO: move to a separate css file*/
+  <style>
+    /*TODO: move to a separate css file*/
     .node {
       stroke: #fff;
       stroke-width: 1.5px;
@@ -27,12 +27,12 @@
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
   <script>
-      var force_chart = vizForceChart($("#chart"),{
-        linkDistance: 100,
-        charge: -300,
-        clickable: false
-      });
-      force_chart.start();
+    var force_chart = vizForceChart($("#chart"),{
+      linkDistance: 100,
+      charge: -300,
+      clickable: false
+    });
+    force_chart.start();
   </script>
 {% endblock %}
 
@@ -45,20 +45,19 @@
     </div>
   </div>
   <div class="col-md-4">
-    <h1>Scientific Network Map</h1>
+    <h1>Scientific Software Network Map</h1>
     <p>
       Have you ever tried to understand the interdependencies of different
-      applications: what applications work together, how often do they interact,
-      what are the typical usage patterns?
+      applications: what applications work together, how often they interact,
+      and what the typical usage patterns are?
     </p>
     <p>
-      You can answer these and much more questions using Scientific Network Map!
-      Each node represents a single application, connections between them indicate
-      that they were used together. The size of an application indicates the
-      number of runs.
+      You can answer these and many more questions using the Scientific
+      Software Network Map! Each node represents a single application;
+      connections between them indicate that they were used together. The
+      size of an application’s node indicates the number of runs.
     </p>
-    <p>The diagram is interactive!</p>
-    <h2>Play with the data!</h2>
+    <h2>The diagram is interactive!</h2>
   </div>
 
 {% endblock %}
