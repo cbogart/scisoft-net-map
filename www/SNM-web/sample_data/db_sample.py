@@ -74,13 +74,16 @@ def load_usage_summary(app):
         app.save()
 
 
-def load_data(filename="db_sample.json", hash_file_path="sample_usage/30-applications", usage_path="sample_usage",
+def load_data(filename="db_sample.json",
+              hash_file_path="sample_usage/21-applications",
+              usage_path="sample_usage",
               usage_users_path="sample_usage_users"):
     all_apps = load_apps(filename)
     f = open(hash_file_path)
     hash_list = f.readlines()
+    hash_iterator = iter(hash_list)
     for app in all_apps:
-        hash = random.choice(hash_list)[:10]
+        hash = hash_iterator.next()[:10]
         load_stat(app, hash, usage_path, "Usage")
         load_usage_summary(app)
         load_stat(app, hash, usage_users_path, "UsersUsage")
