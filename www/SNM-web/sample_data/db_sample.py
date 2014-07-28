@@ -21,15 +21,21 @@ def generate_links(app_list):
     print("Generate random links")
     max_links = 3
     min_links = 0
-    for app in app_list:
-        links = []
-        for link in random.sample(
-                app_list,
-                randint(min_links, max_links)):
-            links.append(Link(app=link, power=randint(0, 350)))
-        print app.title, "{} links".format(len(links))
+    l = len(app_list)
+    links = [[False] * l for i in range(l)] # the matrix
+    for _ in range(int(l*1.3): #total number of links
+        i, j = randint(0, l-1), randint(0, l-1)
+        links[i][j] = links[j][i] = True
+
+    for idx, app in enumerate(app_list):
+        app_links = []
+        for idx2, linked in enumerate(links[idx]):
+            if not linked: continue
+            if idx == idx2: continue
+            app_links.append(Link(app=app_list[idx2], power=randint(0, 350)))
+        print app.title, "{} links".format(len(app_links))
         coo = CoOccurence(application=app,
-                          links=links)
+                          links=app_links)
         coo.save()
 
 
