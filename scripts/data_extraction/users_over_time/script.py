@@ -1,43 +1,88 @@
 #!/usr/bin/python
 
-import json, sys, os
+import json
+import sys
+import os
 import datetime
+import time
 import collections
+from datetime import date, timedelta
 from os import walk
 
 
 class App:
     def __init__(self, hash):
         self.hash = hash
-        self.runs = collections.defaultdict(int)
-        self.total = 0
+        self.daily = collections.defaultdict(set)
+        self.weekly = collections.defaultdict(set)
+        self.monthly = collections.defaultdict(set)
 
-    def addRun(self, run, session_key):
-        dt = datetime.datetime.fromtimestamp(float(run["startEpoch"]))
-        date = dt.date().__str__()
-        self.runs[date] += 1
-        self.total += 1
-        self.name = run["exec"]
+    def addRun(self, run):
+        dt = datetime.datetime.fromtimestamp(float(run["startEpoch"])).date()
+        user = run["user"]
+        # the day
+        day = dt.__str__()
+        self.daily[day].add(user)
+        # nearest
+        week = dt + datetime.timedelta(days=-dt.weekday(), weeks=1)
+        week = week.__str__()
+        self.weekly[week].add(user)
 
-    def __repr__(self):
-        return "{} \n".format(self.runs, self.name)
+        # Month first day
+        month = date(dt.year, dt.month, 1).__str__()
+        self.monthly[month].add(user)
+
+    def fill_empty_dates(self):
+        def parsedt(s):
+            time_struct = time.strptime(s, "%Y-%m-%d")
+            return datetime.datetime.fromtimestamp(time.mktime(time_struct))
+
+        end = parsedt(max(self.daily.keys()))
+        print "by day"
+        data = self.daily
+
+        start = min(data.keys())
+        start = parsedt(start)
+        delta = timedelta(days=1)
+        while start < end + delta:
+            str_repr = start.strftime("%Y-%m-%d")
+            print str_repr
+            self.daily[str_repr] = data.get(str_repr, set())
+            start += delta
+        print "by week"
+        data = self.weekly
+        start, end = min(data.keys()), max(data.keys())
+        start, end = parsedt(start), parsedt(end)
+        delta = timedelta(days=7)
+        while start < end + delta:
+            str_repr = start.strftime("%Y-%m-%d")
+            print str_repr
+            self.weekly[str_repr] = data.get(str_repr, set())
+            start += delta
+        print "by month"
+        data = self.monthly
+        start, end = min(data.keys()), max(data.keys())
+        start, end = parsedt(start).date(), parsedt(end).date()
+        delta = timedelta(days=31)
+        while start <= end + delta:
+            str_repr = start.strftime("%Y-%m-%d")
+            print str_repr
+            self.monthly[str_repr] = data.get(str_repr, set())
+            month = start.month + 1
+            start = date(start.year + (month / 12), 1 + ((month - 1) % 12), 1)
 
 
-def process_file(filename, apps):
+def process_file(filename, app):
+    app_hash = app.hash
     f = open(filename)
     j = json.load(f)
 
     for session_key, session in j.iteritems():
         for run in session:
             hash = run["sha1"]
-            name = run["exec"]
-            a = None
-            if hash in apps:
-                a = apps[hash]
-            else:
-                apps[hash] = App(hash)
-                a = apps[hash]
-            a.addRun(run, session_key)
+            if app_hash != hash:
+                continue
+            app.addRun(run)
     f.close()
 
 
@@ -50,34 +95,40 @@ def get_list_of_files(path):
     return files
 
 
-def writeResults(apps):
-    f = open("output.tsv", 'w')
-    for key in apps:
-        f.write("{};{}".format(apps[key].total, key))
-        runs = apps[key].runs
-        for dt in sorted(runs):
-            f.write(";{}:{}".format(dt, runs[dt]))
-        f.write("\n")
-    f.close()
+def writeResults(app):
+    app.fill_empty_dates()
+    j = {
+        "id": "",
+        "data": []
+    }
+    for prop in ['daily', 'weekly', 'monthly']:
+        j["id"] = app.hash
+        j["data"] = [{"x": k, "y": len(v)} for k, v in
+                     getattr(app, prop).iteritems()]
+        f = open("{}-{}.json".format(app.hash[:10], prop), 'w')
+        json.dump(j, f)
+        f.close()
 
 
 def main():
-    if len(sys.argv) < 2:
-        print "usage: {} AHHA_MSIT-project2014_Root/\[General\]\ From\ Client/data\ for\ MSI\ team/lariatData".format(
+    if len(sys.argv) < 3:
+        print "usage: {} AHHA_MSIT-project2014_Root/\[General\]\ From\ " \
+              "Client/data\ for\ MSI\ team/lariatData HASH_LIST_FILE".format(
             sys.argv[0])
         return
-    apps = dict()
     files = get_list_of_files(sys.argv[1])
-    progress = 0
-    l = len(files)
-    for f in get_list_of_files(sys.argv[1]):
-        progress += 1
-        print "[{}%]\tprocessing {}".format(int(progress * 100 / l), os.path.basename(f))
-        try:
-            process_file(f, apps)
-        except:
-            print "error on file: " + f
-    writeResults(apps)
+    with open(sys.argv[2]) as f:
+        hash_list = f.readlines()
+    for app_hash in hash_list:
+        app = App(app_hash[:-1])
+        progress = 0
+        l = len(files)
+        for f in get_list_of_files(sys.argv[1]):
+            progress += 1
+            print "[{}%]\tprocessing {}".format(int(progress * 100 / l),
+                                                os.path.basename(f))
+            process_file(f, app)
+        writeResults(app)
 
 
 if __name__ == '__main__':
