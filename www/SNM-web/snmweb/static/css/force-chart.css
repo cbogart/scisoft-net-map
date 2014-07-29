@@ -1,8 +1,23 @@
 .node {
   stroke: #fff;
   stroke-width: 1.5px;
-  fill: rgb(31, 119, 180);
   cursor: pointer;
+  fill: #1f77b4;
+}
+
+.node:hover {
+    stroke: #FF7F0E;
+    stroke-width: 3px;
+}
+
+.node.loaded {
+  fill: #FF7F0E;
+  cursor: default;
+}
+
+.node.loaded:hover {
+    stroke: #fff;
+    stroke-width: 1px;
 }
 
 .node a {
