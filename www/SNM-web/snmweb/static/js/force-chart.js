@@ -20,7 +20,7 @@ function vizForceChart(container, options) {
         .linkStrength(1)
         .size([width, height]);
     var app_dict = {},
-        link_dict = {}
+        link_dict = {},
         counter = 0,
         nodes = [],
         links = [];
@@ -49,14 +49,21 @@ function vizForceChart(container, options) {
                     nodes.push(node);
                 }
             }
-            // The link could be added twice. Should check here if a link already exists
+
             for (i in data.links) {
                 link = data.links[i];
-                links.push({
-                    "source" : app_dict[link.source],
-                    "target" : app_dict[link.target],
-                    "value"  : link.value
-                });
+                var s = app_dict[link.source],
+                    t = app_dict[link.target],
+                    st = s + ":" + t,
+                    ts = t + ":" + s;
+                if (!(st in link_dict)) {
+                    link_dict[st] = link_dict[ts] = true;
+                    links.push({
+                        "source" : s,
+                        "target" : t,
+                        "value"  : link.value
+                    });
+                }
             }
             updateChart();
         });
@@ -93,7 +100,6 @@ function vizForceChart(container, options) {
                 d.loaded = true;
                 d3.select(this).classed("loaded", true);
                 loadData(d.id);
-                console.log(d);
             });
         }
 
