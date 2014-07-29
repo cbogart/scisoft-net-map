@@ -52,29 +52,31 @@
 
         function data(args) {
             var appData = [];
-            snmapi.getStat(options.stat_id, args,
-                function(r) {
-                    for (var i = 0; i < r.data.length; i++) {
-                        addRowApp(r.data[i].title);
-                        var data = r.data[i].data;
-                        var parseDate = d3.time.format("%Y-%m-%d").parse;
-                        var x, y, entry;
-                        for (var j = 0; j < data.length; j++) {
-                            entry = data[j];
-                            data[j].x = parseDate(entry.x);
-                            addRow(entry.x, entry.y);
-                        }
-
-                        var d = data.sort(
-                            function(a, b) {
-                                if (a.x > b.x) return 1;
-                                else return -1;
+            if (args.id != "") {
+                snmapi.getStat(options.stat_id, args,
+                    function(r) {
+                        for (var i = 0; i < r.data.length; i++) {
+                            addRowApp(r.data[i].title);
+                            var data = r.data[i].data;
+                            var parseDate = d3.time.format("%Y-%m-%d").parse;
+                            var x, y, entry;
+                            for (var j = 0; j < data.length; j++) {
+                                entry = data[j];
+                                data[j].x = parseDate(entry.x);
+                                addRow(entry.x, entry.y);
                             }
-                        );
 
-                        appData.push({values: d, key: r.data[i].title});
-                    }
-                });
+                            var d = data.sort(
+                                function(a, b) {
+                                    if (a.x > b.x) return 1;
+                                    else return -1;
+                                }
+                            );
+
+                            appData.push({values: d, key: r.data[i].title});
+                        }
+                    });
+            }
             return appData;
         }
 

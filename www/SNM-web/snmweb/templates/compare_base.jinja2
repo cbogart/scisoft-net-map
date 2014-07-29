@@ -10,16 +10,20 @@
 {% block js %}
   {#  You can add page-specific js here #}
   <script>
-    snmapi.getApps(compare.get(), function(r) {
-        var links = "";
-        r.data.forEach(function(entry) {
-            console.log(entry.name);
-            console.log(entry);
-            links += "<a class='btn btn-default btn-block' href='" + entry.link + "'>" + entry.name + "</a>";
+    var applicationsDiv = $("#selected-applications-panel");
+    if (compare.get() == "") {
+         applicationsDiv.html("No applications selected");
+    }
+    else {
+        snmapi.getApps(compare.get(), function(r) {
+            var links = "";
+            r.data.forEach(function(entry) {
+                links += "<a class='btn btn-default btn-block' href='" + entry.link + "'>" + entry.name + "</a>";
+            });
+            links += "<br /><p>Click to navigate to Application page</p>";
+            applicationsDiv.html(links);
         });
-        links += "<br /><p>Click to navigate to Application page</p>";
-        $("#selected-applications-panel").html(links);
-    });
+    }
   </script>
 {% endblock %}
 
@@ -29,18 +33,12 @@
       <div class="panel-heading">Choose property</div>
       <div class="panel-body">
         <button type="button" class="btn btn-primary btn-block">Usage over time</button>
-        <button type="button" class="btn disabled btn-default btn-block">Users over time</button>
+        <button type="button" class="btn btn-default btn-block">Users over time</button>
       </div>
     </div>
     <div id="legend" class="panel panel-default">
       <div class="panel-heading">Selected applications</div>
       <div class="panel-body" id="selected-applications-panel">
-        <!--
-        <a style="background-color: blue;" href="#" class="btn disabled btn-default btn-block">Euler</a>
-        <a style="background-color: purple;" href="#" class="btn btn-block">Freemat</a>
-        <a style="background-color: orange;" href="#" class="btn btn-default btn-block">Maxima</a>
-        <a style="background-color: magenta;" href="#" class="btn btn-default btn-block">PARI/GP</a>
-        -->
       </div>
     </div>
   </div>
