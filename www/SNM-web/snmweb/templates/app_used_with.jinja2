@@ -2,25 +2,8 @@
 
 {% block head %}
   {{ super() }}
-  <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
-  <style>
-  /*TODO: move to a separate css file*/
-    .node {
-      stroke: #fff;
-      stroke-width: 1.5px;
-    }
-
-    .link {
-      fill: none;
-      stroke: #bbb;
-    }
-
-    #chart {
-      width: 100%;
-      height: 400px;
-    }
-
-  </style>
+  <link href="{{request.static_url('snmweb:static/css/force-chart.css')}}"
+        rel="stylesheet">
 {% endblock %}
 
 {% block js %}
