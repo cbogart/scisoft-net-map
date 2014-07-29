@@ -10,6 +10,11 @@
 {% block js %}
   {#  You can add page-specific js here #}
   <script>
+    $(".chart-type").click(function() {
+        $("#chart-title").html($(this).html());
+        drawChart($(this).attr("value"));
+    });
+
     var applicationsDiv = $("#selected-applications-panel");
     if (compare.get() == "") {
          applicationsDiv.html("No applications selected");
@@ -32,8 +37,8 @@
     <div class="panel panel-default">
       <div class="panel-heading">Choose property</div>
       <div class="panel-body">
-        <button type="button" class="btn btn-primary btn-block">Usage over time</button>
-        <button type="button" class="btn btn-default btn-block">Users over time</button>
+        <button value="usage_over_time" type="button" class="chart-type btn btn-primary btn-block">Usage over time</button>
+        <button value="users_over_time" type="button" class="chart-type btn btn-default btn-block">Users over time</button>
       </div>
     </div>
     <div id="legend" class="panel panel-default">

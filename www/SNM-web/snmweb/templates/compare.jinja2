@@ -16,12 +16,16 @@
   <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
-
     $(function main() {
+      drawChart("usage_over_time"); 
+    });
+
+    function drawChart(type) {
+      console.log("Drawing");
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
-          stat_id : "usage_over_time"
+          stat_id : type
         });
       var btns = $("#filters-group button");
       btns.click(function() {
@@ -33,17 +37,17 @@
         });
       });
       $("#filters-group button")[0].click();
-    });
+    }
 
-  $('#myTab a').click(function (e) {
-    e.preventDefault()
+    $('#myTab a').click(function (e) {
+      e.preventDefault()
       $(this).tab('show')
-      })
+    })
   </script>
 {% endblock %}
 
 {% block graph %}
-  <h2>Usage over time</h2>
+  <h2 id="chart-title">Usage over time</h2>
   <div class="panel-body">
   <ul class="nav nav-tabs" role="tablist" id="myTab">
     <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
