@@ -1,0 +1,22 @@
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  fill: rgb(31, 119, 180);
+  cursor: pointer;
+}
+
+.node a {
+    text-decoration: dotted;
+}
+
+.link {
+  fill: none;
+  stroke: #bbb;
+}
+
+#chart {
+  width: 100%;
+  height: 400px;
+}
+
+

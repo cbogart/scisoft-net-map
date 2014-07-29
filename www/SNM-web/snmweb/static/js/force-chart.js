@@ -12,6 +12,8 @@ function vizForceChart(container, options) {
     var svg = d3.select("#chart svg")
         .attr("width", width)
         .attr("height", height);
+    var svglinks = svg.append("g");
+    var svgnodes = svg.append("g");
     var force = d3.layout.force()
         .charge(options.charge)
         .linkDistance(options.linkDistance)
@@ -58,32 +60,53 @@ function vizForceChart(container, options) {
         });
     }
 
+    function mouseover() {
+      d3.select(this).transition()
+          .duration(50)
+          .attr("r", 16);
+    }
+
+    function mouseout() {
+      d3.select(this).transition()
+          .duration(50)
+          .attr("r", 9);
+    }
     function updateChart() {
         force.start();
-
-        var allLinks = svg.selectAll(".link")
+        var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
             .attr("class", "link")
-            .style("stroke-width",1);
+            .style("stroke-width", function(d) {return d.value; });
 
-        var allGNodes = svg.selectAll('g.gnode')
+        var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
             .enter()
             .append('g')
             .classed('gnode', true)
             .call(force.drag);
 
-        var labels = allGNodes.append("text")
+        var labels = allGNodes.append("a")
+            .attr("xlink:href", function(d) {return d.link;})
+            .append("text")
             .attr("transform", "translate(10,0)")
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .attr("r", 9)
+            .attr("fill", function(d){console.log(d); if (d.loaded) return "#BB78FF"; else return "#1f77b4";})
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout);
+
         if (options.clickable) {
-            allNodes.on("click", function(d) {loadData(d.id);});
+            allNodes.on("click", function(d) {
+                d.loaded = true;
+                loadData(d.id);
+                console.log(d);
+            });
         }
+
 
     }
 
