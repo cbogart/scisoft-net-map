@@ -18,7 +18,6 @@
     $("#order-input").val(order);
     console.log(order.charAt(0));
     if (order.charAt(0) == "-") {
-        console.log("Hi");
         order = order.substring(1, order.length);
         console.log(order);
     }
@@ -33,8 +32,11 @@
   <div id="applications" class="col-md-12">
     <div id="sort-by-panel" style="float:left">
       <div class="btn-group">
-        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-usage'})}}">Most used first</a>
-        <a id="order-trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-trend'})}}">Trending first</a>
+        <button type="button" class="btn disabled">Order by:</button>
+        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-usage'})}}">Usage</a>
+        <a id="order-usage_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-usage_trend'})}}">Usage trend</a>
+        <a id="order-users" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-users'})}}">Users</a>
+        <a id="order-users_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-users_trend'})}}">Users trend</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>    
