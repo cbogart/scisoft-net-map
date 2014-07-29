@@ -8,7 +8,9 @@ class Application(Document):
     image = StringField()
     version = StringField()
     usage = IntField()
-    trend = IntField()
+    usage_trend = IntField()
+    users = IntField()
+    users_trend = IntField()
     website = StringField()
 
 

@@ -23,7 +23,7 @@ def generate_links(app_list):
     min_links = 0
     l = len(app_list)
     links = [[False] * l for i in range(l)] # the matrix
-    for _ in range(int(l*1.3): #total number of links
+    for _ in range(int(l*1.3)): #total number of links
         i, j = randint(0, l-1), randint(0, l-1)
         links[i][j] = links[j][i] = True
 
@@ -65,19 +65,31 @@ def load_stat(app, hash, dir_path, stat_type):
 
 
 def load_usage_summary(app):
-    app_usage = 0
-    app_trend = 0
+    def load_internal(stat):
+        if stat is not None:
+            usage = 0
+            trend = 0
+            for entry in stat.daily:
+                date = dt.strptime(entry.x, "%Y-%m-%d")
+                current_date = datetime.datetime(2013, 1, 27)  #should be current date, for now the last date we have data
+                if (current_date - date).days < 60:
+                    trend += entry.y
+                usage += entry.y
+            return (usage, trend)
+            app.usage = app_usage
+            app.trend = app_trend
+            app.save()
+
+    app_users = 0
     usage = Usage.objects(application=app).first()
-    if usage is not None:
-        for entry in usage.daily:
-            date = dt.strptime(entry.x, "%Y-%m-%d")
-            current_date = datetime.datetime(2013, 1, 27)  #should be current date, for now the last date we have data
-            if (current_date - date).days < 60:
-                app_trend += entry.y
-            app_usage += entry.y
-        app.usage = app_usage
-        app.trend = app_trend
-        app.save()
+    app_usage, app_usage_trend = load_internal(usage)
+    app.usage = app_usage
+    app.usage_trend = app_usage_trend
+    usersUsage = UsersUsage.objects(application=app).first()
+    app_users, app_users_trend = load_internal(usersUsage)
+    app.users = app_users
+    app.users_trend = app_users_trend
+    app.save()
 
 
 def load_data(filename="db_sample.json",
@@ -91,8 +103,8 @@ def load_data(filename="db_sample.json",
     for app in all_apps:
         hash = hash_iterator.next()[:10]
         load_stat(app, hash, usage_path, "Usage")
-        load_usage_summary(app)
         load_stat(app, hash, usage_users_path, "UsersUsage")
+        load_usage_summary(app)
     generate_links(all_apps)
 
 
