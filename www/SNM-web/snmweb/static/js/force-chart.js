@@ -20,6 +20,7 @@ function vizForceChart(container, options) {
         .linkStrength(1)
         .size([width, height]);
     var app_dict = {},
+        link_dict = {}
         counter = 0,
         nodes = [],
         links = [];
@@ -42,6 +43,7 @@ function vizForceChart(container, options) {
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
+                    if (node.id == id) node.loaded = true;
                     app_dict[node.id] = counter;
                     counter++;
                     nodes.push(node);
@@ -60,24 +62,13 @@ function vizForceChart(container, options) {
         });
     }
 
-    function mouseover() {
-      d3.select(this).transition()
-          .duration(50)
-          .attr("r", 16);
-    }
-
-    function mouseout() {
-      d3.select(this).transition()
-          .duration(50)
-          .attr("r", 9);
-    }
     function updateChart() {
         force.start();
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
             .attr("class", "link")
-            .style("stroke-width", function(d) {return d.value; });
+            .style("stroke-width", function(d) {return d.value/2; });
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
@@ -94,14 +85,13 @@ function vizForceChart(container, options) {
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
-            .attr("r", 9)
-            .attr("fill", function(d){console.log(d); if (d.loaded) return "#BB78FF"; else return "#1f77b4";})
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout);
+            .classed("loaded", function(d){return d.loaded})
+            .attr("r", 9);
 
         if (options.clickable) {
             allNodes.on("click", function(d) {
                 d.loaded = true;
+                d3.select(this).classed("loaded", true);
                 loadData(d.id);
                 console.log(d);
             });
