@@ -49,7 +49,6 @@ var compare = function(){
                 $(this).html("Compare");
                 $(this).removeClass("btn-success");
             }
-            console.log(compare.get());
         });
     });
     
