@@ -103,15 +103,6 @@ class ApiViews:
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
-
-        def co_occurence(id=None):
-            if id is None:
-                raise Exception("Please, specify application id")
-            app = Application.objects.get(id=id)
-            cooc = CoOccurence.objects.get(application=id)
-            nodes = [{"name": app.title, "id": app.id.__str__()}]
-
-
         def force_directed(id=None):
             nodes = []
             links = []
@@ -122,12 +113,19 @@ class ApiViews:
                 app = Application.objects.get(id=id)
                 cooc = [CoOccurence.objects.get(application=id)]
                 app_id = app.id.__str__()
-                nodes.append({"name": app.title, "id": app_id})
+                nodes.append({"name": app.title,
+                              "id": app_id,
+                              "link": request.route_url('application',
+                                                        name=app.title)})
             for c in cooc:
                 app_id = c.application.id.__str__()
-                nodes.append({"name": c.application.title, "id": app_id})
+                nodes.append({"name": c.application.title,
+                              "id": app_id,
+                              "link": request.route_url('application', name=c.application.title)})
                 for l in c.links:
-                    nodes.append({"name": l.app.title, "id": l.app.id.__str__()})
+                    nodes.append({"name": l.app.title,
+                                  "id": l.app.id.__str__(),
+                                  "link": request.route_url('application', name=l.app.title)})
                 for l in c.links:
                     links.append({
                         "source": app_id,

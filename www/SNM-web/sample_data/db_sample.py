@@ -23,7 +23,7 @@ def generate_links(app_list):
     min_links = 0
     l = len(app_list)
     links = [[False] * l for i in range(l)] # the matrix
-    for _ in range(int(l*1.3): #total number of links
+    for _ in range(int(l*1.3)): #total number of links
         i, j = randint(0, l-1), randint(0, l-1)
         links[i][j] = links[j][i] = True
 
@@ -32,7 +32,7 @@ def generate_links(app_list):
         for idx2, linked in enumerate(links[idx]):
             if not linked: continue
             if idx == idx2: continue
-            app_links.append(Link(app=app_list[idx2], power=randint(0, 350)))
+            app_links.append(Link(app=app_list[idx2], power=randint(1, 10)))
         print app.title, "{} links".format(len(app_links))
         coo = CoOccurence(application=app,
                           links=app_links)
