@@ -7,7 +7,24 @@ from pyramid.view import (
     view_defaults
 )
 
+"""
 
+All API calls have the following structure:
+/api/:category/:id
+
+For example: /api/apps/MyApp
+
+In order to add new category just add new method in ApiViews class.
+Both def apps(), def stat() can be used as reference point
+
+For a given category nested functions are defined in order to address
+different calls within category.
+For example: /api/stat/usage_over_time is defined as
+def usage_over_time() under def stat()
+
+In order to add new type of data you can simply define new nested function
+and process user request in it.
+"""
 @view_defaults(renderer="json")
 class ApiViews:
     def __init__(self, request):
