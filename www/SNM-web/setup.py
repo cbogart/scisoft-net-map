@@ -16,7 +16,8 @@ requires = [
     "nose",
     "WebTest",
     "mongoengine",
-    "mock"
+    "mock",
+    "coverage"
     ]
 
 setup(name="SNM-web",
