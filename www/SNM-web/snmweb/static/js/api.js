@@ -1,5 +1,7 @@
 /**
- * Created by nix on 7/1/14.
+ * This class that provides methods to interact with API 
+ *
+ * base - is the url of api, e.g. /api
  */
 initAPI = function(base) {
     var api = {

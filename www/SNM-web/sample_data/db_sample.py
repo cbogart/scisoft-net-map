@@ -64,20 +64,31 @@ def load_stat(app, hash, dir_path, stat_type):
     stat_obj.save()
 
 
-def load_usage_summary(app):
-    app_usage = 0
-    app_trend = 0
-    usage = Usage.objects(application=app).first()
-    if usage is not None:
-        for entry in usage.daily:
-            date = dt.strptime(entry.x, "%Y-%m-%d")
-            current_date = datetime.datetime(2013, 1, 27)  #should be current date, for now the last date we have data
-            if (current_date - date).days < 60:
-                app_trend += entry.y
-            app_usage += entry.y
-        app.usage = app_usage
-        app.trend = app_trend
+def load_distinct_users_number(app, hash, usage_users_path):
+    with open(os.path.join(usage_users_path,
+                           "{}-{}.json".format(hash, "daily"))) as f:
+        app.users = json.load(f)["users"]
         app.save()
+
+
+def load_usage_summary(app):
+    def load_internal(stat):
+        if stat is not None:
+            usage = 0
+            trend = 0
+            for entry in stat.daily:
+                date = dt.strptime(entry.x, "%Y-%m-%d")
+                current_date = datetime.datetime(2013, 1, 27)  #should be current date, for now the last date we have data
+                if (current_date - date).days < 60:
+                    trend += entry.y
+                usage += entry.y
+            return (usage, trend)
+
+    usage = Usage.objects(application=app).first()
+    app_usage, app_usage_trend = load_internal(usage)
+    app.usage = app_usage
+    app.usage_trend = app_usage_trend
+    app.save()
 
 
 def load_data(filename="db_sample.json",
@@ -91,8 +102,9 @@ def load_data(filename="db_sample.json",
     for app in all_apps:
         hash = hash_iterator.next()[:10]
         load_stat(app, hash, usage_path, "Usage")
-        load_usage_summary(app)
         load_stat(app, hash, usage_users_path, "UsersUsage")
+        load_distinct_users_number(app, hash, usage_users_path)
+        load_usage_summary(app)
     generate_links(all_apps)
 
 
