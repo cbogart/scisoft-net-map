@@ -102,6 +102,24 @@ class ApiFunctionalTests(unittest.TestCase):
         self.assertEqual(res["status"], "OK")
         self.assertTrue(isinstance(res["data"], list))
 
+    def test_api_apps_query(self):
+        res = self.testapp.get("/api/apps?query=euler", status=200).body
+        res = self.parse(res)
+        self.assertEqual(res["status"], "OK")
+        self.assertTrue(isinstance(res["data"], list))
+
+    def test_api_apps_ids(self):
+        res = self.testapp.get("/api/apps?ids=53cd803a83297424dfe37699", status=200).body
+        res = self.parse(res)
+        self.assertEqual(res["status"], "OK")
+        self.assertTrue(isinstance(res["data"], list))
+
+    def test_api_apps_query_and_ids(self):
+        res = self.testapp.get("/api/apps?ids=53cd803a83297424dfe37699&query=euler", status=200).body
+        res = self.parse(res)
+        self.assertEqual(res["status"], "OK")
+        self.assertTrue(isinstance(res["data"], list))
+
     @patch.object(mongoengine.queryset.QuerySet, "all")
     def test_api_get_app(self, mock_all):
         mock_all.return_value = [Application(id="53cd803a83297424dfe37699", title="Test", description="a", image="a", version=1.0)]
@@ -109,13 +127,40 @@ class ApiFunctionalTests(unittest.TestCase):
         res = self.testapp.get("/api/apps/Test", status=200).body
         res = self.parse(res)
         self.assertEqual(res["status"], "OK")
-        #TODO: check for unknown id later
 
     def test_api_stat(self):
         res = self.testapp.get("/api/stat", status=200).body
         res = self.parse(res)
         self.assertEqual(res["status"], "OK")
         self.assertTrue(isinstance(res["data"], list))
+
+    def test_api_stat_data_over_time_no_group_and_id(self):
+        res = self.testapp.get("/api/stat/data_over_time").body
+        res = self.parse(res)
+        self.assertRaises(Exception)
+
+    def test_api_stat_data_over_time_no_id(self):
+        res = self.testapp.get("/api/stat/data_over_time?group_by=daily").body
+        res = self.parse(res)
+        self.assertRaises(Exception)
+
+    def test_api_stat_data_over_time_no_group(self):
+        res = self.testapp.get("/api/stat/data_over_time?id=53cd803a83297424dfe37699").body
+        res = self.parse(res)
+        self.assertRaises(Exception)
+
+#    @patch.object(mongoengine.queryset.QuerySet, "all")
+#    @patch.object(Application, "title")
+#    @patch.object(Usage, "to_mongo")
+#    def test_api_stat_usage_over_time(self, mock_all, mock_titile, mock_to_mongo):
+#        mock_all.return_value = [Usage("53d865d18329745cf0ad87d1", application = "53d865d08329745cf0ad87b3", daily = [{ "y" : 0, "x" : "2012-10-31" }])]
+#        mock_title.return_value = "App"
+#        mock_to_mongo.return_value = {"daily" : [{ "y" : 0, "x" : "2012-10-31"}]}
+#
+#        res = self.testapp.get("/api/stat/usage_over_time?id=53d865d08329745cf0ad87b3&group_by=day").body
+#        res = self.parse(res)
+#        self.assertEqual(res["status"], "OK")
+#        self.assertTrue(isinstance(res["data"], list))
 
     def test_api_stat_unknown(self):
         res = self.testapp.get("/api/stat/SOME_UNKNOWN_STUFF", status=200).body
