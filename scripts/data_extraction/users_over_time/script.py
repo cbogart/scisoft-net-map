@@ -13,6 +13,7 @@ from os import walk
 class App:
     def __init__(self, hash):
         self.hash = hash
+        self.users = set()
         self.daily = collections.defaultdict(set)
         self.weekly = collections.defaultdict(set)
         self.monthly = collections.defaultdict(set)
@@ -20,9 +21,12 @@ class App:
     def addRun(self, run):
         dt = datetime.datetime.fromtimestamp(float(run["startEpoch"])).date()
         user = run["user"]
+        self.users.add(user)
+
         # the day
         day = dt.__str__()
         self.daily[day].add(user)
+
         # nearest
         week = dt + datetime.timedelta(days=-dt.weekday(), weeks=1)
         week = week.__str__()
@@ -99,10 +103,12 @@ def writeResults(app):
     app.fill_empty_dates()
     j = {
         "id": "",
+        "users": 0,
         "data": []
     }
     for prop in ['daily', 'weekly', 'monthly']:
         j["id"] = app.hash
+        j["users"] = len(app.users)
         j["data"] = [{"x": k, "y": len(v)} for k, v in
                      getattr(app, prop).iteritems()]
         f = open("{}-{}.json".format(app.hash[:10], prop), 'w')

@@ -10,7 +10,6 @@ class Application(Document):
     usage = IntField()
     usage_trend = IntField()
     users = IntField()
-    users_trend = IntField()
     website = StringField()
 
 

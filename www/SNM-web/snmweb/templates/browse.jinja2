@@ -36,7 +36,6 @@
         <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-usage'})}}">Usage</a>
         <a id="order-usage_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-usage_trend'})}}">Usage trend</a>
         <a id="order-users" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-users'})}}">Users</a>
-        <a id="order-users_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-users_trend'})}}">Users trend</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>    
@@ -76,7 +75,6 @@
                         <a href="#" class="snm-tooltip" title="Number of runs from 2012-04-09 to 2013-01-27">Usage:</a><span> {{app.usage}}; </span>
                         <a href="#" class="snm-tooltip" title="Number of runs for the last 60 days">Usage trend:</a><span> {{app.usage_trend}}</span>
                         <a href="#" class="snm-tooltip" title="Number of users from 2012-04-09 to 2013-01-27">Users:</a><span> {{app.users}}</span>
-                        <a href="#" class="snm-tooltip" title="Number of users for the last 60 days">Users trend:</a><span> {{app.users_trend}}</span>
                     </div>
                   </div>
                   <div class="col-md-3">
