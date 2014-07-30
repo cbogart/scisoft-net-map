@@ -7,22 +7,12 @@
 {% endblock %}
 
 {% block js %}
+  <link href="{{request.static_url('snmweb:static/css/force-chart.css')}}"
+      rel="stylesheet">
   <style>
-    /*TODO: move to a separate css file*/
-    .node {
-      stroke: #fff;
-      stroke-width: 1.5px;
-    }
-
-    .link {
-      fill: none;
-      stroke: #bbb;
-    }
-
     #chart {
       height: 600px;
     }
-
   </style>
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>

@@ -12,12 +12,15 @@ function vizForceChart(container, options) {
     var svg = d3.select("#chart svg")
         .attr("width", width)
         .attr("height", height);
+    var svglinks = svg.append("g");
+    var svgnodes = svg.append("g");
     var force = d3.layout.force()
         .charge(options.charge)
         .linkDistance(options.linkDistance)
         .linkStrength(1)
         .size([width, height]);
     var app_dict = {},
+        link_dict = {},
         counter = 0,
         nodes = [],
         links = [];
@@ -40,19 +43,27 @@ function vizForceChart(container, options) {
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
+                    if (node.id == id) node.loaded = true;
                     app_dict[node.id] = counter;
                     counter++;
                     nodes.push(node);
                 }
             }
-            // The link could be added twice. Should check here if a link already exists
+
             for (i in data.links) {
                 link = data.links[i];
-                links.push({
-                    "source" : app_dict[link.source],
-                    "target" : app_dict[link.target],
-                    "value"  : link.value
-                });
+                var s = app_dict[link.source],
+                    t = app_dict[link.target],
+                    st = s + ":" + t,
+                    ts = t + ":" + s;
+                if (!(st in link_dict)) {
+                    link_dict[st] = link_dict[ts] = true;
+                    links.push({
+                        "source" : s,
+                        "target" : t,
+                        "value"  : link.value
+                    });
+                }
             }
             updateChart();
         });
@@ -60,30 +71,38 @@ function vizForceChart(container, options) {
 
     function updateChart() {
         force.start();
-
-        var allLinks = svg.selectAll(".link")
+        var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
             .attr("class", "link")
-            .style("stroke-width",1);
+            .style("stroke-width", function(d) {return d.value/2; });
 
-        var allGNodes = svg.selectAll('g.gnode')
+        var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
             .enter()
             .append('g')
             .classed('gnode', true)
             .call(force.drag);
 
-        var labels = allGNodes.append("text")
+        var labels = allGNodes.append("a")
+            .attr("xlink:href", function(d) {return d.link;})
+            .append("text")
             .attr("transform", "translate(10,0)")
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
-            .attr("r", 9)
+            .classed("loaded", function(d){return d.loaded})
+            .attr("r", 9);
+
         if (options.clickable) {
-            allNodes.on("click", function(d) {loadData(d.id);});
+            allNodes.on("click", function(d) {
+                d.loaded = true;
+                d3.select(this).classed("loaded", true);
+                loadData(d.id);
+            });
         }
+
 
     }
 
