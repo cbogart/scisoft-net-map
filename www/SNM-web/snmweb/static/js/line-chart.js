@@ -31,7 +31,6 @@
 
 
         function clear_diagram() {
-            console.log("Clearing");
             tab.find("tbody").empty();
             svg.empty();
         }
@@ -54,7 +53,6 @@
         function data(args) {
             var appData = [];
             if (args.id != "") {
-                console.log("!!!" + args.id);
                 snmapi.getStat(options.stat_id, args,
                     function(r) {
                         for (var i = 0; i < r.data.length; i++) {
@@ -96,7 +94,7 @@
         }
 
         return {
-            drawDiagram: drawDiagram
-        };
-    };
-})(jQuery);
+            drawDiagram: drawDiagram,
+            setOption: function(name, val) {options[name] = val; }
+        }
+}})(jQuery);

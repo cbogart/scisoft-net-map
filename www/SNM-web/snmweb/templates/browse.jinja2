@@ -16,10 +16,8 @@
 
     var order = SNM.getParameterByName("order");
     $("#order-input").val(order);
-    console.log(order.charAt(0));
     if (order.charAt(0) == "-") {
         order = order.substring(1, order.length);
-        console.log(order);
     }
     $("#order-" + order).addClass("active");
 
