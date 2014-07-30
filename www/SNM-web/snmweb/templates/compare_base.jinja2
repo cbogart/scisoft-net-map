@@ -11,6 +11,12 @@
   {#  You can add page-specific js here #}
   <script>
     $(".chart-type").click(function() {
+        $(".chart-type").each(function() {
+            $(this).removeClass("btn-primary");
+            $(this).addClass("btn-default");
+        });
+        $(this).addClass("btn-primary");
+
         $("#chart-title").html($(this).html());
         drawChart($(this).attr("value"));
     });
