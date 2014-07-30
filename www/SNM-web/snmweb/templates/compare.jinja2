@@ -16,13 +16,16 @@
   <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
+    var chart = $.vizLineChart(
+      "#chart svg",
+      {table: $("#graph-data")}
+    );
+    function drawChart(type) {
+      chart.setOption("stat_id", type);
+      $("#filters-group button")[0].click();
+    }
 
     $(function main() {
-      var chart = $.vizLineChart("#chart svg",
-        {
-          table   : $("#graph-data"),
-          stat_id : "usage_over_time"
-        });
       var btns = $("#filters-group button");
       btns.click(function() {
         btns.removeClass("active");
@@ -32,25 +35,21 @@
           id: compare.get()
         });
       });
-      $("#filters-group button")[0].click();
-    });
-
-  $('#myTab a').click(function (e) {
-    e.preventDefault()
-      $(this).tab('show')
+      $('#myTab a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
       })
+      drawChart("usage_over_time");
+    });
   </script>
 {% endblock %}
 
 {% block graph %}
-  <h2>Usage over time</h2>
+  <h2 id="chart-title">Usage over time</h2>
   <div class="panel-body">
   <ul class="nav nav-tabs" role="tablist" id="myTab">
     <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
     <li><a href="#graph-data-wrapper" role="tab" data-toggle="tab">Data</a></li>
-    <li><a href="#graph-desc-wrapper" role="tab" data-toggle="tab">
-      Chart description
-    </a></li>
   </ul>
 
   <div class="tab-content">
@@ -79,13 +78,6 @@
         <tbody>
         </tbody>
       </table>
-    </div>
-    <div id="graph-desc-wrapper" class="tab-pane">
-      <h4>Description</h4>
-      Each data-point on the chart shows number of runs of the application
-      for a given day (week, month). For instance, if chart shows usage = 212
-      on 2012-07-15 it means that during this day this application was run
-      212 times.
     </div>
   </div>
 {% endblock %}
