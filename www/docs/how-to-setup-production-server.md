@@ -32,5 +32,5 @@ pserve production.ini start --daemon --pid-file=/var/www/5000.pid \
 
 
 P.S.
-Is based on http://akbarahmed.com/2012/08/08/install-pyramid-on-ubuntu-12-04-lts-rackspace/
+Is based on [http://akbarahmed.com/2012/08/08/install-pyramid-on-ubuntu-12-04-lts-rackspace/]
 
