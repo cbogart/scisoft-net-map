@@ -87,13 +87,13 @@ function vizForceChart(container, options) {
         var labels = allGNodes.append("a")
             .attr("xlink:href", function(d) {return d.link;})
             .append("text")
-            .attr("transform", "translate(10,0)")
+            .attr("transform", function(d) { return "translate(" + (10+d.publications/2) + ",0)"; })
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .classed("loaded", function(d){return d.loaded})
-            .attr("r", 9);
+            .attr("r", function(d){ return (d.publications)/2+5; });  // 9
 
         if (options.clickable) {
             allNodes.on("click", function(d) {

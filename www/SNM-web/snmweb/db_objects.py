@@ -13,6 +13,7 @@ class Application(Document):
     usage_trend = IntField()
     users = IntField()
     website = StringField()
+    publications = IntField()
 
 """
 This class represents nested structure that looks like this:
@@ -83,3 +84,37 @@ application.
 class CoOccurence(Document):
     application = ReferenceField(Application, required=True)
     links = ListField(EmbeddedDocumentField(Link))
+
+
+"""
+----------Working tables------------------
+Hold data that is not used by the website, but for calculating
+incremental updates to website data
+------------------------------------------
+"""
+
+"""
+ByDateDetails: nested structure for holding a list of users or publications or whatever, associated with a date
+
+    {
+        "items" : List of strings
+        "date" : "some date here"
+    }
+"""
+
+class ByDateDetails(EmbeddedDocument):
+    items = ListField(StringField(), required=True)
+    date = StringField()
+
+"""
+UserList: List of users by date for each app.  We need this to
+calculate the number of distinct users in each time period
+"""
+class UserList(Document):
+    application = ReferenceField(Application, required=True)
+    users = ListField(EmbeddedDocumentField(ByDateDetails))
+
+class PubList(Document):
+    application = ReferenceField(Application, required=True)
+    publications = ListField(EmbeddedDocumentField(ByDateDetails))
+

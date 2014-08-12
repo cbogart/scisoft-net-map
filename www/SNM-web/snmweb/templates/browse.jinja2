@@ -36,7 +36,7 @@
         <a id="order-users" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-users'})}}">Users</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
-    </div>    
+    </div>
     <form class="form-group">
       <div id="search" class="input-group" style="float: right">
         <input id="query-input" name="query" type="text" class="form-control">
@@ -46,7 +46,7 @@
         <input name="order" type="hidden" id="order-input" />
       </div>
     </form>
-    
+
     <div style="clear: both"></div>
 
     <div class="panel panel-default">
@@ -83,6 +83,11 @@
                          class="snm-tooltip"
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
+                      Publications:
+                      <span
+                         class="snm-tooltip"
+                         title="Number of publications resulting from jobs using this application">
+                        {{app.publications}}</span>
                     </div>
                   </div>
                   <div class="col-md-3">
