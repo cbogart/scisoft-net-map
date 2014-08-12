@@ -102,9 +102,14 @@ ByDateDetails: nested structure for holding a list of users or publications or w
     }
 """
 
-class ByDateDetails(EmbeddedDocument):
-    items = ListField(StringField(), required=True)
+class ByDateUsers(EmbeddedDocument):
+    users = ListField(StringField(), required=True)
     date = StringField()
+
+class PubInfo(DynamicEmbeddedDocument):
+    title=StringField()
+    year=StringField()
+    url=StringField()
 
 """
 UserList: List of users by date for each app.  We need this to
@@ -112,9 +117,9 @@ calculate the number of distinct users in each time period
 """
 class UserList(Document):
     application = ReferenceField(Application, required=True)
-    users = ListField(EmbeddedDocumentField(ByDateDetails))
+    users = ListField(EmbeddedDocumentField(ByDateUsers))
 
 class PubList(Document):
     application = ReferenceField(Application, required=True)
-    publications = ListField(EmbeddedDocumentField(ByDateDetails))
+    publications = ListField(EmbeddedDocumentField(PubInfo))
 
