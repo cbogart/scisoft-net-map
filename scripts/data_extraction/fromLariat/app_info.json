@@ -1,0 +1,197 @@
+[
+{
+  "title":"Amira",
+  "description": "From a reconstructed geometry or from any imported 3D data, including time series, the Basic Amira Package delivers a wide range of visualization techniques and interactive manipulation capabilities. Through a comprehensive set of 3D post-processing tools, it offers a highly flexible and powerful 3D visualization and simulation platform.",
+  "short_description": "Amira® is a powerful, multifaceted 3D software platform for visualizing, manipulating, and understanding biomedical data",
+  "image": "fei.png",
+  "version": "2.8",
+  "website": "http://www.vsg3d.com/amira/amira",
+  "publications": 7
+},
+
+{
+  "title":"GOBLIN Graph library",
+  "description": "Goblin is a full-featured tool chain for handling graphs. The project provides code from the following areas: Optimization: Nearly all algorithms described in textbooks on graph optimization are implemented. Layout: The most common models (orthogonal, layered, force directed) are supported. Composition: Especially for planar graphs, a lot of rules are implemented to derive one graph from another. File import and export: Graphs can be read from Dimacs, Tsplib and Steinlib formats. Layouts can be exported to nearly arbitrary bitmap and vectorial formats by implicit use of the fig2dev and the netpbm packages. Manipulation: Graph incidence structures can be edited and attributes can be assigned to nodes and edges in the graphical front end. While all algorithms are implemented in a C++ class library (libgoblin.a), the editor code and partially the file I/O code are written in the Tcl/Tk scripting language and use a Tcl wrapper of the C++ library.",
+  "short_description": "Goblin is a full-featured tool chain for handling graphs.",
+  "image": "goblin.gif",
+  "version": "2.8",
+  "website": "http://goblin2.sourceforge.net/",
+  "publications": 11
+},
+{
+  "title":"Euler",
+  "description": "Euler (now Euler Mathematical Toolbox or EuMathT) is a free and open-source numerical software package. It contains a matrix language, a graphical notebook style interface, and a plot window. Euler is designed for higher level math such as calculus, optimization, and statistics. The software can handle real, complex and interval numbers, vectors and matrices, it can produce 2D/3D plots, and uses Maxima for symbolic operations. The software is compilable with Windows. The Unix and Linux versions do not contain a computer algebra subsystem.",
+  "short_description": "Numerical application designed for higher level math such as calculus, optimization, and statistics that uses Maxima for symbolic operations.",
+  "image": "euler.png",
+  "version": "2.5",
+  "website": "http://euler.rene-grothmann.de/",
+  "publications": 2
+},
+{
+  "title":"Freemat",
+  "description": "FreeMat is an environment for rapid engineering and scientific processing. It is similar to commercial systems such as MATLAB from Mathworks and IDL from Research Systems, but is Open Source. It is free as in speech and free as in beer.",
+  "short_description": "Matlab-like program that supports many of its functions and features a codeless interface to external C, C++, and Fortran code, further parallel distributed algorithm development (via MPI), and 3D visualization capabilities.",
+  "image": "freemat.png",
+  "version": "4.0",
+  "website": "http://freemat.sourceforge.net/",
+  "publications": 1
+},
+{
+  "title":"Maxima",
+  "description": "Maxima is a system for the manipulation of symbolic and numerical expressions, including differentiation, integration, Taylor series, Laplace transforms, ordinary differential equations, systems of linear equations, polynomials, and sets, lists, vectors, matrices, and tensors. Maxima yields high precision numeric results by using exact fractions, arbitrary precision integers, and variable precision floating point numbers. Maxima can plot functions and data in two and three dimensions.",
+  "short_description": "Maple/Mathematica-like program with a wxWidgets based frontend.",
+  "image": "maxima.png",
+  "version": "5.33.0",
+  "website": "http://maxima.sourceforge.net/",
+  "publications": 7
+},
+{
+  "title":"PARIGP",
+  "description": "The PARI/GP system is a package that is capable of doing formal computations on recursive types at high speed; it is primarily aimed at number theorists. Its three main strengths are its speed, the possibility of directly using data types that are familiar to mathematicians, and its extensive algebraic number theory module.",
+  "short_description": "Computer algebra system designed for fast computations in number theory.",
+  "image": "parigp.png",
+  "version": "4.3",
+  "website": "http://pari.math.u-bordeaux.fr/",
+  "publications": 6
+},
+{
+  "title":"R",
+  "description": "R is a language and environment for statistical computing and graphics. It is a GNU project which is similar to the S language and environment which was developed at Bell Laboratories (formerly AT&T, now Lucent Technologies) by John Chambers and colleagues. R can be considered as a different implementation of S. There are some important differences, but much code written for S runs unaltered under R.",
+  "short_description": "Software environment for statistical computing and graphics.",
+  "image": "r.jpg",
+  "version": "3.1.1",
+  "website": "http://www.r-project.org/",
+  "publications": 3
+},
+
+{
+  "title":"3DNA",
+  "description": "The 3DNA package is command-line driven, much like Unix commands. Running each program with the -h option (e.g., find_pair -h) will provide you with detailed usage information. Once you are familiar with the package, it should be straightforward to combine the various pieces in a script to automate your tasks. The utility program blocview, a Perl script, illustrates this idea. When finished, the page will provide detailed information on how to run the various programs, with cross links and examples.  ",
+  "short_description": "A package for data processing of 2DX crystals developed by the Stahlberg laboratory at the University of Basel.",
+  "image": "3DNA.jpg",
+  "version": "3.4.1",
+  "website": "http://x3dna.org",
+  "publications": 5
+},
+
+{
+  "title": "GNU A2PS",
+  "description": "GNU a2ps is an Any to PostScript filter. Of course it processes plain text files, but also pretty prints quite a few popular languages.",
+  "short_description": "An Any-to-PostScript filter. It processes plain text files, but also pretty prints quite a few popular languages.",
+  "image": "A2PS.jpg",
+  "version": "4.14",
+  "website": "http://www.gnu.org/software/a2ps/#introduction",
+  "publications": 11
+},
+
+{
+  "title": "ACE2",
+  "description": "A CTF Estimator (ACE) 2. ACE2 is a completely rewritten version of ACE. ACE2 adds the additional feature of robust astigmatism estimation and CTF correction with astigmatism using either a mild Weiner filter (recommended) or phase-flipping. Since ACE2 in written in objective C, it no longer requires MATLAB to work.",
+  "short_description": "A CTF Estimator (ACE) 2. ACE2 is a completely rewritten version of ACE. ACE2 adds the additional feature of robust astigmatism estimation and CTF correction with astigmatism using either a mild Weiner filter (recommended) or phase-flipping. Since ACE2 in written in objective C, it no longer requires MATLAB to work.",
+  "image": "ACE2.jpg",
+  "version": "5.5.1",
+  "website": "http://ami.scripps.edu/redmine/projects/ami/wiki/ACE2",
+  "publications": 12
+},
+
+{
+  "title": "ACEMD",
+  "description": "ACEMD is heavily optimized molecular dynamics (MD) engine specially designed to run on NVIDA GPUs. ACEMD is extremely fast (115ns/day for DHFR using 1 GPU) and allows performing MD simulations on the microsecond scale in a single workstation. ACEMD is a fully featured platform (PME, NPT, NVT, TCL, PLUMED, CAMSHIFT), that can read CHARMM/NAMD and AMBER input files. Furthermore, ACEMD works with CUDA and OpenCL and uses similar syntax to other MD software. ACEMD has been validated by numerous studies and powers GPUGrid, one of the largest distributed computing projects worldwide. Parallel, fully supported versions of ACEMD are available through Acellera.",
+  "short_description": "ACEMD is heavily optimized molecular dynamics (MD) engine specially designed to run on NVIDA GPUs.",
+  "image": "ACEMD.jpg",
+  "version": "2306",
+  "website": "http://www.acellera.com/?arg=acemd",
+  "publications": 12
+},
+
+{
+  "title": "ADVX",
+  "description": "The principal application of adxv is to display protein crystallography X-Ray diffraction data. The data may be displayed as a 2-D image, 3-D wire mesh or as integer pixel values. Data may be saved as either tiff or postscript files. ",
+  "short_description": "Displays protein crystallography X-ray diffraction data. The data may be displayed as a 2-D image, 3-D wire mesh or as integer pixel values. Data files may be saved in tiff or postscript format. adxv was written by Andrew Arvai.",
+  "image": "ADVX.jpg",
+  "version": "2.1",
+  "website": "http://www.scripps.edu/tainer/arvai/adxv.html",
+  "publications": 4
+},
+
+{
+  "title": "Aline",
+  "description": "Aline is an interactive perl/tk application which can read common sequence alignment formats which the user can then alter, embellish, markup etc to produce the kind of sequence figure commonly found in biochemical articles.",
+  "short_description": "An interactive perl/tk application that can read common sequence alignment formats that the user can then alter, embellish, markup, etc. to produce the kind of sequence figure commonly found in biochemical articles. Developed by Charlie Bond and Alex Schüttelkopf.",
+  "image": "Aline.jpg",
+  "version": "2.1",
+  "website": "http://crystal.scb.uwa.edu.au/charlie/software/aline/",
+  "publications": 0
+},
+
+{
+  "title": "Alscript",
+  "description": "ALSCRIPT takes a multiple sequence alignment in AMPS (Barton & Sternberg, 1987, Barton, 1990) blockfile format and a set of formatting commands and produces a PostScript file that may be printed on a PostScript laser printer, or viewed using a PostScript previewer (e.g. Sun Microsystem's PageView program). CLUSTAL and GCG format multiple alignment files may also be used (see below). ALSCRIPT is NOT a multiple sequence alignment program, nor is it an alignment editor.",
+  "short_description": "A program to format multiple sequence alignments in PostScript for publication and to assist in analysis. Alscript does not support point-and-click, but has a scripting language to allow complex effects.",
+  "image": "Alscript.jpg",
+  "version": "2.07a",
+  "website": "http://www.csb.yale.edu/userguides/seq/alscript/",
+  "publications": 1
+},
+
+{
+  "title": "AmberTools",
+  "description": "AmberTools consists of several independently developed packages that work well by themselves, and with Amber itself. The suite can also be used to carry out complete molecular dynamics simulations, with either explicit water or generalized Born solvent models. The sander program is now a part of AmberTools.",
+  "short_description": "AmberTools consists of several independently developed packages that work well by themselves, and with Amber itself. The suite can also be used to carry out complete (non-periodic) molecular dynamics simulations (using NAB), with generalized Born solvent models",
+  "image": "AmberTools.jpg",
+  "version": "14",
+  "website": "http://ambermd.org/#AmberTools",
+  "publications": 27
+},
+
+
+{
+  "title": "AMIGOS II",
+  "description": "Libraries of discrete RNA conformations based on a simplified pseudo-torsional notation of the RNA backbone.. Allows the user to perform interactive comparisons between RNA structures and to conduct database searches for specific RNA structures or substructures. AMIGOS II was authored by Leven Wadley in the lab of Anna Marie Pyle at Yale University.",
+  "short_description": "Allows the user to perform interactive comparisons between RNA structures and to conduct database searches for specific RNA structures or substructures. AMIGOS II was authored by Leven Wadley in the lab of Anna Marie Pyle at Yale University.",
+  "image": "AMIGOS.jpg",
+  "version": "3",
+  "website": "http://pylelab.org/software",
+  "publications": 2
+},
+
+{
+  "title": "AMPS",
+  "description": "All development of this package is now carried out on a Sun Microsystems SPARCstation under the Unix operating system. The most stable version is therefore the SPARCstation one. With this release is the first option for Silicon Graphics Personal Iris and compatibles. The core multiple alignment programs will compile under VAX/VMS - see the instructions in BUILD.COM.",
+  "short_description": "A suite of programs designed for the alignment of multiple protein sequences and flexible pattern matching.",
+  "image": "AMPS.jpg",
+  "version": "d2.0",
+  "website": "http://www.compbio.dundee.ac.uk/manuals/amps/tableofcontents3_1.html#SECTION0001000000000000000",
+  "publications": 3
+},
+
+{
+  "title": "APBS",
+  "description": "APBS is a software package for modeling biomolecular solvation through solution of the Poisson-Boltzmann equation (PBE), one of the most popular continuum models for describing electrostatic interactions between molecular solutes in salty, aqueous media. Continuum electrostatics plays an important role in several areas of biomolecular simulation.",
+  "short_description": "A software package designed for the numerical solution of the Poisson-Boltzmann equation (PBE). This software was written by Nathan Baker in collaboration with J. Andrew McCammon and Michael Holst and enhanced by several others.",
+  "image": "APBS.jpg",
+  "version": "1.1.3",
+  "website": "http://www.poissonboltzmann.org/apbs",
+  "publications": 5
+},
+
+{
+  "title": "Appion",
+  "description": "Appion is integrated with Leginon:http//leginon.org data acquisition but can also be used stand-alone after uploading images (either digital or scanned micrographs) or particle stacks using a set of provided tools. Appion consists of a web based user interface linked to a set of python scripts that control several underlying integrated processing packages. All data input and output within Appion is managed using tightly integrated SQL databases. The goal is to have all control of the processing pipeline managed from a web based user interface and all output from the processing presented using web based viewing tools.",
+  "short_description": "Appion is a pipeline for processing and analysis of EM images. ",
+  "image": "Appion.jpg",
+  "version": "11.37",
+  "website": "http://ami.scripps.edu/redmine/projects/appion/wiki/Appion_Home",
+  "publications": 3
+},
+
+{
+  "title": "AQUA",
+  "description": "A suite of programs that analyze the quality of biomolecular structures determined via NMR spectroscopy. AQUA was initially developed by Ton Rullmann and Jurgen Doreleijersb Bijvoet Center for Biomolecular Research, Utrecht, The Netherlands. Current maintenance and expansion by Jurgen Doreleijers, BioMagResBank, University of Wisconsin-Madison, USA.",
+  "short_description": "A suite of programs that analyze the quality of biomolecular structures determined via NMR spectroscopy. ",
+  "image": "AQUA.jpg",
+  "version": "5.1",
+  "website": "http://aria.pasteur.fr/documentation/use-aria/version-2.2/",
+  "publications": 17
+}
+]
