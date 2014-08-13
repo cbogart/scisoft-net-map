@@ -119,7 +119,7 @@ def load_data(filedir):
             appusers[app].update(users[appname])
             UserList.objects(application=app).update_one(upsert=True,push__users=
                              ByDateUsers(users=users[appname],date=dt.isoformat()))
-
+        #if (progress==7): break
     (maxc, minusers) = appinfo.getMaxCoocurrence(appusers)
 
     for app1 in appinfo.co_occurrence:
@@ -137,9 +137,12 @@ def load_data(filedir):
     both = set(appinfo.projects_exec.keys()).intersection(set(appinfo.pubindex.keys()))
     print "Intersection size is", len(both)
     for b in both:
-        appobj = Application.objects(application=appinfo.projects_exec[b]).first()
-        PubList.objects(application=appobj).update_one(upsert=True,push__publications=
-                 PubInfo(**appinfo.pubindex[b]))
+        #print appinfo.pubindex[b]
+        for appname in appinfo.projects_exec[b]:
+            appobj = Application.objects(title=appname).first()
+            for doc in appinfo.pubindex[b]:
+                PubList.objects(application=appobj).update_one(upsert=True,push__publications=
+                    PubInfo(**doc))
 
 """
 def load_data(filename="db_sample.json",
