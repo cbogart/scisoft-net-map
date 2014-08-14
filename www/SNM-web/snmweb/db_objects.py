@@ -5,14 +5,14 @@ This class represents collection with applications
 """
 class Application(Document):
     title = StringField(required=True)
-    description = StringField(required=True)
-    short_description = StringField()
-    image = StringField()
-    version = StringField()
+    description = StringField(required=True, default="")
+    short_description = StringField(default="")
+    image = StringField(default="unknown.jpg")
+    version = StringField(default="")
     usage = IntField()
     usage_trend = IntField()
     users = IntField()
-    website = StringField()
+    website = StringField(default="")
     publications = IntField()
 
 """

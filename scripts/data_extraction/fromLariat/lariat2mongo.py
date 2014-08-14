@@ -24,22 +24,28 @@ class AppInfo:
         users = defaultdict(set)   # app -> add each user who uses it
         byUser = defaultdict(set)
 
+        hasPkgT = False
         content = open(file)
         data = json.loads(content.read());
         datakeys = sorted(data.keys())
         for job in datakeys:
             jobinf = data[job]
+            jobsusers = set()
             for jobpart in jobinf:
+                jobsusers.add(jobpart["user"])
                 startdate = datetime.datetime.fromtimestamp(float(jobpart["startEpoch"])).date()
                 collab = set()
-                exeq = "/" + jobpart["exec"].split("/")[-1]
+                exeq = jobpart["exec"].split("/")[-1]
                 collab.add(exeq)
                 usage[exeq] += 1
                 self.projects_exec[jobpart["account"]].add(exeq)
                 users[exeq].add(jobpart["user"])
                 byUser[jobpart["user"]].add(exeq)
                 for pkgT in jobpart["pkgT"]:
-                    pkgName = pkgT.split("/")[0]
+                    if (not hasPkgT):
+                        #print "PKGT"
+                        hasPkgT = True
+                    pkgName = "-" + pkgT.split("/")[0]
                     collab.add(pkgName)
                     usage[pkgName] += 1
                     users[pkgName].add(jobpart["user"])
@@ -48,12 +54,17 @@ class AppInfo:
                     for c2 in collab:
                         if (c1 != c2):
                             self.co_occurrence[c1][c2] += 1
+                            #print c1,c2,"=>",self.co_occurrence[c1][c2], len(users[c1]), len(users[c2])
+            if len(collab) > 1 and False == True:
+                print job, collab, jobsusers
+
         for u in byUser:
             if len(byUser[u]) > 1:
                 for c1 in byUser[u]:
                     for c2 in byUser[u]:
                         if (c1 != c2):
                             self.co_occurrence[c1][c2] += 1
+                            #print c1,c2,"==>",self.co_occurrence[c1][c2], len(users[c1]), len(users[c2])
 
         return (startdate, usage, users)
 
@@ -64,14 +75,13 @@ class AppInfo:
                 self.pubindex[project].append(p)
         pubs = None
 
-    def getMaxCoocurrence(self, appusers):
+    def getMaxCoocurrence(self, appusers, minusers):
         maxc = 1.0
-        minusers = 5
         for app1 in self.co_occurrence:
             for app2 in self.co_occurrence[app1]:
                 if math.log(self.co_occurrence[app1][app2]) > maxc and len(appusers[app1]) >= minusers and len(appusers[app2]) >= minusers:
                     maxc = math.log(self.co_occurrence[app1][app2])
-        return (maxc, minusers)
+        return maxc
 
 def get_list_of_files(path):
     files = []
@@ -116,18 +126,20 @@ def load_data(filedir):
                           push__daily=ByDateStat(x=dt.isoformat(),y=usage[appname]))
             UsersUsage.objects(application=app).update_one(upsert=True,
                         push__daily=ByDateStat(x=dt.isoformat(),y=len(users[appname])))
-            appusers[app].update(users[appname])
+            appusers[appname].update(users[appname])
             UserList.objects(application=app).update_one(upsert=True,push__users=
                              ByDateUsers(users=users[appname],date=dt.isoformat()))
-        #if (progress==7): break
-    (maxc, minusers) = appinfo.getMaxCoocurrence(appusers)
+    minusers = 5
+    maxc = appinfo.getMaxCoocurrence(appusers, minusers)
 
+    print "maxc is", maxc
     for app1 in appinfo.co_occurrence:
         app1coocs = []
         for app2 in appinfo.co_occurrence[app1]:
             power = math.log(appinfo.co_occurrence[app1][app2])*(10.0/maxc)
+            #print "Power", app1, "(", len(appusers[app1]), ")", app2, "(", len(appusers[app2]), ") =", appinfo.co_occurrence[app1][app2]
             if (power > 1 and len(appusers[app1]) >=minusers and len(appusers[app2]) >= minusers):
-                app1coos.append(Link(app=addApp(app2), power=power))
+                app1coocs.append(Link(app=addApp(app2), power=power))
         if len(app1coocs) > 0:
             CoOccurence(application=addApp(app1), links=app1coocs).save()
 
