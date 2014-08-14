@@ -16,6 +16,7 @@ requires = [
     "nose",
     "WebTest",
     "mongoengine",
+    "pymongo",
     "mock",
     "coverage"
     ]
