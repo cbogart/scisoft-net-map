@@ -9,6 +9,7 @@ import os
 import datetime
 import time
 import math
+import pdb
 from pymongo import MongoClient, Connection
 from collections import defaultdict
 from datetime import date, timedelta
@@ -24,27 +25,56 @@ def readAppInfo():
             matches[m] = i
     return matches
 
-def enoughUsers2(userThreshhold):
-    users = set()
-    apps = set()
+def readPubList(stagedb, proddb):
+    publist = stagedb["pub_list"].find()
+    for pubset in publist:
+        proddb["pub_list"].insert(pubset)
 
-    for bydateusers in UserList.objects(application=app).first().users:
-        users.update(set(bydateusers.users))
-        if len(users) >= userThreshhold:
-            return True
-    return len(users) >= userThreshhold
 
-def enoughUsers(app, stagedb, userThreshhold):
-    if (app["title"].startswith("-")):
-        return False
-    users = set()
-    #print dir(app), str(app)
-    for bydateusers in stagedb["user_list"].find_one(
-                    {"application": app["_id"]})["users"]:
-        users.update(set(bydateusers["users"]))
-        if len(users) >= userThreshhold:
-            return True
-    return len(users) >= userThreshhold
+class DataStreams():
+    def __init__(self, datemin, datemax, default):
+        self.daily = dict()
+        self.weekly = dict()
+        self.monthly = dict()
+        self.total = default()
+        day = datemin
+        delta = datetime.timedelta(days=1)
+        while day <= datemax:
+            self.daily[dayOf(day)] = default()
+            self.weekly[weekOf(day)] = default()
+            self.monthly[monthOf(day)] = default()
+            day += delta
+
+    def add(self, day, count):
+        self.total += count
+        self.daily[dayOf(day)] += count
+        self.weekly[weekOf(day)] += count
+        self.monthly[monthOf(day)] += count
+
+    def update(self, day, items):
+        self.total.update(items)
+        self.daily[dayOf(day)].update(items)
+        self.weekly[weekOf(day)].update(items)
+        self.monthly[monthOf(day)].update(items)
+
+def xyList(f, datadict):
+    return [{"x":str(k) ,"y":f(datadict[k])} for k in sorted(datadict.keys())]
+
+def dayOf(when):
+    return when.isoformat()
+
+def weekOf(when):
+    return (when + datetime.timedelta(days=-when.weekday())).isoformat()
+
+def monthOf(when):
+    return date(when.year, when.month, 1).isoformat()
+
+def isTrending(whenYmd, enddate):
+    return (enddate - ymd2date(whenYmd)).days < 60
+
+def ymd2date(ymd): return dt.strptime(ymd, "%Y-%m-%d").date()
+
+def date2ymd(dt): return dt.isoformat()
 
 def populate(dbProductionName, userThreshhold=5):
     c = Connection()
@@ -53,76 +83,81 @@ def populate(dbProductionName, userThreshhold=5):
     proddb = c[dbProductionName]
     stagedb = c["snm-staging"]
 
-    print "Type of proddb is", type(proddb), "and its app object is", proddb["application"]
 
-    legit = dict()
-    legitids = set()
+    print "Reading application data"
+    matches = readAppInfo()
+
+    print "Updating publication list"
+    readPubList(stagedb, proddb)
+
+
     # Determine "legit" applications (more then 5 users)
     # Copy Application() table, filter to legit ones
-    appcount = stagedb.application.count() #Application.objects.count()
+    legitids = set()
+    appcount = stagedb.application.count()
     checked= 0
-    for app in stagedb.application.find(): #Application.objects:
+    for app in stagedb.application.find():
         checked = checked + 1
         if (checked%100 == 0): print int(100.0*checked/appcount), "% done"
-        if enoughUsers(app, stagedb, userThreshhold):
-            legit[app["title"]] = app
-            legitids.add(app["_id"])
-            print app["title"], "has enough users"
-        #if checked == 500:
-        #    break
 
-    for appname in legit:
-        proddb["application"].insert(legit[appname])
-        #legitNew[appname] = proddb["Application"].insert(legit[appname])
+        appName = app["title"]
+        # Skip some apps:
+        if appName.startswith("-") or appName in ["a.out","date", "main", "test", "env", "hostname"]: #
+            continue
 
-    matches = readAppInfo()
-    for appName in legit:
         # fill in Application statistics
-        id = legit[appName]["_id"]
+        id = app["_id"]
         use = stagedb["usage"].find_one({"application": id})
-        totalUse = sum([bds["y"] for bds in use["daily"]])
-        trend = sum([bds["y"] for bds in use["daily"] if bds["x"][0:4]=="2014"])  # FIX ME: within 2 months
         users = stagedb["users_usage"].find_one({"application": id})
-        totalUsers = sum([bds["y"] for bds in users["daily"]])
+        user_list = stagedb["user_list"].find_one({"application": id})
         totalPubs = stagedb["pub_list"].find_one({"application": id})
 
-        prodApp = proddb["application"].find_one({"_id": id})
-        prodApp["usage"] = totalUse
-        prodApp["usage_trend"] = trend
-        prodApp["users"] = totalUsers
-        prodApp["publications"]= len(totalPubs["publications"]) if totalPubs is not None else 0
-        prodApp["image"] = "unknown.jpg"
-        prodApp["short_description"] = ""
-        prodApp["version"] = ""
+        daymin = ymd2date(min([d["x"] for d in use["daily"]]))
+        daymax = ymd2date(max([d["x"] for d in use["daily"]]))
+
+        userListStreams = DataStreams(daymin, daymax, lambda: set([]))
+        useStreams = DataStreams(daymin, daymax, lambda: 0)
+
+        # Come up with distinct set of users per week, per month, and total; then count and add to users_usage
+        for dayUsers in user_list["users"]:
+           userListStreams.update(ymd2date(dayUsers["date"]), dayUsers["users"])
+
+        if (len(userListStreams.total) < userThreshhold):
+            #print appName,": only has ", len(userListStreams.total), "distinct users.  Skipping."
+            continue
+        print "Processing", appName, "because it has",len(userListStreams.total), "distinct users."
+
+        legitids.add(app["_id"])
+        proddb["users_usage"].save({ "application": id,
+                   "daily": xyList(len, userListStreams.daily),
+                   "weekly":xyList(len, userListStreams.weekly),
+                   "monthly":xyList(len, userListStreams.monthly) })
+
+        for dayUsage in use["daily"]:
+            useStreams.add(ymd2date(dayUsage["x"]), dayUsage["y"])
+
+        ident = lambda x:x
+        proddb["usage"].save({ "application": id,
+                   "daily": xyList(ident, useStreams.daily),
+                   "weekly":xyList(ident, useStreams.weekly),
+                   "monthly":xyList(ident, useStreams.monthly) })
+
+        app["usage"] = useStreams.total
+        app["usage_trend"] = sum([bds["y"] for bds in use["daily"] if isTrending(bds["x"], ymd2date("2013-02-01"))])
+        app["publications"]= len(totalPubs["publications"]) if totalPubs is not None else 0
+        app["image"] = "unknown.jpg"
+        app["short_description"] = ""
+        app["version"] = ""
         for m in matches:
-            if (m in prodApp["title"]):
-                prodApp["description"] = matches[m]["description"]
-                prodApp["image"] = matches[m]["image"]
-                prodApp["short_description"] = matches[m]["short_description"]
-                prodApp["title"] = matches[m]["title"] + "--" + prodApp["title"]
-                prodApp["website"] = matches[m]["website"]
+            if (m in app["title"]):
+                app["description"] = matches[m]["description"]
+                app["image"] = matches[m]["image"]
+                app["short_description"] = matches[m]["short_description"]
+                app["title"] = app["title"] + " (" + matches[m]["title"] + ")"
+                app["website"] = matches[m]["website"]
+        app["users"] = len(userListStreams.total)
+        proddb["application"].save(app)
 
-        proddb["application"].save(prodApp)
-
-
-        # TODO: look up application data in app_info.json
-
-
-        # Copy usage and users_usage over for legit applications
-        weekly = defaultdict(int)
-        monthly = defaultdict(int)
-        for day in use["daily"]:
-            when = dt.strptime(day["x"], "%Y-%m-%d")
-            week = when + datetime.timedelta(days=-when.weekday(), weeks=1)
-            #week = week.__str__()
-            month = date(when.year, when.month, 1) #.__str__()
-            weekly[week] += day["y"]
-            monthly[month] += day["y"]
-        newuse = { "application": id,
-                   "daily": use["daily"],
-                   "weekly":[{"x":str(wk) ,"y":weekly[wk]} for wk in sorted(weekly.keys())],
-                   "monthly":[{"x":str(mo) ,"y":monthly[mo]} for mo in sorted(monthly.keys())] }
-        proddb["usage"].save(newuse)
 
     # Copy over legit portions of CoOccurence() table
     coocs = stagedb["co_occurence"].find()
@@ -132,7 +167,7 @@ def populate(dbProductionName, userThreshhold=5):
         if (app1 in legitids):
             for link in cooc["links"]:
                 app2 = link["app"]
-                if (app2 in legitids):
+                if (app2 in legitids):# and link["power"] > 2):
                     newlinks.append({
                         "app": app2,
                         "power": link["power"] })
@@ -140,31 +175,6 @@ def populate(dbProductionName, userThreshhold=5):
             proddb["co_occurence"].insert(
                 { "application": app1,
                   "links": newlinks })
-
-
-"""
-        # NO THIS IS WRONG BECAUSE USERS OVERLAP
-        for day in users.daily:
-            when = dt.strptime(day.x, "%Y-%m-%d")
-            week = when + datetime.timedelta(days=-when.weekday(), weeks=1)
-            #week = week.__str__()
-            month = date(when.year, when.month, 1) #.__str__()
-            weekly[week] += day.y
-            monthly[month] += day.y
-        newuse = { "application": legitNew[appname],
-                   "daily": use.daily,
-                   "weekly":
-                        proddb["Usage"].insert(
-                            [{"x":str(wk) ,"y":weekly[wk]} for wk in sorted(weekly.keys())]),
-                   "monthly":
-                        proddb["Usage"].insert(
-                            [{"x":str(mo) ,"y":monthly[mo]} for mo in sorted(monthly.keys())]) }
-        proddb["Usage"].save(newuse)
-
-
-        # TODO: compute weekly and monthly data streams for usage
-        # TODO: compute users_usage from UserList
-"""
 
 if __name__ == "__main__":
     dbProductionName = "snm-web"

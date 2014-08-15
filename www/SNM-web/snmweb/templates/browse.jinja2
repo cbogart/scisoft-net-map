@@ -84,10 +84,10 @@
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
                       Publications:
-                      <span
+                      <a href="{{request.route_url('app_pubs', name=app.title)}}"
                          class="snm-tooltip"
                          title="Number of publications resulting from jobs using this application">
-                        {{app.publications}}</span>
+                        {{app.publications}}</a>
                     </div>
                   </div>
                   <div class="col-md-3">
