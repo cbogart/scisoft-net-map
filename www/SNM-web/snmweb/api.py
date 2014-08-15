@@ -132,16 +132,19 @@ class ApiViews:
                 app_id = app.id.__str__()
                 nodes.append({"name": app.title,
                               "id": app_id,
+                              "publications": app.publications,
                               "link": request.route_url('application',
                                                         name=app.title)})
             for c in cooc:
                 app_id = c.application.id.__str__()
                 nodes.append({"name": c.application.title,
                               "id": app_id,
+                              "publications": c.application.publications,
                               "link": request.route_url('application', name=c.application.title)})
                 for l in c.links:
                     nodes.append({"name": l.app.title,
                                   "id": l.app.id.__str__(),
+                                  "publications": l.app.publications,
                                   "link": request.route_url('application', name=l.app.title)})
                 for l in c.links:
                     links.append({

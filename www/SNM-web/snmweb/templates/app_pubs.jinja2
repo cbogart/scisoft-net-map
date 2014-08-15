@@ -1,0 +1,33 @@
+{% extends "app_base.jinja2" %}
+
+{% block head %}
+  {{ super() }}
+  <style>
+    #chart svg {
+      height: 400px;
+    }
+  </style>
+{% endblock %}
+
+
+
+{% block details %}
+  <h2>Publications</h2>
+  {% if pubs is none %}
+      No publications are known deriving from this software.
+  {% else %}
+      Users of this package associated the following {{ app.publications }} publications with
+      the XSEDE allocation/account under which they were running this software.  Thus
+      the publications may have come before or after the runs of this software, but
+      the authors considered them to be related to the same line of research.
+      <br>
+      <p>
+      <ul>
+      {% for pub in pubs.publications %}
+         <li style="margin:0 0 8px 0;">{% for auth in pub.authors %} {{ auth }}, {% endfor %}
+             ({{pub.month}}{{ pub.year }}) "{{ pub.title }}", {{ pub.journal }} {{ pub.location }} {{ pub.volume }},
+             {{ pub.pages }}.  <a href="{{ pub.url }}">{{ pub.url }}</a>
+      {% endfor %}
+      </ul>
+  {% endif %}
+{% endblock %}
