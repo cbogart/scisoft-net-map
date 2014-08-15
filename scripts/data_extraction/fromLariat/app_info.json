@@ -206,6 +206,22 @@
   "website": ""
 },
 {
+  "match": ["parsec"],
+  "title": "PARSEC",
+  "description": "PARSEC is a computer code that solves the Kohn-Sham equations by expressing electron wave-functions directly in real space, without the use of explicit basis sets. It uses norm-conserving pseudopotentials (Troullier-Martins and other varieties). It is designed for ab initio quantum-mechanical calculations of the electronic structure of matter, within density-functional theory.<p>PARSEC is optimized for massively parallel computing environment, but it is also compatible with serial machines. A finite-difference approach is used for the calculation of spatial derivatives. Owing to the sparsity of the Hamiltonian matrix, the Kohn-Sham equations are solved by direct diagonalization, with the use of extremely efficient sparse-matrix eigensolvers. Some of its features are:<p><ul><li>Choice of boundary conditions: periodic (on all three directions), or confined.<li>Structural relaxation.<li>Simulated annealing.<li>Langevin molecular dynamics.<li>Polarizability calculations (confined-system boundary conditions only).<li>Spin-orbit coupling.<li>Non-collinear magnetism.",
+  "short_description": "PARSEC does ab initio quantum-mechanical calculations of the electronic structure of matter, within density-functional theory.",
+  "image": "parsec.jpg",
+  "website": "http://parsec.ices.utexas.edu/"
+},
+{
+  "match": ["desmond"],
+  "title": "desmond",
+  "description": "Desmond can compute energies and forces for the standard fixed-charged force fields used in biomolecular simulations. A variety of integrators and support for various ensembles have been implemented in the code, including methods for thermostatting (Andersen, Nose-Hoover, and Langevin) and barostatting (Berendsen, Martyna-Tobias-Klein, and Langevin). Ensembles typically used in membrane simulations (constant surface area and surface tension) and semi-isotropic and fully anisotropic pressure coupling schemes are also available.<p>Desmond supports algorithms typically used to perform fast and accurate molecular dynamics. Long-range electrostatic energy and forces are calculated using particle-mesh-based Ewald techniques. Constraints, which are enforced using a variant of the SHAKE algorithm, allow the time step to be increased. These approaches can be used in combination with time-scale splitting (RESPA-based) integration schemes.<p>The Desmond software includes tools for minimization and energy analysis (which can be run efficiently in a parallel environment); methods for restraining atomic positions as well as molecular configurations; support for a variety of periodic cell configurations; and facilities for accurate checkpointing and restart.<p>Force field parameters can be assigned using an included template-based parameter assignment tool. Supported force fields include CHARMM (22,27,32,36), AMBER (94,96,99,03), and OPLS (2001,2005), as well as several in-house-developed variants (such as CHARMM22* and AMBER99SB-ILDN).<p>Desmond can also be used to perform absolute and relative free energy calculations. Other simulation techniques (such as replica exchange and enhanced sampling) are supported through a plug-in-based infrastructure, which also allows users to develop their own simulation algorithms and models.<p>Desmond is integrated with a molecular modeling environment for setting up simulations of biological and chemical systems, and is compatible with widely used tools for trajectory viewing and analysis. (description from <a href=\"http://www.deshawresearch.com/resources_whatdesmonddoes.html\">http://www.deshawresearch.com/resources_whatdesmonddoes.html</a>)",
+  "short_description": "Molecular dynamics simulations for biomolecular systems",
+  "image": "desmond.jpg",
+  "website": "http://www.schrodinger.com/Desmond"
+},
+{
   "match": ["mdrun"],
   "title": "GROMACS",
   "description": "GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles.<p>It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, e.g. polymers.",

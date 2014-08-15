@@ -23,6 +23,7 @@ class AppInfo:
         usage = defaultdict(int)    # app -> add 1 for each time it's run ((for just today)
         users = defaultdict(set)   # app -> add each user who uses it
         byUser = defaultdict(set)
+        byProject = defaultdict(set)
 
         hasPkgT = False
         content = open(file)
@@ -31,16 +32,17 @@ class AppInfo:
         for job in datakeys:
             jobinf = data[job]
             jobsusers = set()
+            collab = set()
             for jobpart in jobinf:
                 jobsusers.add(jobpart["user"])
                 startdate = datetime.datetime.fromtimestamp(float(jobpart["startEpoch"])).date()
-                collab = set()
                 exeq = jobpart["exec"].split("/")[-1]
                 collab.add(exeq)
                 usage[exeq] += 1
                 self.projects_exec[jobpart["account"]].add(exeq)
                 users[exeq].add(jobpart["user"])
                 byUser[jobpart["user"]].add(exeq)
+                byProject[jobpart["account"]].add(exeq)
                 for pkgT in jobpart["pkgT"]:
                     if (not hasPkgT):
                         #print "PKGT"
@@ -50,11 +52,11 @@ class AppInfo:
                     usage[pkgName] += 1
                     users[pkgName].add(jobpart["user"])
                     self.projects_exec[jobpart["account"]].add(pkgName)
-                for c1 in collab:
-                    for c2 in collab:
-                        if (c1 != c2):
-                            self.co_occurrence[c1][c2] += 1
-                            #print c1,c2,"=>",self.co_occurrence[c1][c2], len(users[c1]), len(users[c2])
+            for c1 in collab:
+                for c2 in collab:
+                    if (c1 != c2):
+                        self.co_occurrence[c1][c2] += 1
+                        #print c1,c2,"=>",self.co_occurrence[c1][c2], len(users[c1]), len(users[c2])
             if len(collab) > 1 and False == True:
                 print job, collab, jobsusers
 
