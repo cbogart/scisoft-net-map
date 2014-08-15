@@ -8,6 +8,7 @@
 .DS_Store
 .pydevproject
 *.pyc
+*.pyo
 
 # Distribution / packaging
 .Python

@@ -5,14 +5,15 @@ This class represents collection with applications
 """
 class Application(Document):
     title = StringField(required=True)
-    description = StringField(required=True)
-    short_description = StringField()
-    image = StringField()
-    version = StringField()
+    description = StringField(required=True, default="")
+    short_description = StringField(default="")
+    image = StringField(default="unknown.jpg")
+    version = StringField(default="")
     usage = IntField()
     usage_trend = IntField()
     users = IntField()
-    website = StringField()
+    website = StringField(default="")
+    publications = IntField()
 
 """
 This class represents nested structure that looks like this:
@@ -83,3 +84,42 @@ application.
 class CoOccurence(Document):
     application = ReferenceField(Application, required=True)
     links = ListField(EmbeddedDocumentField(Link))
+
+
+"""
+----------Working tables------------------
+Hold data that is not used by the website, but for calculating
+incremental updates to website data
+------------------------------------------
+"""
+
+"""
+ByDateDetails: nested structure for holding a list of users or publications or whatever, associated with a date
+
+    {
+        "items" : List of strings
+        "date" : "some date here"
+    }
+"""
+
+class ByDateUsers(EmbeddedDocument):
+    users = ListField(StringField(), required=True)
+    date = StringField()
+
+class PubInfo(DynamicEmbeddedDocument):
+    title=StringField()
+    year=StringField()
+    url=StringField()
+
+"""
+UserList: List of users by date for each app.  We need this to
+calculate the number of distinct users in each time period
+"""
+class UserList(Document):
+    application = ReferenceField(Application, required=True)
+    users = ListField(EmbeddedDocumentField(ByDateUsers))
+
+class PubList(Document):
+    application = ReferenceField(Application, required=True)
+    publications = ListField(EmbeddedDocumentField(PubInfo))
+

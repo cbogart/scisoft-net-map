@@ -27,6 +27,13 @@ def view_app_users(request):
     app = Application.objects(title=name).first()
     return {"app": app}
 
+@view_config(route_name="app_pubs", renderer='templates/app_pubs.jinja2')
+def view_app_pubs(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    publist = PubList.objects(application=app).first()
+
+    return {"app": app, "pubs": publist}
 
 @view_config(route_name="app_used_with", renderer='templates/app_used_with.jinja2')
 def view_app_used_with(request):
@@ -46,9 +53,12 @@ def view_application(request):
 def view_compare(request):
     return {"status": "200 OK"}
 
-
 @view_config(route_name="about", renderer='templates/about.jinja2')
-def view_data_sources(request):
+def view_about(request):
+    return {"status": "200 OK"}
+
+@view_config(route_name="data_source", renderer='templates/data_source.jinja2')
+def view_data_source(request):
     return {"status": "200 OK"}
 
 
