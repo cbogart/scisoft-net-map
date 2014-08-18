@@ -31,7 +31,7 @@
           id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
         });
       });
-      chart.drawDiagram({group_by: "day", id: app_id});
+      chart.drawDiagram({group_by: "week", id: app_id});
     });
 
     $('#myTab a').click(function (e) {
@@ -60,8 +60,8 @@
       <div class="row" id="filters">
         <div id="filters-group" class="btn-group">
           <button type="button" class="btn disabled">Period:</button>
-          <button data-period="day" type="button" class="btn active btn-default">Day</button>
-          <button data-period="week" type="button" class="btn btn-default">Week</button>
+          <button data-period="day" type="button" class="btn btn-default">Day</button>
+          <button data-period="week" type="button" class="btn active btn-default">Week</button>
           <button data-period="month" type="button" class="btn btn-default">Month</button>
         </div>
       </div>

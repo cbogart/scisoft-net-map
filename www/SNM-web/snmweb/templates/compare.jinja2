@@ -22,7 +22,7 @@
     );
     function drawChart(type) {
       chart.setOption("stat_id", type);
-      $("#filters-group button")[0].click();
+      $("#filters-group button")[2].click();
     }
 
     $(function main() {
@@ -61,7 +61,7 @@
         <div id="filters-group" class="btn-group">
           <button type="button" class="btn disabled">Period:</button>
           <button data-period="day" type="button" class="btn btn-default">Day</button>
-          <button data-period="week" type="button" class="btn btn-default">Week</button>
+          <button data-period="week" type="button" class="btn active btn-default">Week</button>
           <button data-period="month" type="button" class="btn btn-default">Month</button>
         </div>
       </div>
