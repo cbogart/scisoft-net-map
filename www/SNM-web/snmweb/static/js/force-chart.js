@@ -16,6 +16,7 @@ function vizForceChart(container, options) {
     var svgnodes = svg.append("g");
     var force = d3.layout.force()
         .charge(options.charge)
+        .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
         .linkStrength(1)
         .size([width, height]);
@@ -32,8 +33,10 @@ function vizForceChart(container, options) {
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
-        svg.selectAll('g.gnode').attr("transform", function(d) {
-            return 'translate(' + [d.x, d.y] + ')';
+        svg.selectAll('g.gnode')
+            .attr("transform", function(d) {
+                //return 'translate(' + [d.x, d.y] + ')';   // Bounds here keep node centers 8 pix within edges
+                return 'translate(' + [Math.max(8,Math.min(width-8,d.x)), Math.max(8,Math.min(height-8,d.y))] + ')';
         });
     });
     function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
