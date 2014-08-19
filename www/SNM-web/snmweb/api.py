@@ -1,6 +1,8 @@
 import os
 import json
+import sys
 from db_objects import *
+from pymongo import Connection
 
 from pyramid.view import (
     view_config,
@@ -46,7 +48,7 @@ class ApiViews:
 
         if category is None:
             response["status"] = self.STATUS_OK
-            response["data"] = "#TODO: Return list of available api calls "
+            response["data"] = repr(request)
             return response
 
         try:  # TODO: Handle non existing path
@@ -58,6 +60,17 @@ class ApiViews:
             response["data"] = str(e)
 
         return response
+
+    def register(self, request, type):
+        """ Register a user's use of an application,
+        dropping the information into a mongo collection.
+        Parameters are ignored.
+        """
+        c = Connection()
+        rawrecords = c["snm-raw-records"]
+        record = json.loads(request.body)
+        rawrecords["lariat"].save(record)
+        return "Registered"
 
     def apps(self, request, type):
         """ Return list of applications available
