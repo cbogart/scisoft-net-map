@@ -77,6 +77,15 @@ class Link(EmbeddedDocument):
 
 
 """
+User logins: these are for people logging into the web service,
+not users of the scientific software being tracked.
+Password is encrypted using passlib
+"""
+class WebUsers(Document):
+    userid = StringField(required=True)
+    password = StringField(required=True)
+
+"""
 This collection stores applications that happened to co-occur with given
 application.
     /api/stat/force_directed
@@ -85,6 +94,13 @@ class CoOccurence(Document):
     application = ReferenceField(Application, required=True)
     links = ListField(EmbeddedDocumentField(Link))
 
+"""
+This collection stores applications that are strictly dependent on given
+application.
+"""
+class Dependency(Document):
+    application = ReferenceField(Application, required=True)
+    links = ListField(EmbeddedDocumentField(Link))
 
 """
 ----------Working tables------------------
