@@ -12,6 +12,7 @@ requires = [
     "pyramid",
     "pyramid_jinja2",
     "pyramid_debugtoolbar",
+    "passlib",
     "waitress",
     "nose",
     "WebTest",

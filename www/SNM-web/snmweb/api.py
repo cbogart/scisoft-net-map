@@ -37,9 +37,12 @@ class ApiViews:
         self.STATUS_OK = "OK"
         self.STATUS_ERROR = "ERROR"
 
-    @view_config(route_name="api_home")
-    @view_config(route_name="api_home.category")
-    @view_config(route_name="api_home.category.id")
+    @view_config(route_name="api_home",
+                 permission="api")
+    @view_config(route_name="api_home.category",
+                 permission="api")
+    @view_config(route_name="api_home.category.id",
+                 permission="api")
     def home(self):
         request = self.request
         response = self.TEMPLATE.copy()

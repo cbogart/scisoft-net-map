@@ -1,12 +1,26 @@
 from pyramid.config import Configurator
 from mongoengine import connect
+from pyramid.security import Authenticated, remember, forget
+from pyramid.authentication import AuthTktAuthenticationPolicy
 
+class SNMAuthorizationPolicy(object):
+    def permits(self, context, principals,
+                permission):
+        return Authenticated in principals
 
 def main(global_config, **settings):
 
     """ This function returns a Pyramid WSGI application.
     """
-    config = Configurator(settings=settings)
+    authn_policy = AuthTktAuthenticationPolicy(
+        'gabbleblotchits')
+    authz_policy = SNMAuthorizationPolicy()
+    config = Configurator(
+        authentication_policy=authn_policy,
+        authorization_policy=authz_policy,
+        settings=settings
+        )
+
     config.include("pyramid_jinja2")
 
     # Configuring static assets
@@ -25,6 +39,8 @@ def main(global_config, **settings):
     config.add_route("data_source", "/data_source")
     config.add_route("browse", "/browse")
     config.add_route("overview", "/overview")
+    config.add_route("login", "/login")
+    config.add_route("accept_login", "/accept_login")
 
     config.add_route("api_home", "/api")
     config.add_route("api_home.category", "/api/{category}")
