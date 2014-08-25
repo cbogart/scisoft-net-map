@@ -35,7 +35,7 @@ function vizForceChart(container, options) {
             .attr("y2", function(d) { return d.target.y; });
         svg.selectAll('g.gnode')
             .attr("transform", function(d) {
-                //return 'translate(' + [d.x, d.y] + ')';   // Bounds here keep node centers 8 pix within edges
+                // Bounds here keep node centers 8 pix within edges
                 return 'translate(' + [Math.max(8,Math.min(width-8,d.x)), Math.max(8,Math.min(height-8,d.y))] + ')';
         });
     });
