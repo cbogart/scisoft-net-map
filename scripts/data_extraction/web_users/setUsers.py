@@ -13,4 +13,4 @@ def addUser(db, userid, password):
 	"password": pwd_context.encrypt(password) })
 
 if __name__ == "__main__":
-    addUser("snm-web", "guest", "gazebo52")
+    addUser("snm-web", "guest", "*******")
