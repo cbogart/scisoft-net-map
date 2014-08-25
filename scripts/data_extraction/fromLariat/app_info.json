@@ -206,6 +206,22 @@
   "website": ""
 },
 {
+  "match": ["fftw"],
+  "title": "Fastest Fourier Transform in the West",
+  "description": "FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data (as well as of even/odd data, i.e. the discrete cosine/sine transforms or DCT/DST). We believe that FFTW, which is free software, should become the FFT library of choice for most applications.",
+  "short_description": "FFTW is a C subroutine library for computing the discrete Fourier transform (DFT)",
+  "image": "fftw.gif",
+  "website": "http://www.fftw.org/"
+},
+{
+  "match": ["nwchem"],
+  "title": "High Performance Computational Chemistry Software",
+  "description": "NWChem aims to provide its users with computational chemistry tools that are scalable both in their ability to treat large scientific computational chemistry problems efficiently, and in their use of available parallel computing resources from high-performance parallel supercomputers to conventional workstation clusters.<p>NWChem software can handle<ul><li>Biomolecules, nanostructures, and solid-state<li>From quantum to classical, and all combinations<li>Ground and excited-states<li>Gaussian basis functions or plane-waves<li>Scaling from one to thousands of processors<li>Properties and relativistic effects</ul>",
+  "short_description": "Scalable computational chemistry tools for supercomputers or workstation clusters",
+  "image": "nwchem.png",
+  "website": "http://www.nwchem-sw.org/"
+},
+{
   "match": ["parsec"],
   "title": "PARSEC",
   "description": "PARSEC is a computer code that solves the Kohn-Sham equations by expressing electron wave-functions directly in real space, without the use of explicit basis sets. It uses norm-conserving pseudopotentials (Troullier-Martins and other varieties). It is designed for ab initio quantum-mechanical calculations of the electronic structure of matter, within density-functional theory.<p>PARSEC is optimized for massively parallel computing environment, but it is also compatible with serial machines. A finite-difference approach is used for the calculation of spatial derivatives. Owing to the sparsity of the Hamiltonian matrix, the Kohn-Sham equations are solved by direct diagonalization, with the use of extremely efficient sparse-matrix eigensolvers. Some of its features are:<p><ul><li>Choice of boundary conditions: periodic (on all three directions), or confined.<li>Structural relaxation.<li>Simulated annealing.<li>Langevin molecular dynamics.<li>Polarizability calculations (confined-system boundary conditions only).<li>Spin-orbit coupling.<li>Non-collinear magnetism.",
