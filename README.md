@@ -9,6 +9,9 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 ## Description
 This Scientific Software Network Map viewer is part of an NSF-funded project (SciSIP: The Scientific Software Network Map) to map out the dependencies among scientific software packages. The goal is to help scientists monitor how the software they write is being used, so that they can focus updates and improvements on the most needed areas, understand more deeply how they are being used together, and to take credit for their contributions by being able to document how much their software is being used.
 
+## Related projects
+[scimapClient](https://github.com/cbogart/scimapClient) is an R package that sends usage packets to SNM from users who choose to install and enable it.
+
 ## Related research papers
 Some academic research related to this project can be found here:
  * Howison, J. and Herbsleb, J. D. (2011). Scientific software production: incentives and collaboration. In Proceedings, Computer-Supported Collaborative Work Hangzhou, China, pp. 513-522.
@@ -23,3 +26,4 @@ For further information contact
 
 ## Development team
 The project has been developed as MSIT-SE Practicum project at CMU.
+Modified and maintained by Chris Bogart.
