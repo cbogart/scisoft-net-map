@@ -1,0 +1,14 @@
+Package: RJSONIO
+Version: 1.3-0
+Imports: methods
+License: BSD_3_clause + file LICENSE
+MD5sum: 72c395622ba8d1435ec43849fd32c830
+NeedsCompilation: yes
+
+Package: scimapClient
+Version: 0.1.2
+Imports: RJSONIO
+License: BSD_2_clause + file LICENSE
+MD5sum: 0eac06f71a61cda099d3c3549f14128e
+NeedsCompilation: no
+

@@ -33,7 +33,11 @@ from datetime import date, timedelta
 from datetime import datetime as dt
 import datetime
 import pdb
+import json
     
+appf = open("appinfo.json", "r")
+apps = json.loads(appf.read())
+
 def addApp(c, dest, appinfo):
     finding = dest.application.find_one({"title": appinfo["title"]})
     if finding:
@@ -117,6 +121,7 @@ def updateData(datapoints, epoch, datef, default, xname, yname, incf):
      
     return matches[0][yname]
     
+defaultPkgs = ["stats","utils","base","R","methods","graphics","datasets","RJSONIO","grDevices","scimapClient", "scimapRegister"]
     
 def addOne(c, dest, rawrec):
     execid = addApp(c,dest, {
@@ -125,14 +130,24 @@ def addOne(c, dest, rawrec):
            "short_description" : "Unknown",
            "image" : "unknown.jpg",
            "version" : "",
-           "publications" : [] })
-    depids = [addApp(c,dest,{
-           "title" : pkgT.split("/")[0],
-           "description" : "(To to: look up on CRAN or bioconductor)",
-           "short_description" : "(To to: look up on CRAN or bioconductor)",
-           "image" : "unknown.jpg",
-           "version" : pkgT.split("/")[0],
-           "publications" : [] }) for pkgT in rawrec["pkgT"]]
+           "publications" : 0 })
+    depids = []
+    inf = {}
+    for pkgT in rawrec["pkgT"]:
+       pkgname = pkgT.split("/")[0]
+       if pkgname not in defaultPkgs:
+           if (pkgname in apps):
+               inf = apps[pkgname]
+           else:
+               inf =  {
+                 "title" : pkgname,
+                 "description" : "unknown",
+                 "short_description" : "unknown",
+                 "image" : "unknown.jpg",
+                 "version" : pkgT.split("/")[1],
+                 "publications" : 0 }
+           depids.append(addApp(c, dest, inf))
+
     allids = depids + [execid]
     #pdb.set_trace()
     for id in allids:
