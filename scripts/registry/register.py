@@ -17,7 +17,7 @@ from datetime import date, timedelta
 from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
-from processLariatOnline import addOne
+from processUsageRecsOnline import addOne
 
 def await():
     c = Connection()
@@ -37,11 +37,17 @@ def await():
         conn.close()
         register(c, data)
         
+def scrub_dots(dottyDict):
+    newdict = dict()
+    for k in dottyDict:
+        newdict[k.replace(".","[dot]")] = dottyDict[k]
+    return newdict
+    
 def register(c, data):
     try:
         rawrecords = c["snm-raw-records"]
-        record = json.loads(data)
-        rawrecords["lariat2"].save(record)
+        record = json.loads(data, object_hook = scrub_dots)
+        rawrecords["scimapInfo"].save(record)
         addOne(c, c["snm-r"], record)
         print "Registered a usage!"
     except Exception as e:
