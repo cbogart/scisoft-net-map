@@ -10,13 +10,14 @@ import datetime
 import time
 import math
 import pdb
+import socket
 from pymongo import MongoClient, Connection
 from collections import defaultdict
 from datetime import date, timedelta
 from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
-import socket
+from processLariatOnline import addOne
 
 def await():
     c = Connection()
@@ -41,6 +42,7 @@ def register(c, data):
         rawrecords = c["snm-raw-records"]
         record = json.loads(data)
         rawrecords["lariat2"].save(record)
+        addOne(c, c["snm-r"], record)
         print "Registered a usage!"
     except Exception as e:
         print "Error: " + str(e)
