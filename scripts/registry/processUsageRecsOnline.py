@@ -3,7 +3,7 @@
 # Author:
 #  Chris Bogart
 #
-# Original record in collection lariat2 is:
+# Original record in collection scimapInfo is:
 #
 #{ "_id" : ObjectId("53ff48b09808db2cb61f07fe"), "account" : "0956680526176432635668900", 
 # "exec" : "source, testRun.R", 
@@ -18,6 +18,21 @@
 # "user" : "0956680526176432635668900", 
 # "startTime" : "Thu Aug 28 11:30:02 2014" }
 #
+# Version 2:
+#
+#{ "_id" : ObjectId("53ff48b09808db2cb61f07fe"), "account" : "0956680526176432635668900", 
+# "exec" : "source, testRun.R", 
+# "startEpoch" : "1409239802", 
+# "scimapInfoVersion" : 2,
+# "jobID" : "09566805261764326356689001409239802", 
+# "platform" : { "hardware" : "x86_64", "version" : "13.3.0", "system" : "Darwin" }, 
+# "pkgT" : {  "GenomicRanges/1.16.4" : ["GenomeInfoDb", "stats", "graphics"],     
+#             "GenomeInfoDb/1.0.2" : "parallel",
+#             "parallel/3.1.1" : [],
+#             . . . }     # NB: may have list, empty list [], or string singletons 
+#                         # This inconsistency is awkward in python, but more consistent with R's array model
+# "user" : "0956680526176432635668900", 
+# "startTime" : "Thu Aug 28 11:30:02 2014" }
 # New records should be:
 #
 # application
@@ -38,6 +53,22 @@ import json
 appf = open("appinfo.json", "r")
 apps = json.loads(appf.read())
 
+def getUnknownAppInfo(pkgname):
+    if (pkgname in apps):
+        inf = apps[pkgname]
+    else:
+        inf =  {
+           "title" : pkgname,
+           "description" : "unknown",
+           "short_description" : "unknown",
+           "image" : "unknown.jpg",
+           "version" : "",
+           "publications" : 0 }
+    return inf
+
+def addAppUnknown(c, dest, appname):
+    return addApp(c,dest, getUnknownAppInfo(appname))
+           
 def addApp(c, dest, appinfo):
     finding = dest.application.find_one({"title": appinfo["title"]})
     if finding:
@@ -68,7 +99,19 @@ def weekOf(when):
 
 def monthOf(when):
     return date(when.year, when.month, 1).isoformat()
-
+    
+def cooc2ddict(dest):
+    ddict = dict()
+    for cooc in dest.co_occurence.find():
+        ddict[cooc["application"]] = pairlist2dict(cooc["links"], "app", "power")
+    return ddict
+    
+def ddict2cooc(dest, ddict):
+    for id in ddict:
+       cooc = dest.co_occurence.find_one({"application": id})
+       cooc["links"] = dict2pairlist(ddict[id], "app", "power")
+       dest.co_occurence.save(cooc)
+        
 def pairlist2dict(pairlist, keyname, valname):
     return { p[keyname] : p[valname]  for p in pairlist }
     
@@ -124,32 +167,18 @@ def updateData(datapoints, epoch, datef, default, xname, yname, incf):
 defaultPkgs = ["stats","utils","base","R","methods","graphics","datasets","RJSONIO","grDevices","scimapClient", "scimapRegister"]
     
 def addOne(c, dest, rawrec):
-    execid = addApp(c,dest, {
-           "title" : rawrec["exec"],
-           "description" : "Unknown",
-           "short_description" : "Unknown",
-           "image" : "unknown.jpg",
-           "version" : "",
-           "publications" : 0 })
+    idtable = dict()
+    #execid = addAppUnknown(c,dest, rawrec["exec"])
+    #idtable[rawrec["exec"]] = execid
     depids = []
     inf = {}
     for pkgT in rawrec["pkgT"]:
        pkgname = pkgT.split("/")[0]
        if pkgname not in defaultPkgs:
-           if (pkgname in apps):
-               inf = apps[pkgname]
-           else:
-               inf =  {
-                 "title" : pkgname,
-                 "description" : "unknown",
-                 "short_description" : "unknown",
-                 "image" : "unknown.jpg",
-                 "version" : pkgT.split("/")[1],
-                 "publications" : 0 }
-           depids.append(addApp(c, dest, inf))
-
-    allids = depids + [execid]
-    #pdb.set_trace()
+           id = addAppUnknown(c, dest, pkgname)
+           depids.append(id)
+           idtable[pkgname] = id
+    allids = depids #+ [execid]
     for id in allids:
         app = dest.application.find_one({"_id": id})
         
@@ -177,20 +206,43 @@ def addOne(c, dest, rawrec):
         fillInZeroes(uu)
         dest.users_usage.save(uu)
         
-        cooc = dest.co_occurence.find_one({"application": id})
-        ptrs = pairlist2dict(cooc["links"], "app", "power")
-        for id2 in allids:
-            if (id != id2):
-                if id2 not in ptrs:
-                    ptrs[id2] = 5
-        cooc["links"] = dict2pairlist(ptrs, "app", "power")
-        dest.co_occurence.save(cooc)
-                 
+        if (isinstance(rawrec["pkgT"], list)):
+            cooc = dest.co_occurence.find_one({"application": id})
+            ptrs = pairlist2dict(cooc["links"], "app", "power")
+            for id2 in allids:
+                if (id != id2):
+                    if id2 not in ptrs:
+                        ptrs[id2] = 5
+            cooc["links"] = dict2pairlist(ptrs, "app", "power")
+            dest.co_occurence.save(cooc)
+            
+    if (isinstance(rawrec["pkgT"], dict)):  
+        ddict = cooc2ddict(dest)
+        leaves = []   
+        for pkgT in rawrec["pkgT"]:
+            dependor = pkgT.split("/")[0]
+            if dependor in idtable:
+                ddict[idtable[dependor]] = {}
+                links = rawrec["pkgT"][pkgT]
+                if (isinstance(links, list) and len(links) > 0):
+                    for dependee in links:
+                        if dependee in idtable:
+                            ddict[idtable[dependor]][idtable[dependee]] = 5
+                elif (isinstance(links, list) and len(links) == 0):
+                    leaves.append(idtable[dependor])
+                elif links in idtable:
+                    ddict[idtable[dependor]][idtable[links]] = 5
+        for l1 in leaves:
+            for l2 in leaves:
+                if (l1 != l2):
+                    ddict[l1][l2] = 5 
+        ddict2cooc(dest, ddict)
+                
         
 if __name__ == "__main__":
     c = Connection()
     c.drop_database("snm-r")
-    raw = c["snm-raw-records"]["lariat2"]
+    raw = c["snm-raw-records"]["scimapInfo"]
     dest = c["snm-r"]
     for rawrec in raw.find():
         addOne(c, dest, rawrec)
