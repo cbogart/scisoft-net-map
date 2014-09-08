@@ -96,7 +96,7 @@ function vizForceChart(container, options) {
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .classed("loaded", function(d){return d.loaded})
-            .attr("r", function(d){ return (Math.log(d.publications+1)*2+5; });  // 9
+            .attr("r", function(d){ return (Math.log(d.publications+1)*2+5) });  // 9
 
         if (options.clickable) {
             allNodes.on("click", function(d) {
