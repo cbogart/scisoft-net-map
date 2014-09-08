@@ -206,7 +206,8 @@ def addOne(c, dest, rawrec):
         fillInZeroes(uu)
         dest.users_usage.save(uu)
         
-        if (isinstance(rawrec["pkgT"], list)):
+        # Disabled code from previous version: this fully connects all packages from the same job
+        if (isinstance(rawrec["pkgT"], list) and 1==0):   
             cooc = dest.co_occurence.find_one({"application": id})
             ptrs = pairlist2dict(cooc["links"], "app", "power")
             for id2 in allids:
