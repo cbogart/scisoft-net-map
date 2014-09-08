@@ -3893,7 +3893,8 @@
         "title": "survival", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 3081, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=9234581656961127192&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Survival Analysis ", 
         "match": [
             "survival"
@@ -6065,7 +6066,8 @@
         "title": "sp", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 741, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8686053991402444087&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " classes and methods for spatial data ", 
         "match": [
             "sp"
@@ -10373,7 +10375,8 @@
         "title": "reshape2", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 144, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=6190146663644652460&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Flexibly reshape data: a reboot of the reshape package ", 
         "match": [
             "reshape2"
@@ -14969,7 +14972,8 @@
         "title": "coda", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 518,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=11187786877678558553&as_sdt=5,39&sciodt=0,39&hl=en", 
         "short_description": " Output analysis and diagnostics for MCMC ", 
         "match": [
             "coda"
@@ -18557,7 +18561,8 @@
         "title": "lattice", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 611,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4883090144814739620&as_sdt=5,39&sciodt=0,39&hl=en", 
         "short_description": " Lattice Graphics ", 
         "match": [
             "lattice"
@@ -22034,7 +22039,8 @@
     "GenomicRanges": {
         "website": "http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 28, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=2893318430189020678&as_sdt=5,39&sciodt=0,39&hl=en",
         "title": "GenomicRanges", 
         "short_description": "Representation and manipulation of genomic intervals", 
         "image": "unknown.jpg", 
@@ -25541,7 +25547,8 @@
         "title": "car", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 760, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=10572143584576971383&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Companion to Applied Regression ", 
         "match": [
             "car"
@@ -30722,7 +30729,8 @@
     "IRanges": {
         "website": "http://www.bioconductor.org/packages/release/bioc/html/IRanges.html", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 28, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=2893318430189020678&as_sdt=5,39&sciodt=0,39&hl=en",
         "title": "IRanges", 
         "short_description": "Infrastructure for manipulating intervals on sequences", 
         "image": "unknown.jpg", 
@@ -43817,7 +43825,8 @@
         "title": "psych", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 135, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=6322918435528774032&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Procedures for Psychological, Psychometric, and Personality\nResearch ", 
         "match": [
             "psych"
@@ -46565,7 +46574,8 @@
         "title": "nlme", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 2713, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14431275077198664715&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Linear and Nonlinear Mixed Effects Models ", 
         "match": [
             "nlme"
@@ -55097,7 +55107,8 @@
         "title": "igraph", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 949, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1556604076393698320&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Network analysis and visualization ", 
         "match": [
             "igraph"
@@ -63077,7 +63088,8 @@
         "title": "Formula", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 23, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=7991916852065434583&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Extended Model Formulas ", 
         "match": [
             "Formula"
@@ -64745,7 +64757,8 @@
         "title": "tnet", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 64, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=17507243085978563103&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " tnet: Software for Analysis of Weighted, Two-mode, and\nLongitudinal networks ", 
         "match": [
             "tnet"
@@ -66677,7 +66690,8 @@
         "title": "nnet", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 11206, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=7838190771856231690&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Feed-forward Neural Networks and Multinomial Log-Linear Models ", 
         "match": [
             "nnet"
@@ -77129,7 +77143,8 @@
         "title": "MASS", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 11206, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=7838190771856231690&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Support Functions and Datasets for Venables and Ripley's MASS ", 
         "match": [
             "MASS"
@@ -79625,7 +79640,8 @@
         "title": "boot", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 5163,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14575920058254385333&as_sdt=5,39&sciodt=0,39&hl=en", 
         "short_description": " Bootstrap Functions (originally by Angelo Canty for S) ", 
         "match": [
             "boot"
