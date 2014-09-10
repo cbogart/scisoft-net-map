@@ -14,6 +14,7 @@ class Application(Document):
     users = IntField()
     website = StringField(default="")
     publications = IntField()
+    publicationsUrl = StringField(default="")
 
 """
 This class represents nested structure that looks like this:
