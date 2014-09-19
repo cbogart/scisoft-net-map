@@ -28,14 +28,14 @@ def await():
     s.listen(3)
     while 1:
         conn, addr = s.accept()
-        print 'Connection from', addr
+        print 'Connection from', addr[0]
         data = ""
         while 1:
             rcvd = conn.recv(4096)
             if not rcvd: break
             data = data + rcvd
         conn.close()
-        register(c, data)
+        register(c, data, addr[0])
         
 def scrub_dots(dottyDict):
     newdict = dict()
@@ -43,13 +43,15 @@ def scrub_dots(dottyDict):
         newdict[k.replace(".","[dot]")] = dottyDict[k]
     return newdict
     
-def register(c, data):
+def register(c, data, ip):
     try:
         rawrecords = c["snm-raw-records"]
         record = json.loads(data, object_hook = scrub_dots)
+        record["ip"] = ip
         rawrecords["scimapInfo"].save(record)
         addOne(c, c["snm-r"], record)
-        print "Registered a usage!"
+        print "Registered a usage! from ", ip
+        print record
     except Exception as e:
         print "Error: " + str(e)
 
