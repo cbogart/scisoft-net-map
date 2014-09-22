@@ -9,7 +9,7 @@ information at <a href="http://sci-net-map.isri.cmu.edu">http://sci-net-map.isri
 Type this from your R command line:
 
 <pre>
-install.packages(“scimapClient”, repos=“http://sci-net-map.isri.cmu.edu/static/R”)
+install.packages("scimapClient", repos="http://sci-net-map.isri.cmu.edu/static/R")
 </pre>
 
 Then set your R installation to load the package (i.e.  library(scimapClient) ) in every session.  
@@ -19,9 +19,8 @@ The easiest way to do this is to add the following line to a .Rprofile file in y
 .First <- function() {  library(scimapClient)  }
 </pre>
 
-(alternately, you can put the line <code>library(scimapClient)</code> at the top of any script you want
-to track.  Note that all usage in that R session will be included in the statistics, not just that
-script)
+(Note: if you already have a .Rprofile file, and it already has a <code>.First <- function...</code>
+in it, then add <code>library(scimapClient)</code> somewhere in that function's code.)
 
 <hr>
 
