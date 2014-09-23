@@ -136,38 +136,64 @@ class ApiViews:
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
+        # TO DO: I want this to return:
+        #    All the nodes that point to id
+        #   CoOccurence.find( { links: { $elemMatch: { app: id } } }).id  <- foreach
+        #    All the nodes that id points to
+        #   CoOccurence.find( { application: id} )   <- step through as below and grab out all apps pointed to
+        #    All the edges where source and target are both in this set
+        #   CoOccurence.find( { application: { $in : nodelist }, links: { $elemMatch: { app: { $in : nodelist } } }})
+        #    From which, be sure to only pass along those links that flow within the nodelist
+
         def force_directed(id=None):
             nodes = []
             links = []
 
             if id is None:
                 cooc = CoOccurence.objects()
+                for c in cooc:
+                    app_id = c.application.id.__str__()
+                    nodes.append({"name": c.application.title,
+                                  "id": app_id,
+                                  "publications": c.application.publications,
+                                  "link": request.route_url('application', name=c.application.title)})
+                    for l in c.links:
+                        nodes.append({"name": l.app.title,
+                                      "id": l.app.id.__str__(),
+                                      "publications": l.app.publications,
+                                      "link": request.route_url('application', name=l.app.title)})
+                    for l in c.links:
+                        links.append({
+                            "source": app_id,
+                            "target": l.app.id.__str__(),
+                            "value": l.power
+                        })
             else:
+                from bson.objectid import ObjectId
                 app = Application.objects.get(id=id)
-                cooc = [CoOccurence.objects.get(application=id)]
-                app_id = app.id.__str__()
-                nodes.append({"name": app.title,
-                              "id": app_id,
-                              "publications": app.publications,
-                              "link": request.route_url('application',
-                                                        name=app.title)})
-            for c in cooc:
-                app_id = c.application.id.__str__()
-                nodes.append({"name": c.application.title,
-                              "id": app_id,
-                              "publications": c.application.publications,
-                              "link": request.route_url('application', name=c.application.title)})
-                for l in c.links:
-                    nodes.append({"name": l.app.title,
-                                  "id": l.app.id.__str__(),
-                                  "publications": l.app.publications,
-                                  "link": request.route_url('application', name=l.app.title)})
-                for l in c.links:
-                    links.append({
-                        "source": app_id,
-                        "target": l.app.id.__str__(),
-                        "value": l.power
-                    })
+                nodelist = [ObjectId(id)]
+                fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
+                nodelist = nodelist + [fc.application.id for fc in fromcooc]
+                tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
+                for tc in tocooc:
+                    nodelist = nodelist + [tcl.app.id for tcl in tc.links]
+                edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
+                for fan in edgecooc:
+                    src = fan.application
+                    for destinf in fan.links:
+                        dest = destinf.app.id
+                        if (dest in nodelist):
+                            links.append({"source": src.id.__str__(),
+                                             "target": dest.__str__(),
+                                             "value": destinf.power})
+
+                for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
+                    app_id = c.id.__str__()
+                    nodes.append({"name": c.title,
+                                  "id": app_id,
+                                  "publications": c.publications,
+                                  "link": request.route_url('application', name=c.title)})
+
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
