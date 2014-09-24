@@ -33,6 +33,34 @@
 #                         # This inconsistency is awkward in python, but more consistent with R's array model
 # "user" : "0956680526176432635668900", 
 # "startTime" : "Thu Aug 28 11:30:02 2014" }
+#
+# Version 3:
+#
+# { "_id" : ObjectId("5420842f9808db4214d8f078"),
+#      "scimapInfoVersion" : 3,
+#      "dynDeps" : [ ],
+#      "startTime" : "",
+#      "startEpoch" : "1411417738",
+#      "pkgT" : { "utils/3[dot]0[dot]2" : [ ],
+#                 "R/3[dot]0[dot]2" : "utils",
+#                 "stats/3[dot]0[dot]2" : [ ],
+#                 "base/3[dot]0[dot]2" : [ ],
+#                 "graphics/3[dot]0[dot]2" : "grDevices",
+#                 "methods/3[dot]0[dot]2" : "utils",
+#                 "grDevices/3[dot]0[dot]2" : [ ],
+#                 "scimapClient/0[dot]1[dot]4" : [ "RJSONIO", "tools" ],
+#                 "datasets/3[dot]0[dot]2" : [ ] },
+#      "jobID" : "12071263646251855663751151411417738",
+#      "platform" : { "hardware" : "x86-64",
+#                     "version" : "7 x64",
+#                     "system" : "Windows" },
+#      "weakDeps" : [ ],
+#      "user" : "1207126364625185566375115",
+#      "userMetadata" : [ ],
+#      "ip" : "128.237.203.24",
+#      "weakPackDeps" : [ ],
+#      "dynPackDeps" : [ ] }
+#
 # New records should be:
 #
 # application
@@ -68,6 +96,12 @@ def getUnknownAppInfo(pkgname):
 
 def addAppUnknown(c, dest, appname):
     return addApp(c,dest, getUnknownAppInfo(appname))
+
+max_co_uses = 0
+def set_max_co_use(n):
+    global max_co_uses
+    if n > max_co_uses:
+        max_co_uses = n
            
 def addApp(c, dest, appinfo):
     finding = dest.application.find_one({"title": appinfo["title"]})
@@ -103,13 +137,13 @@ def monthOf(when):
 def cooc2ddict(dest):
     ddict = dict()
     for cooc in dest.co_occurence.find():
-        ddict[cooc["application"]] = pairlist2dict(cooc["links"], "app", "power")
+        ddict[cooc["application"]] = pairlist2dict(cooc["links"], "app", "co_uses")
     return ddict
     
 def ddict2cooc(dest, ddict):
     for id in ddict:
        cooc = dest.co_occurence.find_one({"application": id})
-       cooc["links"] = dict2pairlist(ddict[id], "app", "power")
+       cooc["links"] = dict2pairlist(ddict[id], "app", "co_uses")
        dest.co_occurence.save(cooc)
         
 def pairlist2dict(pairlist, keyname, valname):
@@ -209,12 +243,12 @@ def addOne(c, dest, rawrec):
         # Disabled code from previous version: this fully connects all packages from the same job
         if (isinstance(rawrec["pkgT"], list) and 1==0):   
             cooc = dest.co_occurence.find_one({"application": id})
-            ptrs = pairlist2dict(cooc["links"], "app", "power")
+            ptrs = pairlist2dict(cooc["links"], "app", "co_uses")
             for id2 in allids:
                 if (id != id2):
                     if id2 not in ptrs:
                         ptrs[id2] = 5
-            cooc["links"] = dict2pairlist(ptrs, "app", "power")
+            cooc["links"] = dict2pairlist(ptrs, "app", "co_uses")
             dest.co_occurence.save(cooc)
             
     if (isinstance(rawrec["pkgT"], dict)):  
@@ -223,21 +257,38 @@ def addOne(c, dest, rawrec):
         for pkgT in rawrec["pkgT"]:
             dependor = pkgT.split("/")[0]
             if dependor in idtable:
-                ddict[idtable[dependor]] = {}
                 links = rawrec["pkgT"][pkgT]
                 if (isinstance(links, list) and len(links) > 0):
                     for dependee in links:
                         if dependee in idtable:
-                            ddict[idtable[dependor]][idtable[dependee]] = 5
+                            if (idtable[dependee] not in ddict[idtable[dependor]]):
+                                ddict[idtable[dependor]][idtable[dependee]] = 1
+                            else:
+                                ddict[idtable[dependor]][idtable[dependee]] += 1
+                            set_max_co_use(ddict[idtable[dependor]][idtable[dependee]])
                 elif (isinstance(links, list) and len(links) == 0):
                     leaves.append(idtable[dependor])
                 elif links in idtable:
-                    ddict[idtable[dependor]][idtable[links]] = 5
+                    if idtable[links] not in ddict[idtable[dependor]]:
+                        ddict[idtable[dependor]][idtable[links]] = 1
+                    else:
+                        ddict[idtable[dependor]][idtable[links]] += 1
+                    set_max_co_use(ddict[idtable[dependor]][idtable[links]])
         for l1 in leaves:
             for l2 in leaves:
                 if (l1 != l2):
-                    ddict[l1][l2] = 5 
+                    if l2 in ddict[l1]:
+                        ddict[l1][l2] += 1
+                    else:
+                        ddict[l1][l2] = 1
+                    set_max_co_use(ddict[l1][l2])
         ddict2cooc(dest, ddict)
+    oldStats = dest.global_stats.find_one()
+    if (oldStats == None):
+        oldStats = { "max_co_uses": max_co_uses, "max_publications": 0 }
+    else:
+        oldStats["max_co_uses"] = max_co_uses
+    dest.global_stats.save(oldStats)
                 
         
 if __name__ == "__main__":

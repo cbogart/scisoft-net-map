@@ -29,7 +29,7 @@ function vizForceChart(container, options) {
         .charge(options.charge)
         .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
-        .linkStrength(1)
+        .linkStrength(function(d) { return( d.value/10.0); })
         .size([width, height]);
     var app_dict = {},
         link_dict = {},

@@ -149,6 +149,7 @@ class ApiViews:
             nodes = []
             links = []
 
+            max_co_uses = GlobalStats.objects()[0].max_co_uses
             if id is None:
                 cooc = CoOccurence.objects()
                 for c in cooc:
@@ -166,7 +167,7 @@ class ApiViews:
                         links.append({
                             "source": app_id,
                             "target": l.app.id.__str__(),
-                            "value": l.power
+                            "value": l.co_uses * 10.0 / max_co_uses
                         })
             else:
                 from bson.objectid import ObjectId
@@ -185,7 +186,7 @@ class ApiViews:
                         if (dest in nodelist):
                             links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
-                                             "value": destinf.power})
+                                             "value": destinf.co_uses * 10.0 /max_co_uses})
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
