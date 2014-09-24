@@ -1,5 +1,9 @@
 from mongoengine import *
 
+class GlobalStats(Document):
+    max_co_uses = IntField()
+    max_publications = IntField()
+
 """
 This class represents collection with applications
 """
@@ -74,7 +78,7 @@ for example:
 """
 class Link(EmbeddedDocument):
     app = ReferenceField(Application, required=True)
-    power = IntField()
+    co_uses = IntField()
 
 
 """
