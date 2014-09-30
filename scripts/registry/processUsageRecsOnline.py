@@ -287,7 +287,6 @@ def addOne(c, dest, rawrec):
                         ddict[l1][l2]["logical"] += 1
                     else:
                         ddict[l1][l2] = {"static": 0, "logical": 1}
-                    print("Found a logical link between ", l1, " and ", l2)
                     set_max_co_use(ddict[l1][l2])
         ddict2cooc(dest, ddict)
     oldStats = dest.global_stats.find_one()

@@ -155,8 +155,8 @@ class ApiViews:
                 return { k : coUses[k]*10/max_co_uses[k] for k in coUses }
             
             def hasLink(coUses):
-                return (coUses["static"] * 10 / max_co_uses["static"] > 3 or
-                        coUses["logical"] * 10 / max_co_uses["logical"] > 3)
+                return (coUses["static"] * 10 / max_co_uses["static"] > 0 or
+                        coUses["logical"] * 10 / max_co_uses["logical"] > 0)
                   
             if id is None:
                 cooc = CoOccurence.objects()
