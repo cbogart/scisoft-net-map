@@ -26,7 +26,15 @@
 
 .link {
   fill: none;
+}
+
+.static-link {
   stroke: #bbb;
+}
+
+.logical-link {
+  stroke: #55f;
+  stroke-dasharray: 3,3;
 }
 
 #Triangle {
