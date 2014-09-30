@@ -150,6 +150,14 @@ class ApiViews:
             links = []
 
             max_co_uses = GlobalStats.objects()[0].max_co_uses
+
+            def normalizeValue(coUses):
+                return { k : coUses[k]*10/max_co_uses[k] for k in coUses }
+            
+            def hasLink(coUses):
+                return (coUses["static"] * 10 / max_co_uses["static"] > 3 or
+                        coUses["logical"] * 10 / max_co_uses["logical"] > 3)
+                  
             if id is None:
                 cooc = CoOccurence.objects()
                 for c in cooc:
@@ -164,11 +172,12 @@ class ApiViews:
                                       "publications": l.app.publications,
                                       "link": request.route_url('application', name=l.app.title)})
                     for l in c.links:
-                        links.append({
-                            "source": app_id,
-                            "target": l.app.id.__str__(),
-                            "value": l.co_uses * 10.0 / max_co_uses
-                        })
+                        if hasLink(l.co_uses):
+                            links.append({
+                                "source": app_id,
+                                "target": l.app.id.__str__(),
+                                "value": normalizeValue(l.co_uses)
+                            })
             else:
                 from bson.objectid import ObjectId
                 app = Application.objects.get(id=id)
@@ -184,9 +193,10 @@ class ApiViews:
                     for destinf in fan.links:
                         dest = destinf.app.id
                         if (dest in nodelist):
-                            links.append({"source": src.id.__str__(),
+                            if (hasLink(destinf.co_uses)):
+                                links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
-                                             "value": destinf.co_uses * 10.0 /max_co_uses})
+                                             "value": normalizeValue(destinf.co_uses)})
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
