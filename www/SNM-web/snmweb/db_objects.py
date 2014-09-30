@@ -1,7 +1,7 @@
 from mongoengine import *
 
 class GlobalStats(Document):
-    max_co_uses = IntField()
+    max_co_uses = MapField(field=IntField())
     max_publications = IntField()
 
 """
@@ -78,7 +78,7 @@ for example:
 """
 class Link(EmbeddedDocument):
     app = ReferenceField(Application, required=True)
-    co_uses = IntField()
+    co_uses = MapField(field=IntField())
 
 
 """
@@ -102,10 +102,10 @@ class CoOccurence(Document):
 """
 This collection stores applications that are strictly dependent on given
 application.
-"""
 class Dependency(Document):
     application = ReferenceField(Application, required=True)
     links = ListField(EmbeddedDocumentField(Link))
+"""
 
 """
 ----------Working tables------------------
