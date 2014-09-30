@@ -29,7 +29,7 @@ function vizForceChart(container, options) {
         .charge(options.charge)
         .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
-        .linkStrength(function(d) { return( d.value/10.0); })
+        .linkStrength(function(d) { return( Math.max(d.value.logical, d.value.static)/10.0); })
         .size([width, height]);
     var app_dict = {},
         link_dict = {},
@@ -93,9 +93,10 @@ function vizForceChart(container, options) {
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
-            .attr("class", "link")
-            .attr("marker-end", "url(#Triangle)")
-            .style("stroke-width", function(d) {return d.value/2; });
+            .attr("class", function(d) { if (d.value.static > d.value.logical) { return("link static-link") } else { return("link logical-link") }})
+            //.attr("class", "link")
+            .attr("marker-end", function(d) { if (d.value.static > d.value.logical) { return("url(#Triangle)") } else { return("") }})
+            .style("stroke-width", function(d) {return Math.max(d.value.logical, d.value.static)/4; });
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())

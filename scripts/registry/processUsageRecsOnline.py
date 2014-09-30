@@ -97,11 +97,13 @@ def getUnknownAppInfo(pkgname):
 def addAppUnknown(c, dest, appname):
     return addApp(c,dest, getUnknownAppInfo(appname))
 
-max_co_uses = 0
+max_co_uses = {"static": 0, "logical": 0}
 def set_max_co_use(n):
     global max_co_uses
-    if n > max_co_uses:
-        max_co_uses = n
+    if n["static"] > max_co_uses["static"]:
+        max_co_uses["static"] = n["static"];
+    if n["logical"] > max_co_uses["logical"]:
+        max_co_uses["logical"] = n["logical"];
            
 def addApp(c, dest, appinfo):
     finding = dest.application.find_one({"title": appinfo["title"]})
@@ -253,34 +255,39 @@ def addOne(c, dest, rawrec):
             
     if (isinstance(rawrec["pkgT"], dict)):  
         ddict = cooc2ddict(dest)
-        leaves = []   
+        roots = []   
+        leaves = idtable.keys()
         for pkgT in rawrec["pkgT"]:
             dependor = pkgT.split("/")[0]
             if dependor in idtable:
                 links = rawrec["pkgT"][pkgT]
                 if (isinstance(links, list) and len(links) > 0):
+                    leaves = [l for l in leaves if l not in links]
                     for dependee in links:
                         if dependee in idtable:
                             if (idtable[dependee] not in ddict[idtable[dependor]]):
-                                ddict[idtable[dependor]][idtable[dependee]] = 1
+                                ddict[idtable[dependor]][idtable[dependee]] = {"static": 1, "logical": 0}
                             else:
-                                ddict[idtable[dependor]][idtable[dependee]] += 1
+                                ddict[idtable[dependor]][idtable[dependee]]["static"] += 1
                             set_max_co_use(ddict[idtable[dependor]][idtable[dependee]])
                 elif (isinstance(links, list) and len(links) == 0):
-                    leaves.append(idtable[dependor])
+                    roots.append(idtable[dependor])
                 elif links in idtable:
+                    leaves = [l for l in leaves if l is not links]
                     if idtable[links] not in ddict[idtable[dependor]]:
-                        ddict[idtable[dependor]][idtable[links]] = 1
+                        ddict[idtable[dependor]][idtable[links]] = {"static": 1, "logical": 0} 
                     else:
-                        ddict[idtable[dependor]][idtable[links]] += 1
+                        ddict[idtable[dependor]][idtable[links]]["static"] += 1
                     set_max_co_use(ddict[idtable[dependor]][idtable[links]])
+        leaves = [idtable[l] for l in leaves]
         for l1 in leaves:
             for l2 in leaves:
                 if (l1 != l2):
                     if l2 in ddict[l1]:
-                        ddict[l1][l2] += 1
+                        ddict[l1][l2]["logical"] += 1
                     else:
-                        ddict[l1][l2] = 1
+                        ddict[l1][l2] = {"static": 0, "logical": 1}
+                    print("Found a logical link between ", l1, " and ", l2)
                     set_max_co_use(ddict[l1][l2])
         ddict2cooc(dest, ddict)
     oldStats = dest.global_stats.find_one()

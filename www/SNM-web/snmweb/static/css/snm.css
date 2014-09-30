@@ -15,6 +15,33 @@ h2 {
   padding-top: 20px;
 }
 
+.negotiated-interrupt {
+  -webkit-animation-duration: 2s;
+  -webkit-animation-name: glow;
+  -moz-animation-duration: 2s;
+  -moz-animation-name: glow;
+  color: #f00;
+}
+
+@-moz-keyframes glow {
+  from {
+    opacity: 0.0;
+  }
+  to {
+    opacity: 1.0;
+    color: #f00;
+  }
+}
+@-webkit-keyframes glow {
+  from {
+    opacity: 0.0;
+  }
+  to {
+    opacity: 1.0;
+    color: #f00;
+  }
+}
+
 .snm-tooltip {
   display: inline;
   position: relative;
