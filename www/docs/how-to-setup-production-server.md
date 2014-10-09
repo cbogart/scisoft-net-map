@@ -6,6 +6,10 @@
 4. Create environment foler: `sudo mkdir /var/www/environments`
 5. Goto /var: `cd /var`
 6. Change ownership: `sudo chown -R wwwuser:wwwuser www`
+7. Set up port forwarding from whatever port the server uses to 80: if it's 6543, then:
+       sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8080
+
+    (More info at: http://askubuntu.com/questions/427600/persist-port-routing-from-80-to-8080)
 
 # The following steps should be done as `wwwuser`
 1. Become `wwwuser`: `su - wwwuser`, use your root password
