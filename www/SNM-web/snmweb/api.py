@@ -146,7 +146,7 @@ class ApiViews:
         #   CoOccurence.find( { application: { $in : nodelist }, links: { $elemMatch: { app: { $in : nodelist } } }})
         #    From which, be sure to only pass along those links that flow within the nodelist
 
-        def force_directed(id=None):
+        def force_directed(id=None, clustered=False):
             nodes = []
             links = []
 
@@ -210,7 +210,9 @@ class ApiViews:
                                   "publications": c.publications,
                                   "link": request.route_url('application', name=c.title)})
 
-            nodes = clusteringOrder(nodes, links)
+            if (clustered):
+                nodes = clusteringOrder(nodes, links)
+
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
