@@ -1,0 +1,47 @@
+{% extends "base.jinja2" %}
+{% block title %}Scientific Network Map{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  <style>
+  table {
+      table-layout: fixed;
+   }
+   th.rotated {
+      height: 140px;
+   }
+   th.rotated > div {
+      transform:
+         translate(20px, 41px)
+         rotate(315deg);
+      width: 22px;
+   }
+   th.rotated > div > span {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 5px;
+   }
+  </style>
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/dsm.js')}}"></script>
+  <script>
+    var dsm = vizDSM($("#chart"),{
+      clickable: false
+    });
+    dsm.start();
+  </script>
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="col-md-8">
+    <div id="dsm">
+      <table><tr><td>Please wait: Calculating best row order to group dependent packages together.....</td></tr></table>
+    </div>
+  </div>
+
+{% endblock %}
