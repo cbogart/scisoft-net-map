@@ -12,8 +12,7 @@ from threading import Lock
 
 usageCacheLock = Lock()
 
-def freshDb(dbname):
-    c = Connection()
+def freshDb(c, dbname):
     c.drop_database(dbname)
     db = c[dbname]
     db.global_stats.save({"max_co_uses": { "static": 0, "logical": 0}, "max_publications": 0 })
@@ -21,8 +20,10 @@ def freshDb(dbname):
 
 class UsageCache:
 
-    def __init__(self, dest):
+    def __init__(self, dest, logicallyLinkLeaves):
         "Load a fresh database from mongo"
+
+        self.logicallyLinkLeaves = logicallyLinkLeaves
         with usageCacheLock:
             self.today = datetime.date.today()
             self.db = dest
@@ -100,39 +101,55 @@ class UsageCache:
                self.apps[pkgname]["user_list"][dayOf(today)].add(packet["user"])
     
             # Fill in co-occurence
-            leaves = self.apps.keys()
+            leaves = [p.split("/")[0] for p in packet["pkgT"].keys()]  #self.apps.keys()
             roots = []
+            #if (packet["pkgT"] != {packet["exec"]: []} and packet["pkgT"] != {}):
+                #pdb.set_trace()
             for pkgT in packet["pkgT"]:
                 dependor = pkgT.split("/")[0]
                 self.addNewApp(dependor)
                 if isinstance(packet["pkgT"], dict):
-                    links = packet["pkgT"][pkgT]
+                    links = [p.split("/")[0] for p in packet["pkgT"][pkgT]]
                     if (isinstance(links, list) and len(links) > 0):
                         leaves = [l for l in leaves if l not in links]
                         for dependee in links:
-                            if dependee in self.apps.keys():
+                            if dependee in self.apps.keys() and dependee != dependor:
                                 self.apps[dependor]["co_occurence"][dependee]["static"] += 1
                                 self.update_max_co_use(self.apps[dependor]["co_occurence"][dependee])
                     elif (isinstance(links, list) and len(links) == 0):
                         roots.append(dependor)
                     elif links in self.apps.keys():
                         leaves = [l for l in leaves if l is not links]
-                        self.apps[dependor]["co_occurence"][links]["static"] += 1
-                        self.update_max_co_use(self.apps[dependor]["co_occurence"][links])
-            for l1 in leaves:
-                for l2 in leaves:
-                    if (l1 != l2):
-                        self.apps[l1]["co_occurence"][l2]["logical"] += 1
-                        self.update_max_co_use(self.apps[l1]["co_occurence"][l2])
+                        if (dependor != links):
+                            self.apps[dependor]["co_occurence"][links]["static"] += 1
+                            self.update_max_co_use(self.apps[dependor]["co_occurence"][links])
+                    else:
+                        print "pkgT", pkgT, " points to a ", links
+                        #pdb.set_trace()
+                else:
+                   print "Not a dict"
+                   #pdb.set_trace()
+            if (self.logicallyLinkLeaves):
+                for l1 in leaves:
+                    for l2 in leaves:
+                        if (l1 != l2):
+                            #pdb.set_trace()
+                            try:
+                                self.apps[l1]["co_occurence"][l2]["logical"] += 1
+                            except:
+                                pdb.set_trace()
+                            self.update_max_co_use(self.apps[l1]["co_occurence"][l2])
     
             if ("weakPackDeps" in packet and isinstance(packet["weakPackDeps"], dict)):
                 for weakdependor in packet["weakPackDeps"]:
                     if (isinstance(packet["weakPackDeps"][weakdependor], (list, dict))):
                         for weakdependee in packet["weakPackDeps"][weakdependor]:
+                            #pdb.set_trace()
                             self.apps[weakdependor]["co_occurence"][weakdependee]["logical"] += 1
                             self.update_max_co_use(self.apps[weakdependor]["co_occurence"][weakdependee])
                     else:
                         weakdependee = packet["weakPackDeps"][weakdependor]
+                        #pdb.set_trace()
                         self.apps[weakdependor]["co_occurence"][weakdependee]["logical"] += 1
                         self.update_max_co_use(self.apps[weakdependor]["co_occurence"][weakdependee])
     
@@ -150,6 +167,7 @@ class UsageCache:
                 app = self.apps[appname]
                 id = app["id"] 
             
+                # Save usage *counts*
                 usageData = fillInDayWeekMonth(app["usage"], 0, lambda x,y: x+y, "x", "y")
                 thisusage = self.db.usage.find_one({"application": id})
                 thisusage["daily"] = usageData["daily"]
@@ -158,6 +176,7 @@ class UsageCache:
                 app_usage = usageData["total"]
                 self.db.usage.save(thisusage)
 
+                # Save lists of users.  Technically we don't need the weekly/monthly lists
                 userListData = fillInDayWeekMonth(app["user_list"], set(), lambda x,y: x.union(y), "date","items")
                 thisuser_list = self.db.user_list.find_one({"application": id})
                 thisuser_list["daily"] = [{"date": i["date"], "items": list(i["items"])} for i in userListData["daily"]]
@@ -165,6 +184,7 @@ class UsageCache:
                 thisuser_list["monthly"] = [{"date": i["date"], "items": list(i["items"])} for i in userListData["monthly"]]
                 self.db.user_list.save(thisuser_list)
 
+                # Save counts of users.  We *do* need weekly/monthly here.
                 thisusers = self.db.users_usage.find_one({"application": id})
                 thisusers["daily"] = [{"x": i["date"], "y": len(i["items"])} for i in userListData["daily"]]
                 thisusers["weekly"] = [{"x": i["date"], "y": len(i["items"])} for i in userListData["weekly"]]
@@ -172,6 +192,7 @@ class UsageCache:
                 self.db.users_usage.save(thisusers)
                 app_users = len(userListData["total"])
                
+                # Save application metadata.
 		appRec = self.db.application.find_one({"_id": id})
                 appRec["usage"] = app_usage
                 appRec["usage_trend"] = sum([pt["y"] for pt in thisusage["daily"] if self.isTrending(pt["x"]) ])

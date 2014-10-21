@@ -3,6 +3,7 @@ import json
 import sys
 from db_objects import *
 from pymongo import Connection
+from tarjan import clusteringOrder
 
 from pyramid.view import (
     view_config,
@@ -152,32 +153,36 @@ class ApiViews:
             max_co_uses = GlobalStats.objects()[0].max_co_uses
 
             def normalizeValue(coUses):
-                return { k : coUses[k]*10/max_co_uses[k] for k in coUses }
+                return { k : (0 if (coUses[k] == 0) else
+                                   1+coUses[k]*9/max(coUses[k], max_co_uses[k], 1)) 
+                         for k in coUses }
             
             def hasLink(coUses):
-                return (coUses["static"] * 10 / max_co_uses["static"] > 3 or
-                        coUses["logical"] * 10 / max_co_uses["logical"] > 3)
+                return (coUses["static"]  > 0 or
+                        coUses["logical"] > 0)
                   
             if id is None:
+                nodedict = {}
                 cooc = CoOccurence.objects()
                 for c in cooc:
                     app_id = c.application.id.__str__()
-                    nodes.append({"name": c.application.title,
+                    nodedict[app_id] = {"name": c.application.title,
                                   "id": app_id,
                                   "publications": c.application.publications,
-                                  "link": request.route_url('application', name=c.application.title)})
+                                  "link": request.route_url('application', name=c.application.title)}
                     for l in c.links:
-                        nodes.append({"name": l.app.title,
+                        nodedict[l.app.id.__str__()] = {"name": l.app.title,
                                       "id": l.app.id.__str__(),
                                       "publications": l.app.publications,
-                                      "link": request.route_url('application', name=l.app.title)})
+                                      "link": request.route_url('application', name=l.app.title)}
                     for l in c.links:
                         if hasLink(l.co_uses):
                             links.append({
                                 "source": app_id,
                                 "target": l.app.id.__str__(),
-                                "value": normalizeValue(l.co_uses)
+                                "value":  normalizeValue(l.co_uses)
                             })
+                nodes = nodedict.values()
             else:
                 from bson.objectid import ObjectId
                 app = Application.objects.get(id=id)
@@ -205,6 +210,7 @@ class ApiViews:
                                   "publications": c.publications,
                                   "link": request.route_url('application', name=c.title)})
 
+            nodes = clusteringOrder(nodes, links)
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
