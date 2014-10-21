@@ -15,7 +15,7 @@ function vizDSM(container, options) {
            return "rgb(0," + v + "," + v + ")"
        }
     } 
-    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
+    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "clustered": true},
         function(result) {
             var nodeIdToIndex = {};
             nodes2value = {}
