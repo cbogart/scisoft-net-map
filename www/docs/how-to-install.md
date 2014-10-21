@@ -19,7 +19,9 @@ $ source env/bin/activate
 (env) $
 ```
 
-Step 4. `easy_install "pyramid==1.5.1"`
+Step 4a. `easy_install "pyramid==1.5.1"`
+
+Step 4b. 'pip install numpy'
 
 Step 5. `cd SNM-web`
 
