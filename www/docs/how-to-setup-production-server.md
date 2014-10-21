@@ -13,11 +13,12 @@
 3. Create virtual environment: `virtualenv env`
 4. Enter environment `. env/bin/activate`
 5. Install Pyramide: `easy_install Pyramid`
-6. `pip install waitress`
-7. Go to www root folder `cd /var/www`
-8. Clone your project here: `git clone https://github.com/Tyumener/SNM.git`
-9. Navigate to `cd SNM/www/SNM-web`
-10. Install dependencies: `python setup.py develop`
+6. Install numpy: `pip install numpy`
+7. `pip install waitress`
+8. Go to www root folder `cd /var/www`
+9. Clone your project here: `git clone https://github.com/Tyumener/SNM.git`
+10. Navigate to `cd SNM/www/SNM-web`
+11. Install dependencies: `python setup.py develop`
 
 At this point you could try to check if everything is correct.
 Type `pserve development.ini` in `/var/www/SNM/www/SNM-web` folder. You should be able to navigate in your browser to `your-server.com:6543`
