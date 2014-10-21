@@ -93,10 +93,9 @@ function vizForceChart(container, options) {
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
-            .attr("class", function(d) { if (d.value.static > d.value.logical) { return("link static-link") } else { return("link logical-link") }})
-            //.attr("class", "link")
-            .attr("marker-end", function(d) { if (d.value.static > d.value.logical) { return("url(#Triangle)") } else { return("") }})
-            .style("stroke-width", function(d) {return Math.max(d.value.logical, d.value.static)/4; });
+            .attr("class", function(d) { if (d.value.static > 0) { return("link static-link") } else { return("link logical-link") }})
+            .attr("marker-end", function(d) { if (d.value.static > 0) { return("url(#Triangle)") } else { return("") }})
+            .style("stroke-width", function(d) { if (d.value.static > 0) { return(d.value.static)/4+1; } else if (d.value.logical > 0) { return(d.value.logical)/4+1; } else { return(0); }});
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
