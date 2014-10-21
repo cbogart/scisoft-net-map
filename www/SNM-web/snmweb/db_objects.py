@@ -1,5 +1,9 @@
 from mongoengine import *
 
+class GlobalStats(Document):
+    max_co_uses = MapField(field=IntField())
+    max_publications = IntField()
+
 """
 This class represents collection with applications
 """
@@ -14,6 +18,7 @@ class Application(Document):
     users = IntField()
     website = StringField(default="")
     publications = IntField()
+    publicationsUrl = StringField(default="")
 
 """
 This class represents nested structure that looks like this:
@@ -73,7 +78,7 @@ for example:
 """
 class Link(EmbeddedDocument):
     app = ReferenceField(Application, required=True)
-    power = IntField()
+    co_uses = MapField(field=IntField())
 
 
 """
@@ -97,10 +102,10 @@ class CoOccurence(Document):
 """
 This collection stores applications that are strictly dependent on given
 application.
-"""
 class Dependency(Document):
     application = ReferenceField(Application, required=True)
     links = ListField(EmbeddedDocumentField(Link))
+"""
 
 """
 ----------Working tables------------------

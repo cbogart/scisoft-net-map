@@ -3,6 +3,7 @@ import json
 import sys
 from db_objects import *
 from pymongo import Connection
+from tarjan import clusteringOrder
 
 from pyramid.view import (
     view_config,
@@ -136,38 +137,80 @@ class ApiViews:
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
+        # TO DO: I want this to return:
+        #    All the nodes that point to id
+        #   CoOccurence.find( { links: { $elemMatch: { app: id } } }).id  <- foreach
+        #    All the nodes that id points to
+        #   CoOccurence.find( { application: id} )   <- step through as below and grab out all apps pointed to
+        #    All the edges where source and target are both in this set
+        #   CoOccurence.find( { application: { $in : nodelist }, links: { $elemMatch: { app: { $in : nodelist } } }})
+        #    From which, be sure to only pass along those links that flow within the nodelist
+
         def force_directed(id=None):
             nodes = []
             links = []
 
+            max_co_uses = GlobalStats.objects()[0].max_co_uses
+
+            def normalizeValue(coUses):
+                return { k : (0 if (coUses[k] == 0) else
+                                   1+coUses[k]*9/max(coUses[k], max_co_uses[k], 1)) 
+                         for k in coUses }
+            
+            def hasLink(coUses):
+                return (coUses["static"]  > 0 or
+                        coUses["logical"] > 0)
+                  
             if id is None:
+                nodedict = {}
                 cooc = CoOccurence.objects()
+                for c in cooc:
+                    app_id = c.application.id.__str__()
+                    nodedict[app_id] = {"name": c.application.title,
+                                  "id": app_id,
+                                  "publications": c.application.publications,
+                                  "link": request.route_url('application', name=c.application.title)}
+                    for l in c.links:
+                        nodedict[l.app.id.__str__()] = {"name": l.app.title,
+                                      "id": l.app.id.__str__(),
+                                      "publications": l.app.publications,
+                                      "link": request.route_url('application', name=l.app.title)}
+                    for l in c.links:
+                        if hasLink(l.co_uses):
+                            links.append({
+                                "source": app_id,
+                                "target": l.app.id.__str__(),
+                                "value":  normalizeValue(l.co_uses)
+                            })
+                nodes = nodedict.values()
             else:
+                from bson.objectid import ObjectId
                 app = Application.objects.get(id=id)
-                cooc = [CoOccurence.objects.get(application=id)]
-                app_id = app.id.__str__()
-                nodes.append({"name": app.title,
-                              "id": app_id,
-                              "publications": app.publications,
-                              "link": request.route_url('application',
-                                                        name=app.title)})
-            for c in cooc:
-                app_id = c.application.id.__str__()
-                nodes.append({"name": c.application.title,
-                              "id": app_id,
-                              "publications": c.application.publications,
-                              "link": request.route_url('application', name=c.application.title)})
-                for l in c.links:
-                    nodes.append({"name": l.app.title,
-                                  "id": l.app.id.__str__(),
-                                  "publications": l.app.publications,
-                                  "link": request.route_url('application', name=l.app.title)})
-                for l in c.links:
-                    links.append({
-                        "source": app_id,
-                        "target": l.app.id.__str__(),
-                        "value": l.power
-                    })
+                nodelist = [ObjectId(id)]
+                fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
+                nodelist = nodelist + [fc.application.id for fc in fromcooc]
+                tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
+                for tc in tocooc:
+                    nodelist = nodelist + [tcl.app.id for tcl in tc.links]
+                edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
+                for fan in edgecooc:
+                    src = fan.application
+                    for destinf in fan.links:
+                        dest = destinf.app.id
+                        if (dest in nodelist):
+                            if (hasLink(destinf.co_uses)):
+                                links.append({"source": src.id.__str__(),
+                                             "target": dest.__str__(),
+                                             "value": normalizeValue(destinf.co_uses)})
+
+                for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
+                    app_id = c.id.__str__()
+                    nodes.append({"name": c.title,
+                                  "id": app_id,
+                                  "publications": c.publications,
+                                  "link": request.route_url('application', name=c.title)})
+
+            nodes = clusteringOrder(nodes, links)
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):

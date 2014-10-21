@@ -12,12 +12,12 @@ def main(global_config, **settings):
 
     """ This function returns a Pyramid WSGI application.
     """
-    authn_policy = AuthTktAuthenticationPolicy(
-        'gabbleblotchits')
-    authz_policy = SNMAuthorizationPolicy()
+#    authn_policy = AuthTktAuthenticationPolicy(
+#        'gabbleblotchits')
+#    authz_policy = SNMAuthorizationPolicy()
     config = Configurator(
-        authentication_policy=authn_policy,
-        authorization_policy=authz_policy,
+#        authentication_policy=authn_policy,
+#        authorization_policy=authz_policy,
         settings=settings
         )
 
@@ -27,6 +27,7 @@ def main(global_config, **settings):
     config.add_static_view(name="static", path="static")
 
     config.add_route("home", "/")
+    config.add_route("dsm", "/dsm")
 
     config.add_route("app_used_with",   "/application/{name}/used_with")
     config.add_route("app_usage",       "/application/{name}/usage")
