@@ -34,12 +34,27 @@
     </div>
     <div id="graph-desc-wrapper" class="tab-pane">
       <h4>Description</h4>
-      Each node represents an application. A link between nodes shows that these
-      applications happened to be used by the same user on the same day; so
-      they may have been related.  For example maybe 
+      {%if sci_platform=="R" %}
+      Each node represents an R package. A link between nodes shows that these
+      packages happened to be loaded at the same time by some script by some user.
+      Solid lines indicate static dependencies (i.e. those enforced
+      by R's package loading mechanism).  Dotted lines are packages users chose
+      to use during the same R session.
+      {% elif sci_platform=="TACC" %}
+      Each node represents an application. A dashed arrow between nodes shows that these
+      applications happened to be used by the same user on the same day, and that one
+      was started after the previous one completed.  For example maybe 
       in order to achieve a goal, a researcher had to run application
-      A, then process results with application B and then C -
-      meaning A was used with B and C.
+      A, then process results with application B; the graph would show an arrow from
+      A to B.
+      {% else %}
+      Each node represents an application. A dashed arrow between nodes shows that these
+      applications happened to be used by the same user on the same day, and that one
+      was started after the previous one completed.  For example maybe 
+      in order to achieve a goal, a researcher had to run application
+      A, then process results with application B; the graph would show an arrow from
+      A to B.
+      {% endif %}
     </div>
   </div>
 </div>

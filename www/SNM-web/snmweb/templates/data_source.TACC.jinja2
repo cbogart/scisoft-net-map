@@ -1,0 +1,58 @@
+{% extends "base.jinja2" %}
+{% block title %}Data Source{% endblock %}
+{% block content_title  %}<h1>Source of data</h1>{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  {#  You can add page-specific js here #}
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="col-md-12">
+    <p>The data currently shown comes from supercomputers at <a href="https://www.tacc.utexas.edu">
+    TACC (the Texas Advanced Computing Center)</a>. The data was collected using a project called
+    Lariat, between April 2012 through January 2013.
+    It is displayed using the following assumptions:
+    </p>
+    <ul>
+    <li>We assume executables with the same name are the same code.  We ignore the path to the executable.
+        We have checksum and version information, but are currently ignoring it for simplicity.
+    <li>We ignore any executable used by fewer than five distinct users.
+    <li>We ignore executables named "a.out" or named after a short list of standard POSIX commands
+    <li>We associate executable names with well-known scientific software packages by simple string matching:
+        for example any executable containing "vasp" as a substring is assumed to be part of
+        <a href="http://www.vasp.at">VASP</a>.  For
+        some packages we have a list of strings we match against, taken from lists of executables mentioned
+        on the packages' web sites. For example executables containing the strings
+        "gipaw" or "tddfpt" are known to be part of Quantum Espresso.  Please let us know about ones we missed.
+    <li>Two executables are considered to be "used together" if they are run in the same job on the same day.
+    <li>The Lariat data also has information about which libraries (things like FFTW and PGI) are used by
+        which executables.  We are currently omitting this information because almost all other applications
+        use them.
+    <li>Publications are associated with jobs by scraping data from the XSEDE portal
+        (<a href="https://portal.xsede.org/publications#/show">https://portal.xsede.org/publications#/show</a>)
+        where researchers associate publications with their projects, using the same code number the
+        lariat files classify jobs by (allocation identifiers that take the form TG-XXXNNNNNNN).
+    </ul>
+    <p>
+    Some of these choices are arbitrary, and if you are curious about how the graphs and statistics would
+    look under different assumptions, let me know (Chris Bogart: cbogart at cs dot cmu dot edu) and I'd be
+    glad to find useful ways of interpreting and displaying this data.
+    </p>
+
+    <h3>Other data sources</h3>
+    <p>If you have a scientific software package or suite that you would like to track using this tool,
+    let us know. Beyond tracking codes on a single supercomputer, we are interested in helping
+    you to track your software's usage, even if it is widely deployed at individual
+    researchers' sites.
+    </p>
+
+  </div>
+
+{% endblock %}

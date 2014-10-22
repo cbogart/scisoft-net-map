@@ -15,6 +15,32 @@
 {% block content %}
 
   <div class="col-md-12">
+    {% if sci_platform == "R" %}
+    <p>The data currently shown comes from <a href="http://sci-net-map.isri.cmu.edu/static/html/installR.html">volunteers</a> who are tracking the packages they
+    use in their R analyses on their own computers. <a href="http://sci-net-map.isri.cmu.edu:7777">(If you are looking for the TACC supercomputer data,
+    it can be found here.)</a>
+    It is displayed using the following assumptions:
+    </p>
+    <ul>
+    <li>We assume packages with the same name are the same package.  We have distinct version information, but
+        are currently not displaying it for simplicity.
+    <li>We ignore a common baseline of R packages that are installed by default
+    <li>Two packages are considered to be "used together" if they were both used in the same run
+    </ul>
+
+    <h3>Participate</h3>
+    To contribute your own usage data to the map, visit 
+    <a href="http://sci-net-map.isri.cmu.edu/static/html/installR.html">http://sci-net-map.isri.cmu.edu/static/html/installR.html</a> for information on how to install the R package.
+
+    <h3>Other data sources</h3>
+    <p>If you have a scientific software package or suite that you would like to track using this tool,
+    let us know. We are interested in helping
+    you to track your software's usage, even if it is widely deployed at individual
+    researchers' sites.
+    </p>
+
+    {% elif sci_platform == "TACC" %}
+
     <p>The data currently shown comes from supercomputers at <a href="https://www.tacc.utexas.edu">
     TACC (the Texas Advanced Computing Center)</a>. The data was collected using a project called
     Lariat, between April 2012 through January 2013.
@@ -53,6 +79,7 @@
     researchers' sites.
     </p>
 
+    {% endif %}
   </div>
 
 {% endblock %}

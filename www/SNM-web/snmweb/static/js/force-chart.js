@@ -12,13 +12,24 @@ function vizForceChart(container, options) {
     var svg = d3.select("#chart svg")
         .attr("width", width)
         .attr("height", height);
+   // Arrowhead definition from http://www.w3.org/TR/SVG/painting.html#Markers
+    svg.append("defs").append("marker")
+        .attr("id", "Triangle")
+        .attr("viewBox", "0 0 10 10")
+        .attr("refX", "10").attr("refY", "5")
+        .attr("markerUnits", "userSpaceOnUse")
+        .attr("markerWidth", "10") 
+        .attr("markerHeight", "10") 
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M 0 0 L 10 5 L 0 10 z");
     var svglinks = svg.append("g");
     var svgnodes = svg.append("g");
     var force = d3.layout.force()
         .charge(options.charge)
         .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
-        .linkStrength(1)
+        .linkStrength(function(d) { return( Math.max(d.value.logical, d.value.static)/10.0); })
         .size([width, height]);
     var app_dict = {},
         link_dict = {},
@@ -29,10 +40,15 @@ function vizForceChart(container, options) {
         .nodes(nodes)
         .links(links);
     force.on("tick", function() {
-        svg.selectAll(".link").attr("x1", function(d) { return d.source.x; })
+        svg.selectAll(".link")
+            .attr("x1", function(d) { 
+                d.len = Math.pow(Math.pow(d.source.x-d.target.x,2) + Math.pow(d.source.y-d.target.y,2), .5)
+                return d.source.x; 
+             })
             .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+            .attr("x2", function(d) { return d.target.x - (d.target.x-d.source.x)*(d.target.radius/d.len); })
+            .attr("y2", function(d) { return d.target.y - (d.target.y-d.source.y)*(d.target.radius/d.len); })
+            ;
         svg.selectAll('g.gnode')
             .attr("transform", function(d) {
                 // Bounds here keep node centers 8 pix within edges
@@ -77,8 +93,9 @@ function vizForceChart(container, options) {
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
-            .attr("class", "link")
-            .style("stroke-width", function(d) {return d.value/2; });
+            .attr("class", function(d) { if (d.value.static > 0) { return("link static-link") } else { return("link logical-link") }})
+            .attr("marker-end", function(d) { if (d.value.static > 0) { return("url(#Triangle)") } else { return("") }})
+            .style("stroke-width", function(d) { if (d.value.static > 0) { return(d.value.static)/4+1; } else if (d.value.logical > 0) { return(d.value.logical)/4+1; } else { return(0); }});
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
@@ -90,13 +107,16 @@ function vizForceChart(container, options) {
         var labels = allGNodes.append("a")
             .attr("xlink:href", function(d) {return d.link;})
             .append("text")
-            .attr("transform", function(d) { return "translate(" + (10+d.publications/2) + ",0)"; })
+            .attr("transform", function(d) { return "translate(" + (10+Math.log(d.publications+1)*2) + ",0)"; })
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .classed("loaded", function(d){return d.loaded})
-            .attr("r", function(d){ return (d.publications)/2+5; });  // 9
+            .attr("r", function(d){ 
+                  d.radius = (Math.log(d.publications+1)*2+5);
+                  return d.radius;
+             });  // 9
 
         if (options.clickable) {
             allNodes.on("click", function(d) {

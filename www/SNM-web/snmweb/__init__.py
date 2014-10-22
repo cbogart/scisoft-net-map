@@ -2,6 +2,7 @@ from pyramid.config import Configurator
 from mongoengine import connect
 from pyramid.security import Authenticated, remember, forget
 from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.events import BeforeRender
 
 class SNMAuthorizationPolicy(object):
     def permits(self, context, principals,
@@ -23,9 +24,17 @@ def main(global_config, **settings):
 
     config.include("pyramid_jinja2")
 
+    def addSettings(event):
+        event["sci_platform"] = settings["sci_platform"]
+        event["google_tracking_code"] = settings["google_tracking_code"]
+
+    config.add_subscriber(addSettings, BeforeRender)
+
     # Configuring static assets
     config.add_static_view(name="static", path="static")
 
+    config.add_settings({"sci_platform": settings["sci_platform"],
+                         "google_tracking_code": settings["google_tracking_code"]})
     config.add_route("home", "/")
     config.add_route("dsm", "/dsm")
 

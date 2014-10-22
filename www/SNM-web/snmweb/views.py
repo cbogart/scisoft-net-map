@@ -85,7 +85,7 @@ def view_about(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
 @view_config(route_name="data_source",
-             renderer='templates/data_source.jinja2')
+         renderer='templates/data_source.jinja2')
 def view_data_source(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 

@@ -17,7 +17,7 @@
 3. Create virtual environment: `virtualenv env`
 4. Enter environment `. env/bin/activate`
 5. Install Pyramide: `easy_install Pyramid`
-6. `pip install numpy`
+6. Install numpy: `pip install numpy`
 7. `pip install waitress`
 8. Go to www root folder `cd /var/www`
 9. Clone your project here: `git clone https://github.com/Tyumener/SNM.git`
