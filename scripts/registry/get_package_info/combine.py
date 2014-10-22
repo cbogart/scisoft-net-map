@@ -75,7 +75,7 @@ for c in cran:
     
 print json.dumps(cran, indent=4)
 
-outf = open("appinfo2.json", "w")
+outf = open("appinfo.R.json", "w")
 outf.write( json.dumps(cran, indent=4))
 outf.close()
 

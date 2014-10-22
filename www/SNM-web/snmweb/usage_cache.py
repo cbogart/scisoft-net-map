@@ -18,12 +18,36 @@ def freshDb(c, dbname):
     db.global_stats.save({"max_co_uses": { "static": 0, "logical": 0}, "max_publications": 0 })
     return db
 
+def readAppInfo(sci_platform):
+    inf = json.load(open("../../data/appinfo." + sci_platform + ".json"))
+    matches = dict()
+    for i in inf:
+        for m in inf[i]["match"]:
+            matches[m] = inf[i]
+    return matches
+
+def readPubInfo(sci_platform):
+    byproject = defaultdict(set)
+    inf = []
+    try:
+        inf = json.load(open("../../data/pubs." + sci_platform + ".json"))
+        for i in range(len(inf)):
+            for p in inf[i]["projects"]:
+                byproject[p].add(i)
+    except Exception, e:
+        print "ERROR: ", str(e)
+    return (byproject, inf)
+
+
 class UsageCache:
 
-    def __init__(self, dest, logicallyLinkLeaves):
+    def __init__(self, dest, logicallyLinkLeaves, sci_platform):
         "Load a fresh database from mongo"
 
         self.logicallyLinkLeaves = logicallyLinkLeaves
+        self.sci_platform = sci_platform
+        self.app_info = readAppInfo(sci_platform)
+        (self.pub_indexes, self.pub_list) = readPubInfo(sci_platform)
         with usageCacheLock:
             self.today = datetime.date.today()
             self.db = dest
@@ -71,21 +95,28 @@ class UsageCache:
             self.apps[pkgname]["user_list"] = defaultdict(set)
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
 
-    def writeNewApp(self, apptitle):
-        appinfo = {}
-        appinfo["title"] = apptitle
-        appinfo["description"] = "unknown"
-        appinfo["short_description"] = "unknown"
-        appinfo["image"] = "unknown.jpg"
-        appinfo["version"] = ""
-        appinfo["publications"] = 0
+    def getUnknownAppInfo(self, pkgname):
+        if (pkgname in self.app_info):
+            inf = self.app_info[pkgname]
+        else:
+            inf =  {
+               "title" : pkgname,
+               "description" : "unknown",
+               "short_description" : "unknown",
+               "image" : "unknown.jpg",
+               "version" : "",
+               "publications" : 0 }
+        return inf
 
-        id = self.db.application.save(appinfo)
+    def writeNewApp(self, apptitle):
+        thisappinfo = self.getUnknownAppInfo(apptitle)
+
+        id = self.db.application.save(thisappinfo)
         self.db.usage.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
         self.db.users_usage.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
         self.db.user_list.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
         self.db.co_occurence.save({ "application": id, "links" : [] })
-        self.appIds[id] = appinfo["title"]
+        self.appIds[id] = thisappinfo["title"]
         return id
 
     def registerPacket(self, packet):
@@ -103,8 +134,7 @@ class UsageCache:
             # Fill in co-occurence
             leaves = [p.split("/")[0] for p in packet["pkgT"].keys()]  #self.apps.keys()
             roots = []
-            #if (packet["pkgT"] != {packet["exec"]: []} and packet["pkgT"] != {}):
-                #pdb.set_trace()
+
             for pkgT in packet["pkgT"]:
                 dependor = pkgT.split("/")[0]
                 self.addNewApp(dependor)
@@ -125,15 +155,12 @@ class UsageCache:
                             self.update_max_co_use(self.apps[dependor]["co_occurence"][links])
                     else:
                         print "pkgT", pkgT, " points to a ", links
-                        #pdb.set_trace()
                 else:
                    print "Not a dict"
-                   #pdb.set_trace()
             if (self.logicallyLinkLeaves):
                 for l1 in leaves:
                     for l2 in leaves:
                         if (l1 != l2):
-                            #pdb.set_trace()
                             try:
                                 self.apps[l1]["co_occurence"][l2]["logical"] += 1
                             except:
@@ -184,6 +211,18 @@ class UsageCache:
                 thisuser_list["monthly"] = [{"date": i["date"], "items": list(i["items"])} for i in userListData["monthly"]]
                 self.db.user_list.save(thisuser_list)
 
+                # Calculate publication list
+                my_pub_indexes = set()
+                if (len(self.pub_indexes) > 0):
+                    publist = self.db.pub_list.find_one({"application": id})
+                    if (publist is None):
+                        publist = {"application": id, "publications": []}
+		    for user in userListData["total"]:
+                        my_pub_indexes = my_pub_indexes.union(self.pub_indexes[user])
+                    publist["publications"] = [self.pub_list[i] for i in my_pub_indexes]
+                    self.db.pub_list.save(publist)
+                
+
                 # Save counts of users.  We *do* need weekly/monthly here.
                 thisusers = self.db.users_usage.find_one({"application": id})
                 thisusers["daily"] = [{"x": i["date"], "y": len(i["items"])} for i in userListData["daily"]]
@@ -197,6 +236,8 @@ class UsageCache:
                 appRec["usage"] = app_usage
                 appRec["usage_trend"] = sum([pt["y"] for pt in thisusage["daily"] if self.isTrending(pt["x"]) ])
                 appRec["users"] = app_users
+                if (len(my_pub_indexes) > 0):
+                    appRec["publications"] = len(my_pub_indexes)
                 self.db.application.save(appRec)
 
                 coocRec = self.db.co_occurence.find_one({"application": id})
@@ -279,18 +320,6 @@ def fillInDayWeekMonth(dayhash, zero, accum, ix, value):
 
 # ----- Junk below this line
 '''
-def getUnknownAppInfo(pkgname):
-    if (pkgname in apps):
-        inf = apps[pkgname]
-    else:
-        inf =  {
-           "title" : pkgname,
-           "description" : "unknown",
-           "short_description" : "unknown",
-           "image" : "unknown.jpg",
-           "version" : "",
-           "publications" : 0 }
-    return inf
 
 class Apps:
     def __init__(self, c, dest):

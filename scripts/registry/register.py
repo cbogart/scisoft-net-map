@@ -18,7 +18,9 @@ from datetime import date, timedelta
 from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
-from UsageCache import UsageCache
+from snmweb.usage_cache import UsageCache
+from Queue import Queue
+from threading import Thread
 
 queue = Queue()
 
@@ -29,7 +31,7 @@ def await():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
     s.listen(3)
-    usecache = UsageCache("snm-tacc", True)  # True=assume logical link between "leaf" non-dependent packages
+    usecache = UsageCache("snm-r", True, "R")  # True=assume logical link between "leaf" non-dependent packages
     while 1:
         conn, addr = s.accept()
         print 'Connection from', addr[0]
@@ -50,13 +52,15 @@ def scrub_dots(dottyDict):
 def worker(): 
     while True:
         packet = queue.get()
+        print "REGISTERING"
         usecache.registerPacket(record)
         queue.task_done()
         if queue.empty() and usecache.dirty:
+            print "SAVING"
             usecache.saveToMongo()
        
 
-def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records")
+def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records"):
     try:
         rawrecords = c[dbraw]
         rawrecords["scimapInfo"].save(record)
@@ -76,10 +80,11 @@ def register(c, data, ip, usecache, dbraw="snm-raw-records"):
         (r1,r2,r3) = sys.exc_info()
         print traceback.format_exception(r1,r2,r3)
 
-
-
-if __name__ == "__main__":
+def initializeThreads():
     t = Thread(target=worker)
     t.daemon = True
     t.start()
     await()
+
+if __name__ == "__main__":
+    initializeThreads()
