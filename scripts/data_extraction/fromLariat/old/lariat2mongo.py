@@ -14,10 +14,16 @@ from datetime import date, timedelta
 from os import walk
 from snmweb.db_objects import *
 
+
+
 class AppInfo:
     co_occurrence = defaultdict(lambda : defaultdict(int))   # app -> app -> add 1 each time they co-occur
     pubindex = defaultdict(list)
     projects_exec = defaultdict(set)
+    
+    allUsers = set()
+    allProjects = set()
+    relevantPubs = set()
 
     def scanForJobData(self, file):
         usage = defaultdict(int)    # app -> add 1 for each time it's run ((for just today)
@@ -42,6 +48,8 @@ class AppInfo:
                 self.projects_exec[jobpart["account"]].add(exeq)
                 users[exeq].add(jobpart["user"])
                 byUser[jobpart["user"]].add(exeq)
+                self.allUsers.add(jobpart["user"])
+                self.allProjects.add(jobpart["account"])
                 byProject[jobpart["account"]].add(exeq)
                 for pkgT in jobpart["pkgT"]:
                     if (not hasPkgT):
@@ -157,6 +165,17 @@ def load_data(filedir):
             for doc in appinfo.pubindex[b]:
                 PubList.objects(application=appobj).update_one(upsert=True,push__publications=
                     PubInfo(**doc))
+                appinfo.relevantPubs.add(str(doc))
+                
+    print "Other stats:"
+    print "  Users:", len(appinfo.allUsers)
+    print "  Relevant pubs:", len(appinfo.relevantPubs)
+    print "  Projects:", len(appinfo.projects_exec)
+    print "  Projects with pubs:", len(appinfo.pubindex)
+    print "  Projects with pubs and code:", len(both)
+    print "  Doublecheck projects:", len(appinfo.allProjects)
+                    
+    
 
 """
 def load_data(filename="db_sample.json",

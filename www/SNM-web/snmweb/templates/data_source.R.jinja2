@@ -1,0 +1,43 @@
+{% extends "base.jinja2" %}
+{% block title %}Data Source{% endblock %}
+{% block content_title  %}<h1>Source of data</h1>{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {#You can include your specific css here#}
+{% endblock %}
+
+{% block js %}
+  {#  You can add page-specific js here #}
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="col-md-12">
+    <p>The data currently shown comes from <a href="http://sci-net-map.isri.cmu.edu/static/html/installR.html">volunteers</a> who are tracking the packages they
+    use in their R analyses on their own computers. <a href="http://sci-net-map.isri.cmu.edu:7777">(If you are looking for the TACC supercomputer data,
+    it can be found here.)</a>
+    It is displayed using the following assumptions:
+    </p>
+    <ul>
+    <li>We assume packages with the same name are the same package.  We have distinct version information, but
+        are currently not displaying it for simplicity.
+    <li>We ignore a common baseline of R packages that are installed by default
+    <li>Two packages are considered to be "used together" if they were both used in the same run
+    </ul>
+
+    <h3>Participate</h3>
+    To contribute your own usage data to the map, visit 
+    <a href="http://sci-net-map.isri.cmu.edu/static/html/installR.html">http://sci-net-map.isri.cmu.edu/static/html/installR.html</a> for information on how to install the R package.
+
+    <h3>Other data sources</h3>
+    <p>If you have a scientific software package or suite that you would like to track using this tool,
+    let us know. We are interested in helping
+    you to track your software's usage, even if it is widely deployed at individual
+    researchers' sites.
+    </p>
+
+  </div>
+
+{% endblock %}

@@ -10,13 +10,17 @@ import datetime
 import time
 import math
 import pdb
+import traceback
+import socket
 from pymongo import MongoClient, Connection
 from collections import defaultdict
 from datetime import date, timedelta
 from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
-import socket
+from UsageCache import UsageCache
+
+queue = Queue()
 
 def await():
     c = Connection()
@@ -25,27 +29,57 @@ def await():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
     s.listen(3)
+    usecache = UsageCache("snm-tacc", True)  # True=assume logical link between "leaf" non-dependent packages
     while 1:
         conn, addr = s.accept()
-        print 'Connection from', addr
+        print 'Connection from', addr[0]
         data = ""
         while 1:
             rcvd = conn.recv(4096)
             if not rcvd: break
             data = data + rcvd
         conn.close()
-        register(c, data)
+        register(c, data, addr[0], usecache)
         
-def register(c, data):
+def scrub_dots(dottyDict):
+    newdict = dict()
+    for k in dottyDict:
+        newdict[k.replace(".","[dot]")] = dottyDict[k]
+    return newdict
+    
+def worker(): 
+    while True:
+        packet = queue.get()
+        usecache.registerPacket(record)
+        queue.task_done()
+        if queue.empty() and usecache.dirty:
+            usecache.saveToMongo()
+       
+
+def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records")
     try:
-        rawrecords = c["snm-raw-records"]
-        record = json.loads(data)
-        rawrecords["lariat2"].save(record)
-        print "Registered a usage!"
+        rawrecords = c[dbraw]
+        rawrecords["scimapInfo"].save(record)
+        queue.put(record)
+    except Exception as e:
+        print "Error: ", e
+        pdb.set_trace()
+
+def register(c, data, ip, usecache, dbraw="snm-raw-records"):
+    try:
+        record = json.loads(data, object_hook = scrub_dots)
+        record["receivedEpoch"] = int(time.time())
+        record["ip"] = ip
+        registerParsed(c, record, ip, usecache, dbraw)
     except Exception as e:
         print "Error: " + str(e)
+        (r1,r2,r3) = sys.exc_info()
+        print traceback.format_exception(r1,r2,r3)
 
 
 
 if __name__ == "__main__":
-	await()
+    t = Thread(target=worker)
+    t.daemon = True
+    t.start()
+    await()

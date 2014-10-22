@@ -36,6 +36,13 @@
   </div>
   <div class="col-md-4">
     <h1>Scientific Software Network Map</h1>
+    {% if sci_platform == "R" %}
+    <h3>R package data</h3>
+    {% elif sci_platform == "TACC" %}
+    <h3>TACC usage data</h3>
+    {% else %}
+    <h3>{{ sci_platform }} data</h3>
+    {% endif %}
     <p>
       The Scientific Software Network Map allows
       interactive exploration of data showing which software
@@ -50,10 +57,17 @@
     </p><p>
       In the graph shown here, each node represents a single application;
       connections between them indicate that they were used together.
-      Line width reflects number of co-occurrences.
+      Solid lines are static dependencies; dotted lines are "logical" dependencies,
+      i.e. non-dependent packages used in the same session.
+      Line width reflects number of co-occurrences.  
       Node size represents the number of publications associated with projects
       that used the application.
     </p>
+
+     {%if sci_platform=="R" %}
+      (<a href="http://scisoft-net-map.isri.cmu.edu:7777">If you are looking for the
+      TACC supercomputer data, click here</a>)
+     {% endif %}
   </div>
 
 {% endblock %}

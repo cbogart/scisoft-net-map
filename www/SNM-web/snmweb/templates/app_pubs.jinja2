@@ -13,7 +13,11 @@
 
 {% block details %}
   <h2>Publications</h2>
-  {% if pubs is none %}
+  {% if app.publications > 0 and pubs is none %}
+      <h2>Results from Google Scholar</h2>
+      <a href="{{ app.publicationsUrl }}">{{ app.publications }} publications</a> cited this package in a way consistent
+      with R's citation() function.
+  {% elif pubs is none %}
       No publications are known deriving from this software.
   {% else %}
       Users of this package associated the following {{ app.publications }} publications with
