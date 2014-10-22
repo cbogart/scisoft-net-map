@@ -2,8 +2,8 @@
 
 import json
 import random
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
+#import matplotlib.pyplot as plt
+#from matplotlib.patches import Rectangle
 import re
 from os import walk
 import os
@@ -14,9 +14,9 @@ import datetime
 import pdb
 import json
 import copy
-from register import scrub_dots, registerParsed
+from register import scrub_dots, registerParsed, initializeThreads
 from pymongo import Connection
-from db_helpers.UsageCache import freshDb, UsageCache
+from snmweb.usage_cache import freshDb, UsageCache
     
 # Add exec to pkgT pointing to everything else
 # add weakPkgDeps to stuff counted towards logical (in the other file)
@@ -209,6 +209,7 @@ def summarizeSequence(sq):
 
    
 def importTaccData():
+    initializeThreads()
     # Pass1: build appname table
     for jobpart in forTaccPart():
         buildAppnameTable(jobpart)
@@ -223,7 +224,7 @@ def importTaccData():
 
     c = Connection()
     c.drop_database("snm-tacc-raw")
-    usecache = UsageCache(freshDb(c, "snm-tacc"), False)
+    usecache = UsageCache(freshDb(c, "snm-tacc"), False, "TACC")
     jobsizeHist = defaultdict(int)
     counter = 0
     for job in forTaccLongJob():
@@ -283,7 +284,7 @@ def importTaccData():
                rec["pkgT"][app] = rec["pkgT"].keys()
                rec["pkgT"] = scrub_dots(rec["pkgT"])
                data = json.dumps(rec)
-               registerParsed(c, rec, "0.0.0.0", usecache, dbraw="snm-tacc-raw", postponeCalc = True)
+               registerParsed(c, rec, "0.0.0.0", usecache, dbraw="snm-tacc-raw")
                prevapp = app
                prevapptime = rec["endEpoch"]
        if counter%4000 == 0:
@@ -332,5 +333,6 @@ def plotLongJob(lj):
 if __name__ == "__main__":
     #for job in forTaccLongJob():
     #    plotLongJob(job)
+    
     importTaccData()
 
