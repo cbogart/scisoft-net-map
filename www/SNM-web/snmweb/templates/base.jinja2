@@ -43,9 +43,9 @@
       <li><a href="{{request.route_url('browse', _query={'order': '-usage'})}}">Browse applications</a></li>
       <li><a href="{{request.route_url('compare')}}">
         <span id="compare-count" class="badge pull-right"></span>Compare
-        chysen
+        chosen
         applications</a></li>
-      <li><a href="{{request.route_url('dsm')}}">Structure Matrix</a></li>
+      <li><a href="{{request.route_url('dsm')}}">Design Structure Matrix</a></li>
       {% if (visits) > 1200 %}
            <li><a class="negotiated-interrupt" href="/static/html/survey.html" title="This site is part of an academic research project. Please consider taking this survey to help us evaluate our work!">Take a survey?</a></li>
       {% endif %}
