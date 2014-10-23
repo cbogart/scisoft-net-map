@@ -25,13 +25,11 @@ from threading import Thread
 queue = Queue()
 
 def await():
-    c = Connection()
     HOST = ''                 # Symbolic name meaning all available interfaces
     PORT = 7778               # Arbitrary non-privileged port
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
     s.listen(3)
-    usecache = UsageCache("snm-r", True, "R")  # True=assume logical link between "leaf" non-dependent packages
     while 1:
         conn, addr = s.accept()
         print 'Connection from', addr[0]
@@ -49,14 +47,12 @@ def scrub_dots(dottyDict):
         newdict[k.replace(".","[dot]")] = dottyDict[k]
     return newdict
     
-def worker(): 
+def worker(usecache): 
     while True:
         packet = queue.get()
-        print "REGISTERING"
-        usecache.registerPacket(record)
+        usecache.registerPacket(packet)
         queue.task_done()
         if queue.empty() and usecache.dirty:
-            print "SAVING"
             usecache.saveToMongo()
        
 
@@ -80,11 +76,16 @@ def register(c, data, ip, usecache, dbraw="snm-raw-records"):
         (r1,r2,r3) = sys.exc_info()
         print traceback.format_exception(r1,r2,r3)
 
-def initializeThreads():
-    t = Thread(target=worker)
+def initializeThreads(usecache):
+    t = Thread(target=worker, args=(usecache,))
     t.daemon = True
     t.start()
-    await()
 
 if __name__ == "__main__":
-    initializeThreads()
+    c = Connection()
+    
+    # True=assume logical link between "leaf" non-dependent packages
+    usecache = UsageCache(c["snm-r"], True, "R")  
+
+    initializeThreads(usecache)
+    await()

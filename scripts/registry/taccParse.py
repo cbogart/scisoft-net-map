@@ -161,13 +161,13 @@ def guess1App(jobpart):
        return list(g)[0]
     
 
-def forTaccDay():
-    for fname in get_list_of_files("/Users/bogart-MBP-isri/TACC-lariatData/"):
+def forTaccDay(taccfiles):
+    for fname in get_list_of_files(taccfiles):
         print fname
         yield load_json(fname)
 
-def forTaccLongJob():
-    for day in forTaccDay():
+def forTaccLongJob(taccfiles):
+    for day in forTaccDay(taccfiles):
         users = defaultdict(list)
         for job in sorted(day.keys(), key=lambda k: int(k) if k.isdigit() else 999999999):
             users[day[job][0]["user"]] += day[job]
@@ -175,13 +175,13 @@ def forTaccLongJob():
             yield users[u]
             
        
-def forTaccJob():
-    for day in forTaccDay():
+def forTaccJob(taccfiles):
+    for day in forTaccDay(taccfiles):
         for job in sorted(day.keys(), key=lambda k: int(k) if k.isdigit() else 999999999):
             yield day[job]
 
-def forTaccPart():
-    for job in forTaccJob():
+def forTaccPart(taccfiles):
+    for job in forTaccJob(taccfiles):
         for jobpart in job:
             yield jobpart
 
@@ -208,10 +208,13 @@ def summarizeSequence(sq):
     return desc
 
    
-def importTaccData():
-    initializeThreads()
+def importTaccData(taccfiles):
+    c = Connection()
+    c.drop_database("snm-tacc-raw")
+    usecache = UsageCache(freshDb(c, "snm-tacc"), False, "TACC")
+    initializeThreads(usecache)
     # Pass1: build appname table
-    for jobpart in forTaccPart():
+    for jobpart in forTaccPart(taccfiles):
         buildAppnameTable(jobpart)
 
     fiveOnly()
@@ -222,12 +225,9 @@ def importTaccData():
     #lookup = { nLabels[i]: i for i in range(0,n) }
     #dsm = numpy.zeros((n,n), dtype=numpy.int)
 
-    c = Connection()
-    c.drop_database("snm-tacc-raw")
-    usecache = UsageCache(freshDb(c, "snm-tacc"), False, "TACC")
     jobsizeHist = defaultdict(int)
     counter = 0
-    for job in forTaccLongJob():
+    for job in forTaccLongJob(taccfiles):
        counter += 1
        jobsizeHist[len(job)] += 1
 
@@ -287,12 +287,7 @@ def importTaccData():
                registerParsed(c, rec, "0.0.0.0", usecache, dbraw="snm-tacc-raw")
                prevapp = app
                prevapptime = rec["endEpoch"]
-       if counter%4000 == 0:
-           print "Checkpointing at ", counter, "th person-job"
-           usecache.saveToMongo()
 
-    print "Final checkpointing at ", counter, "th person-job"
-    usecache.saveToMongo()  
 
 def hashColor(key, selected = False):
     """Return a color unique for this key, brigher if selected.
@@ -331,8 +326,8 @@ def plotLongJob(lj):
 
 
 if __name__ == "__main__":
-    #for job in forTaccLongJob():
+    #for job in forTaccLongJob(taccfiles):
     #    plotLongJob(job)
     
-    importTaccData()
+    importTaccData("/Users/cbogart/TACC-lariatData/")
 
