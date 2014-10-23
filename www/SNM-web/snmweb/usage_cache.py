@@ -21,9 +21,14 @@ def freshDb(c, dbname):
 def readAppInfo(sci_platform):
     inf = json.load(open("../../data/appinfo." + sci_platform + ".json"))
     matches = dict()
-    for i in inf:
-        for m in inf[i]["match"]:
-            matches[m] = inf[i]
+    if (isinstance(inf, dict)):
+        for i in inf:
+            for m in inf[i]["match"]:
+                matches[m] = inf[i]
+    else: # if it's a list
+        for i in inf:
+            for m in i["match"]:
+                matches[m] = i
     return matches
 
 def readPubInfo(sci_platform):
@@ -59,10 +64,21 @@ class UsageCache:
                    "id": app["_id"],
                    "usage": {},
                    "user_list": {},
+                   "pub_indexes": set(),
                    "co_occurence": {} 
                 }
                 self.appIds[app["_id"]] = app["title"]
            
+            for a_publist in dest.pub_list.find():
+                appname = self.appIds[a_publist["application"]]
+                try:
+                    self.apps[appname]["pub_indexes"] = set(
+                         [self.pub_list.index(pub) for pub in a_publist["publications"]])
+                except Exception, e:
+                    print "Should not happen: publication should be in the list"
+                    print str(e)
+                    pdb.set_trace()
+
             for a_usage in dest.usage.find():
                 appname = self.appIds[a_usage["application"]]
                 self.apps[appname]["usage"] = pairlist2dict(a_usage["daily"], "x", "y")
@@ -93,6 +109,7 @@ class UsageCache:
             self.apps[pkgname] = dict()
             self.apps[pkgname]["usage"] = defaultdict(int)
             self.apps[pkgname]["user_list"] = defaultdict(set)
+            self.apps[pkgname]["pub_indexes"] = set()
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
 
     def getUnknownAppInfo(self, pkgname):
@@ -130,6 +147,11 @@ class UsageCache:
                self.addNewApp(pkgname)
                self.apps[pkgname]["usage"][dayOf(today)] += 1
                self.apps[pkgname]["user_list"][dayOf(today)].add(packet["user"])
+
+            # Fill in publications
+            if (len(self.pub_indexes) > 0 and "account" in packet):
+                ixs = self.pub_indexes.get(packet["account"], set())
+                self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
             leaves = [p.split("/")[0] for p in packet["pkgT"].keys()]  #self.apps.keys()
@@ -212,14 +234,11 @@ class UsageCache:
                 self.db.user_list.save(thisuser_list)
 
                 # Calculate publication list
-                my_pub_indexes = set()
-                if (len(self.pub_indexes) > 0):
+                if (len(self.pub_indexes) > 0 and len(app.get("pub_indexes",set()))>0):
                     publist = self.db.pub_list.find_one({"application": id})
                     if (publist is None):
-                        publist = {"application": id, "publications": []}
-		    for user in userListData["total"]:
-                        my_pub_indexes = my_pub_indexes.union(self.pub_indexes[user])
-                    publist["publications"] = [self.pub_list[i] for i in my_pub_indexes]
+                        publist = {"application": id}
+                    publist["publications"] = [self.pub_list[i] for i in app["pub_indexes"]]
                     self.db.pub_list.save(publist)
                 
 
@@ -236,8 +255,8 @@ class UsageCache:
                 appRec["usage"] = app_usage
                 appRec["usage_trend"] = sum([pt["y"] for pt in thisusage["daily"] if self.isTrending(pt["x"]) ])
                 appRec["users"] = app_users
-                if (len(my_pub_indexes) > 0):
-                    appRec["publications"] = len(my_pub_indexes)
+                if (len(app["pub_indexes"]) > 0):
+                    appRec["publications"] = len(app["pub_indexes"])
                 self.db.application.save(appRec)
 
                 coocRec = self.db.co_occurence.find_one({"application": id})
