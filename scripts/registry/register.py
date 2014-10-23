@@ -18,7 +18,7 @@ from datetime import date, timedelta
 from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
-from snmweb.usage_cache import UsageCache
+from snmweb.usage_cache import UsageCache, openOrCreate
 from Queue import Queue
 from threading import Thread
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     c = Connection()
     
     # True=assume logical link between "leaf" non-dependent packages
-    usecache = UsageCache(c["snm-r"], True, "R")  
+    usecache = UsageCache(openOrCreate(c, "snm-r"), True, "R")  
 
     initializeThreads(usecache)
     await()

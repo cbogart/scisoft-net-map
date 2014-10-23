@@ -1,3 +1,9 @@
+// Note: maybe try this: http://jsfiddle.net/VTNax/2/
+//   i.e. put the rows below the header in one giant colspan=n cell,
+//       and do the same with columns inside that after the header,so
+//       there's two nested <div>s inside the table (the first containing
+//       the left-column headers and the second <div>, and the second <div> containing
+//       just the table cell blocks)
 function vizDSM(container, options) {
     var options = $.extend({ //Default or expected options go here
         height  : container.height(),
