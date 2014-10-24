@@ -1,0 +1,2 @@
+pserve production.TACC.ini start --daemon --pid-file=/var/www/7777.pid --log-file=/var/www/7777.log --monitor-restart http_port=7777
+pserve production.R.ini start --daemon --pid-file=/var/www/8888.pid --log-file=/var/www/8888.log --monitor-restart http_port=8888
