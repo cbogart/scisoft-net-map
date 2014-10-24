@@ -6,8 +6,12 @@
 4. Create environment foler: `sudo mkdir /var/www/environments`
 5. Goto /var: `cd /var`
 6. Change ownership: `sudo chown -R wwwuser:wwwuser www`
-7. Set up port forwarding from whatever port the server uses to 80: if it's 6543, then:
-       'sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8080'
+7. Install some stuff that numpy will need: 
+  - `sudo apt-get update`
+  - `sudo apt-get upgrade gcc`
+  - `sudo apt-get install python2.7-dev`
+7. Set up port forwarding from whatever port the server uses to 80: if it's 8888, then:
+       `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8888`
 
     (More info at: http://askubuntu.com/questions/427600/persist-port-routing-from-80-to-8080)
 
