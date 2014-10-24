@@ -1,5 +1,5 @@
 
-#How to setup database
+#How to set up database
 
 Before you begin, please make sure you have entered your virtual environment by:
 ```
