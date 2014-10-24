@@ -9,13 +9,11 @@ $> . ./env/bin/activate
 ```
 
 1. Install mongo: `sudo apt-get install mongodb` if on Ubuntu. Otherwise use [the link](http://docs.mongodb.org/manual/installation/)
-2. Navigate to `SNM/www/SNM-web/sample_data` 
-3. Execute: `python db_sample.py`. This will populate the database with sample data from `db_sample.json` and `sample_usage` / `sample_usage_users` folders.
 
-```
-(env)$> python db_sample.py
-Using database: `snm-test`. You can specidy db with first argument
-All data from `snm-test` will be erased.
-Press Enter to continue...
-...
-```
+#To import data from another valid copy of the database
+
+1. On the machine with the valid database:
+  - `mongodump --db <dbname> --collection scimapInfo --out dump123`
+2. Copy `dump123` to the new machine
+3. `mongo <dbname> --eval "db.dropDatabase()"`
+4. `mongorestore dump123`
