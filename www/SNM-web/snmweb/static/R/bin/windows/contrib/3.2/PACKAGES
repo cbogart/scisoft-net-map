@@ -1,3 +1,9 @@
+Package: anRpackage2
+Version: 1.0
+Imports: scimapClient
+MD5sum: 492be2079d3128836b816ece799b19e6
+NeedsCompilation: no
+
 Package: RJSONIO
 Version: 1.3-0
 Imports: methods
@@ -6,9 +12,9 @@ MD5sum: 72c395622ba8d1435ec43849fd32c830
 NeedsCompilation: yes
 
 Package: scimapClient
-Version: 0.1.3
-Imports: RJSONIO, tools
+Version: 0.1.5
+Imports: RJSONIO, tools, utils
 License: BSD_2_clause + file LICENSE
-MD5sum: a0aaf28d442f274f1e8481003dc4fdd5
+MD5sum: 59eebe885e6e146d6fce3edd6979d96d
 NeedsCompilation: no
 
