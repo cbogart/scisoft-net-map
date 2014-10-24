@@ -11,9 +11,9 @@
   - `sudo apt-get upgrade gcc`
   - `sudo apt-get install python2.7-dev`
 7. Set up port forwarding from whatever port the server uses to 80: if it's 8888, then:
-       `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8888`
-
-    (More info at: http://askubuntu.com/questions/427600/persist-port-routing-from-80-to-8080)
+  - `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8888`
+  - (More info at: http://askubuntu.com/questions/427600/persist-port-routing-from-80-to-8080)
+8. See the other md file for instructions on setting up the mongo database.
 
 # The following steps should be done as `wwwuser`
 1. Become `wwwuser`: `su - wwwuser`, use your root password
