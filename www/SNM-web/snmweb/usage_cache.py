@@ -173,7 +173,7 @@ class UsageCache:
                 self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
-            roots = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"].keys()]  #self.apps.keys()
+            roots = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
 
             for pkgT in packet["pkgT"]:
                 dependor = self.translateAppname(pkgT.split("/")[0])
