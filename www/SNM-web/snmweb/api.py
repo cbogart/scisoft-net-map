@@ -137,22 +137,27 @@ class ApiViews:
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
-        # TO DO: I want this to return:
-        #    All the nodes that point to id
-        #   CoOccurence.find( { links: { $elemMatch: { app: id } } }).id  <- foreach
-        #    All the nodes that id points to
-        #   CoOccurence.find( { application: id} )   <- step through as below and grab out all apps pointed to
-        #    All the edges where source and target are both in this set
-        #   CoOccurence.find( { application: { $in : nodelist }, links: { $elemMatch: { app: { $in : nodelist } } }})
-        #    From which, be sure to only pass along those links that flow within the nodelist
 
+        #
+        #  N.B. the "co_uses" element is not a simple count; it's a little
+        #   dict with 2 keys: "static" and "logical", with separate counts
+        #   for both kinds of usage.  The effective "value" of this element
+        #   is the static count, UNLESS the count is zero, in which case the
+        #   logical count.
+        #
         def force_directed(id=None, clustered=False):
             nodes = []
             links = []
 
             max_co_uses = GlobalStats.objects()[0].max_co_uses
 
-            def normalizeValue(coUses):
+            def normalizeValue(coUses, targetUsage):
+                normalized = { k : (0 if (coUses[k] == 0) else
+                                   coUses[k]*10/targetUsage) 
+                         for k in coUses }
+                return normalized
+            
+            def oldNormalizeValue(coUses):
                 return { k : (0 if (coUses[k] == 0) else
                                    1+coUses[k]*9/max(coUses[k], max_co_uses[k], 1)) 
                          for k in coUses }
@@ -160,7 +165,7 @@ class ApiViews:
             def hasLink(coUses):
                 return (coUses["static"]  > 0 or
                         coUses["logical"] > 0)
-                  
+
             if id is None:
                 nodedict = {}
                 cooc = CoOccurence.objects()
@@ -180,7 +185,7 @@ class ApiViews:
                             links.append({
                                 "source": app_id,
                                 "target": l.app.id.__str__(),
-                                "value":  normalizeValue(l.co_uses)
+                                "value":  normalizeValue(l.co_uses, c.application.usage) #l.app.usage)
                             })
                 nodes = nodedict.values()
             else:
@@ -201,7 +206,8 @@ class ApiViews:
                             if (hasLink(destinf.co_uses)):
                                 links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
-                                             "value": normalizeValue(destinf.co_uses)})
+                                             "value": normalizeValue(destinf.co_uses, app.usage)
+				})    #destinf.app.usage)})
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()

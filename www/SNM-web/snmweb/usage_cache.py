@@ -2,6 +2,7 @@
 
 from pymongo import MongoClient, Connection
 import json
+import copy
 from collections import defaultdict
 from datetime import date, timedelta
 from datetime import datetime as dt
@@ -156,6 +157,7 @@ class UsageCache:
         with usageCacheLock:
             self.dirty = True
             today = epoch2date(packet["startEpoch"])
+            pkgnamelist = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
             for pkgT in packet["pkgT"]:
                pkgname = self.translateAppname(pkgT.split("/")[0])
                if isinstance(pkgname, dict):
@@ -173,7 +175,7 @@ class UsageCache:
                 self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
-            roots = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
+            roots = copy.copy(pkgnamelist)
 
             for pkgT in packet["pkgT"]:
                 dependor = self.translateAppname(pkgT.split("/")[0])
@@ -190,6 +192,11 @@ class UsageCache:
                             if dependee in self.apps.keys() and dependee != dependor:
                                 self.apps[dependor]["co_occurence"][dependee]["static"] += 1
                                 self.update_max_co_use(self.apps[dependor]["co_occurence"][dependee])
+                        if dependee not in pkgnamelist and dependee in self.apps:
+                            self.apps[dependee]["usage"][dayOf(today)] = \
+                                 self.apps[dependee]["usage"].get(dayOf(today), 0) + 1
+                            self.apps[dependee]["user_list"][dayOf(today)] = \
+                                 list(set(self.apps[dependee]["user_list"].get(dayOf(today), []) + [packet["user"]]))
             if (self.logicallyLinkRoots):
                 for l1 in roots:
                     for l2 in roots:
