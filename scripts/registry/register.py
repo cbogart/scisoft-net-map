@@ -84,7 +84,7 @@ def initializeThreads(usecache):
 if __name__ == "__main__":
     c = Connection()
     
-    # True=assume logical link between "leaf" non-dependent packages
+    # True=assume logical link between "root" non-dependent packages
     usecache = UsageCache(openOrCreate(c, "snm-r"), True, "R")  
 
     initializeThreads(usecache)

@@ -16,7 +16,6 @@ def openOrCreate(c, dbname):
     if "global_stats" in c[dbname].collection_names():
        return c[dbname]
     else:
-       pdb.set_trace()
        return freshDb(c, dbname)
 
 def freshDb(c, dbname):
@@ -53,10 +52,10 @@ def readPubInfo(sci_platform):
 
 class UsageCache:
 
-    def __init__(self, dest, logicallyLinkLeaves, sci_platform):
+    def __init__(self, dest, logicallyLinkRoots, sci_platform):
         "Load a fresh database from mongo"
 
-        self.logicallyLinkLeaves = logicallyLinkLeaves
+        self.logicallyLinkRoots = logicallyLinkRoots
         self.sci_platform = sci_platform
         self.app_info = readAppInfo(sci_platform)
         (self.pub_indexes, self.pub_list) = readPubInfo(sci_platform)
@@ -174,34 +173,26 @@ class UsageCache:
                 self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
-            leaves = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"].keys()]  #self.apps.keys()
-            roots = []
+            roots = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"].keys()]  #self.apps.keys()
 
             for pkgT in packet["pkgT"]:
                 dependor = self.translateAppname(pkgT.split("/")[0])
                 self.addNewApp(dependor)
                 if isinstance(packet["pkgT"], dict):
-                    links = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"][pkgT]]
-                    if (isinstance(links, list) and len(links) > 0):
-                        leaves = [l for l in leaves if l not in links]
+                    deplist = packet["pkgT"][pkgT]
+                    if (isinstance(deplist, list)):
+                        links = [self.translateAppname(p.split("/")[0]) for p in deplist]
+                    else:
+                        links = [self.translateAppname(str(deplist).split("/")[0])]
+                    if (len(links) > 0):
+                        roots = [l for l in roots if l not in links]
                         for dependee in links:
                             if dependee in self.apps.keys() and dependee != dependor:
                                 self.apps[dependor]["co_occurence"][dependee]["static"] += 1
                                 self.update_max_co_use(self.apps[dependor]["co_occurence"][dependee])
-                    elif (isinstance(links, list) and len(links) == 0):
-                        roots.append(dependor)
-                    elif links in self.apps.keys():
-                        leaves = [l for l in leaves if l is not links]
-                        if (dependor != links):
-                            self.apps[dependor]["co_occurence"][links]["static"] += 1
-                            self.update_max_co_use(self.apps[dependor]["co_occurence"][links])
-                    else:
-                        print "pkgT", pkgT, " points to a ", links
-                else:
-                   print "Not a dict"
-            if (self.logicallyLinkLeaves):
-                for l1 in leaves:
-                    for l2 in leaves:
+            if (self.logicallyLinkRoots):
+                for l1 in roots:
+                    for l2 in roots:
                         if (l1 != l2):
                             try:
                                 self.apps[l1]["co_occurence"][l2]["logical"] += 1
