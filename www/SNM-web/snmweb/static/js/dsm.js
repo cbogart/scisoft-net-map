@@ -14,11 +14,15 @@ function vizDSM(container, options) {
     
     function colorScale(static, logical) { 
        if (static > 0) {
-           v = Math.floor(192-(static*12))
+           v = Math.floor(120-(static*12))
            return "rgb(" + v + "," + v + "," + v + ")"
+       } else if (logical > 1) {
+           vr = Math.floor(255-(logical*17))
+           vg = 255 
+           vb = 255
+           return "rgb(" + vr + "," + vg + "," + vb + ")"
        } else {
-           v = Math.floor(200-(logical*20))
-           return "rgb(0," + v + "," + v + ")"
+           return "rgb(255,255,255)"
        }
     } 
     function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "clustered": true},
