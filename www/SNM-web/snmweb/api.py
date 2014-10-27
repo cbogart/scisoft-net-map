@@ -152,7 +152,7 @@ class ApiViews:
             max_co_uses = GlobalStats.objects()[0].max_co_uses
 
             def normalizeValue(coUses, targetUsage):
-                normalized = { k : (0 if (coUses[k] == 0) else
+                normalized = { k : int(0 if (coUses[k] == 0) else
                                    coUses[k]*10/targetUsage) 
                          for k in coUses }
                 return normalized
