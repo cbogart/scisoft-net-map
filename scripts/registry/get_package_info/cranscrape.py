@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
 import json
+import re
+import pdb
+import bibtexparser  # pip install bibtexparser
 
 directory = "http://cran.r-project.org/web/packages/available_packages_by_date.html"
 
@@ -19,10 +22,28 @@ for row in tablerows:
             "title" : name,
             "image": "unknown.png",
             "short_description": desc,
+            "searchstring": name,
             "version": "all",
             "publications": 0,
             "website" : site,
             "description" : desc }
+        try:
+            detailsoup = BeautifulSoup(urlopen(site).read(), "lxml")
+            author = detailsoup.find('td', text = 'Author:').findNext("td").text 
+            maintainer = detailsoup.find('td', text = 'Maintainer:').findNext("td").text 
+            try:
+               citationsite = detailsoup.find('td', text = 'Citation:').findNext("td").a["href"] 
+               citationsite = site.replace("index.html", citationsite)
+               citetext = urlopen(citationsite).read()
+               bib = bibtexparser.loads(citetext)
+               titles = bib.entries[0]["title"].replace("}","").replace("{","").replace("\n","")
+               authors = bib.entries[0]["author"].replace("}","").replace("{","").replace("\n","")
+               searchstring  = titles + " " + authors
+            except Exception, e:
+               searchstring = author + " " + name
+            pack[name]["searchstring"] = searchstring
+        except Exception, e:
+            print "ERROR:", e
    
 
 print json.dumps(pack, indent=3)

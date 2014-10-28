@@ -33,6 +33,7 @@ def unquote(x):
         return x
         
 def googleScholar(ref):
+    time.sleep(10)
     return "http://scholar.google.com/scholar?q=" + urllib.quote(ref)
     
 for c in cran:

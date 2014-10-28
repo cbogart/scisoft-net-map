@@ -1169,7 +1169,8 @@
         "title": "plyr", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 146, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8269351693474305046&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools for splitting, applying and combining data ", 
         "match": [
             "plyr"
@@ -28164,7 +28165,8 @@
         "title": "proto", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 4,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=15851011039103338047&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Prototype object-based programming ", 
         "match": [
             "proto"
@@ -29724,7 +29726,8 @@
         "title": "stringr", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 15, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=16896946963211563240&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Make it easier to work with strings ", 
         "match": [
             "stringr"
@@ -65550,7 +65553,8 @@
         "title": "Rcpp", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 131,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8573175198614910339&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Seamless R and C++ Integration ", 
         "match": [
             "Rcpp"
@@ -71167,7 +71171,8 @@
         "title": "gridExtra", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 12, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=11286221434486926628&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " functions in Grid graphics ", 
         "match": [
             "gridExtra"
@@ -71407,7 +71412,8 @@
         "title": "GGally", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 1440,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14238124760782644329&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Extension to ggplot2 ", 
         "match": [
             "GGally"
@@ -75787,7 +75793,8 @@
         "title": "scales", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 7, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=986182600031946213&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Scale functions for graphics ", 
         "match": [
             "scales"
