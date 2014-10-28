@@ -75193,7 +75193,8 @@
         "title": "ggplot2", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 1440, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14238124760782644329&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " An implementation of the Grammar of Graphics ", 
         "match": [
             "ggplot2"
