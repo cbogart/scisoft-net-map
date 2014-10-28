@@ -2,25 +2,22 @@
 <h1>For R users: How to install scimapClient</h1>
 
 <code>scimapClient</code> tracks usage statistics of R packages and displays the
-information at <a href="http://sci-net-map.isri.cmu.edu">http://sci-net-map.isri.cmu.edu</a>
+information at <a href="http://scisoft-net-map.isri.cmu.edu">http://scisoft-net-map.isri.cmu.edu</a>
 
 <h2>To install</h2>
 
 Type this from your R command line:
 
 <pre>
-install.packages("scimapClient", repos="http://sci-net-map.isri.cmu.edu/static/R")
+install.packages("scimapClient", repos="http://scisoft-net-map.isri.cmu.edu/static/R")
 </pre>
 
 Then set your R installation to load the package (i.e.  <code>library(scimapClient)</code> ) in every session.  
 The easiest way to do this is to add the following line to a .Rprofile file in your home directory:
 
 <pre>
-.First <- function() {  library(scimapClient)  }
+options(defaultPackages=c(getOption("defaultPackages"),"scimapClient"))
 </pre>
-
-(Note: if you already have a .Rprofile file, and it already has a <code>.First <- function...</code>
-in it, then add <code>library(scimapClient)</code> somewhere in that function's code.)
 
 <hr>
 
@@ -52,7 +49,7 @@ loop or a deep recursion.
 
 The scimapClient package captures the names and version numbers of every package you load during your R
 session, and their static dependencies.  When you exit your R session, it bundles these
-into an JSON message and sends them by TCP to port 7778 of sci-net-map.isri.cmu.edu.  
+into an JSON message and sends them by TCP to port 7778 of scisoft-net-map.isri.cmu.edu.  
 Here is a sample packet:
 
 <pre>
@@ -80,6 +77,9 @@ Here is a sample packet:
   "weakPackDeps" : [ ],
   "dynPackDeps" : [ ] }
 </pre>
+
+You can see a sample packet in your own installation by loading the scimapClient package and typing "previewPacket()" at
+the R prompt.
 
 <h3>Meaning of the fields:</h3>
 <code>"startTime"</code> and <code>"startEpoch"</code> are the time when your R session started
