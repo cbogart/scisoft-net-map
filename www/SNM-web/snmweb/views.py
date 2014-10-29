@@ -23,6 +23,14 @@ def view_overview(request):
 def view_dsm(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
+@view_config(route_name="notebook",
+             renderer='templates/notebook.jinja2',
+             permission='view')
+def view_notebook(request):
+    scimapID = request.params.get("scimapID", "")
+    entries = RawRecords.objects(user=scimapID)
+    return {"status": "200 OK", "entries": entries, "visits": count_visits(request)}
+
 @view_config(route_name="home",
              renderer='templates/index.jinja2',
              permission='view')

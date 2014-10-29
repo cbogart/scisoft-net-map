@@ -65,16 +65,16 @@ class ApiViews:
 
         return response
 
-    def register(self, request, type):
-        """ Register a user's use of an application,
-        dropping the information into a mongo collection.
-        Parameters are ignored.
-        """
-        c = Connection()
-        rawrecords = c["snm-raw-records"]
-        record = json.loads(request.body)
-        rawrecords["lariat"].save(record)
-        return "Registered"
+    #def register(self, request, type):
+        #""" Register a user's use of an application,
+        #dropping the information into a mongo collection.
+        #Parameters are ignored.
+        #"""
+        #c = Connection()
+        #rawrecords = c["snm-raw-records"]
+        #record = json.loads(request.body)
+        #rawrecords["lariat"].save(record)
+        #return "Registered"
 
     def apps(self, request, type):
         """ Return list of applications available
@@ -130,6 +130,26 @@ class ApiViews:
                                "title": entry.application.title})
             return result
 
+        def raw_user(id):
+           result = []
+           for entry in RawRecords.objects(user=id).all():
+                try:
+                    result.append({
+                      "user": entry.user,
+                      "pkgT": { k.replace("[dot]","."): entry.pkgT[k] for k in entry.pkgT },
+                      "jobID": entry.jobID,
+                      "startTime": entry.startTime,
+                      "startEpoch": entry.startEpoch,
+                      "endTime": entry.endTime,
+                      "endEpoch": entry.endEpoch,
+                      "platform": entry.platform,
+                      "userMetadata": entry.userMetadata,
+                    })
+                except Exception, e:
+                    print "ERROR: ", str(e), str(entry)
+           return result
+           #TODO: find out how dots are stripped and do that here
+                               
         def usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "Usage")
 
@@ -230,3 +250,4 @@ class ApiViews:
                     {"id": "force_directed"}]
 
         return locals().get(type, unknown_stat)(**request.params)
+

@@ -1,0 +1,60 @@
+{% extends "base.jinja2" %}
+{% block title %}Browse applications{% endblock %}
+{% block content_title  %}<h1>User Lab Notebook</h1>{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link href="{{request.static_url('snmweb:static/css/browse.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script>
+    var scimapID = SNM.getParameterByName("scimapID");
+    $("#scimapID-input").val(scimapID);
+  </script>
+{% endblock %}
+
+{% block content %}
+    <form class="form-group">
+      Type "getScimapId()" in your R session, and paste the number it returns here:
+      <div id="scimapID" class="input-group" style="float: right">
+        <input id="scimapID-input" name="scimapID" type="text" class="form-control">
+        <span class="input-group-btn">
+          <input class="btn btn-default" type="submit" style="margin-left: -5px">scimapID</button>
+        </span>
+      </div>
+    </form>
+
+    <div style="clear: both"></div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Your Sessions</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-striped table-hover">
+          {% for entry in entries %}
+            <tr>
+              <td>
+                <div class="row">
+                  <div class="col-md-9">
+                    <h3>
+                        {{entry.startTime}}
+                    </h3>
+                    <div class="app-extra-info">
+                      Hardware: {% for key in entry.platform %} <b> {{key}}:</b> {{entry.platform[key]}}{% endfor %}  <br/>
+                      Main packages used: {% for k in entry.pkgT.keys() %} {{ k|replace("[dot]",".")  }} {% endfor %} <br/>
+                      User-supplied metadata: {{ entry.userMetadata }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
