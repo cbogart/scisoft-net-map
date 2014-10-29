@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-from mongoengine import connect
+from mongoengine import connect, register_connection
 from pyramid.security import Authenticated, remember, forget
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.events import BeforeRender
@@ -50,6 +50,7 @@ def main(global_config, **settings):
     config.add_route("browse", "/browse")
     config.add_route("overview", "/overview")
     config.add_route("login", "/login")
+    config.add_route("notebook", "/notebook")
     config.add_route("accept_login", "/accept_login")
 
     config.add_route("api_home", "/api")
@@ -57,6 +58,7 @@ def main(global_config, **settings):
     config.add_route("api_home.category.id", "/api/{category}/{id}")
 
     connect(settings['db_name'])
+    register_connection('raw-records', settings['raw_db_name'])
 
     config.scan()
     return config.make_wsgi_app()

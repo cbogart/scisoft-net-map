@@ -144,3 +144,21 @@ class PubList(Document):
     application = ReferenceField(Application, required=True)
     publications = ListField(EmbeddedDocumentField(PubInfo))
 
+
+
+"""
+Raw Records: Provide access to the raw records recieved directly
+from R client. Not all fields are captured here; just the ones
+the api module needs to serve them up.
+"""
+class RawRecords(Document):
+    user = StringField()
+    startTime = StringField()
+    startEpoch = StringField()
+    endTime = StringField()
+    endEpoch = StringField()
+    userMetadata = DictField()
+    jobID = StringField()
+    platform = DictField()
+    pkgT = DictField()
+    meta = {"db_alias": "raw-records", "collection": "scimapInfo"}
