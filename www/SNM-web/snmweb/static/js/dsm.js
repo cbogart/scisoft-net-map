@@ -48,11 +48,13 @@ function vizDSM(container, options) {
                        .attr("class","rotated")
                        .append("div")
                        .append("span")
+                       .append("a").attr("href", data.nodes[i].link)
                        .text(data.nodes[i].name);
                 var row = table.append("tr");
                 row.append("th")
                    .append("div")
                    .append("span")
+                   .append("a").attr("href", data.nodes[i].link)
                    .text(data.nodes[i].name);
                 for (j in data.nodes) {
                     var v = nodes2value[[i,j]]
