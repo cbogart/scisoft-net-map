@@ -18,8 +18,7 @@ def view_overview(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
 @view_config(route_name="dsm",
-             renderer='templates/dsm.jinja2',
-             permission='view')
+             renderer='templates/dsm.jinja2')
 def view_dsm(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
@@ -32,14 +31,12 @@ def view_notebook(request):
     return {"status": "200 OK", "entries": entries, "visits": count_visits(request)}
 
 @view_config(route_name="home",
-             renderer='templates/index.jinja2',
-             permission='view')
+             renderer='templates/index.jinja2')
 def view_home(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
 @view_config(route_name="app_usage",
-             renderer='templates/app_usage.jinja2',
-             permission='view')
+             renderer='templates/app_usage.jinja2')
 def view_app_usage(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
@@ -47,16 +44,14 @@ def view_app_usage(request):
 
 
 @view_config(route_name="app_users",
-             renderer='templates/app_users.jinja2',
-             permission='view')
+             renderer='templates/app_users.jinja2')
 def view_app_users(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
     return {"app": app, "visits": count_visits(request)}
 
 @view_config(route_name="app_pubs",
-             renderer='templates/app_pubs.jinja2',
-             permission='view')
+             renderer='templates/app_pubs.jinja2')
 def view_app_pubs(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
@@ -65,16 +60,14 @@ def view_app_pubs(request):
     return {"app": app, "pubs": publist, "visits": count_visits(request)}
 
 @view_config(route_name="app_used_with",
-             renderer='templates/app_used_with.jinja2',
-             permission='view')
+             renderer='templates/app_used_with.jinja2')
 def view_app_used_with(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
     return {"app": app, "visits": count_visits(request)}
 
 @view_config(route_name="application",
-             renderer='templates/application.jinja2',
-             permission='view')
+             renderer='templates/application.jinja2')
 def view_application(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
@@ -82,8 +75,7 @@ def view_application(request):
 
 
 @view_config(route_name="compare",
-             renderer='templates/compare.jinja2',
-             permission='view')
+             renderer='templates/compare.jinja2')
 def view_compare(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
@@ -97,14 +89,14 @@ def view_about(request):
 def view_data_source(request):
     return {"status": "200 OK", "visits": count_visits(request)}
 
-@forbidden_view_config()
-def view_forbidden(request):
-    return HTTPFound(location=request.route_url('login'))
+#@forbidden_view_config()
+#def view_forbidden(request):
+    #return HTTPFound(location=request.route_url('login'))
 
-@view_config(route_name="login",
-             renderer='templates/login.jinja2')
-def view_login(request):
-    return {"status": "200 OK"}
+#@view_config(route_name="login",
+             #renderer='templates/login.jinja2')
+#def view_login(request):
+    #return {"status": "200 OK", "visits": 0}
 
 @view_config(route_name="accept_login",
              renderer='templates/overview.jinja2')
@@ -124,8 +116,7 @@ def view_accept_login(request):
         return HTTPClientError(str(e))
 
 @view_config(route_name="browse",
-             renderer='templates/browse.jinja2',
-             permission='view')
+             renderer='templates/browse.jinja2')
 def view_explore(request):
     order = request.params.get("order", "usage")
     query = request.params.get("query", "")

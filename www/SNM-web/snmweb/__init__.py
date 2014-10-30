@@ -23,6 +23,7 @@ def main(global_config, **settings):
         )
 
     config.include("pyramid_jinja2")
+    config.include("pyramid_persona")
 
     def addSettings(event):
         event["sci_platform"] = settings["sci_platform"]
@@ -49,7 +50,7 @@ def main(global_config, **settings):
     config.add_route("data_source", "/data_source")
     config.add_route("browse", "/browse")
     config.add_route("overview", "/overview")
-    config.add_route("login", "/login")
+    #config.add_route("login", "/login")
     config.add_route("notebook", "/notebook")
     config.add_route("accept_login", "/accept_login")
 
