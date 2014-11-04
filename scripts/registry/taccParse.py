@@ -207,6 +207,17 @@ def summarizeSequence(sq):
         prev = elt
     return desc
 
+userIdTable = dict()
+lastUserId = 43204
+def userAnonymize(username):
+    global userIdTable
+    global lastUserId
+    if username in userIdTable:
+        return userIdTable[username]
+    else:
+        lastUserId += 1
+        userIdTable[username] = str(lastUserId)
+        return userIdTable[username]
    
 def importTaccData(taccfiles):
     c = Connection()
@@ -269,6 +280,7 @@ def importTaccData(taccfiles):
                rec["startTime"] = ""
                rec["dynDeps"] = []
                rec["exec"] = app
+               rec["user"] = userAnonymize(rec["user"])
                rec["dynPackDeps"] = []
                rec["weakDeps"] = []
                jobinf = jobnum[rec["jobID"]]
