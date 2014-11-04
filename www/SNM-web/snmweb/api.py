@@ -130,6 +130,22 @@ class ApiViews:
                                "title": entry.application.title})
             return result
 
+        def user_vector(id):
+           result = dict()
+           maxuse = 0
+           for entry in RawRecords.objects(user=id).all():
+               for pkg in entry.pkgT:
+                   pkgname = pkg.replace("[dot]", ".").split("/")[0]
+                   result[pkgname] = result.get(pkgname, 0) + 1
+                   if (result[pkgname] > maxuse): maxuse = result[pkgname]
+                   for dep in entry.pkgT[pkg] if not (isinstance(entry.pkgT[pkg], str)) else [entry.pkgT[pkg]]:
+                       dep1 = dep.replace("[dot]", ".").split("/")[0]
+                       result[dep1] = result.get(dep1, 0) + 1
+                       if (result[dep1] > maxuse): maxuse = result[dep1]
+           if (maxuse > 0):
+               for pkg in result: result[pkg] = result[pkg]*1.0/maxuse
+           return result
+
         def raw_user(id):
            result = []
            for entry in RawRecords.objects(user=id).all():
@@ -148,7 +164,6 @@ class ApiViews:
                 except Exception, e:
                     print "ERROR: ", str(e), str(entry)
            return result
-           #TODO: find out how dots are stripped and do that here
                                
         def usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "Usage")
