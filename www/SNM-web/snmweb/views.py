@@ -12,10 +12,15 @@ def count_visits(request):
     request.response.set_cookie('visits', value=str(visits), max_age=1000000)
     return(visits)
 
+def cached_scimapID(request):
+    scimapID = request.params.get("scimapID", request.cookies.get('scimapID', ""))
+    request.response.set_cookie("scimapID", value=scimapID, max_age=1000000)
+    return scimapID
+
 @view_config(route_name="overview",
              renderer='templates/overview.jinja2')
 def view_overview(request):
-    return {"status": "200 OK", "visits": count_visits(request)}
+    return {"status": "200 OK", "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
 @view_config(route_name="dsm",
              renderer='templates/dsm.jinja2',
@@ -27,9 +32,9 @@ def view_dsm(request):
              renderer='templates/notebook.jinja2',
              permission='view')
 def view_notebook(request):
-    scimapID = request.params.get("scimapID", "")
+    scimapID = cached_scimapID(request)
     entries = RawRecords.objects(user=scimapID)
-    return {"status": "200 OK", "entries": entries, "visits": count_visits(request)}
+    return {"status": "200 OK", "entries": entries, "visits": count_visits(request), "scimapID": scimapID}
 
 @view_config(route_name="home",
              renderer='templates/index.jinja2',

@@ -3,6 +3,20 @@ from mongoengine import connect, register_connection
 from pyramid.security import Authenticated, remember, forget
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.events import BeforeRender
+import time
+
+def epoch2readable(epoch):
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(epoch)))
+
+def duration(record):
+    if "endEpoch" not in record or record["endEpoch"] == "":
+        return "??"
+    else:
+        secs = int(record["endEpoch"]) - int(record["startEpoch"])
+        if (secs < 2*60): return(str(secs) + " seconds")
+        if (secs < 2*60*60): return(str(secs/60) + " minutes")
+        if (secs < 2*60*60*24): return(str(secs/3600) + " hours")
+        return(str(secs/(3600*24)) + " days")
 
 class SNMAuthorizationPolicy(object):
     def permits(self, context, principals,
@@ -23,6 +37,9 @@ def main(global_config, **settings):
         )
 
     config.include("pyramid_jinja2")
+    config.commit()
+    config.get_jinja2_environment().filters['epoch2readable'] = epoch2readable
+    config.get_jinja2_environment().filters['duration'] = duration
 
     def addSettings(event):
         event["sci_platform"] = settings["sci_platform"]
