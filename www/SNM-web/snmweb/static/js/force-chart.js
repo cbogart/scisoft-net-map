@@ -3,6 +3,7 @@ function vizForceChart(container, options) {
         height  : container.height(),
         width   : container.width(),
         linkDistance  : 30, //table selector
+        scimapID: "",
         charge  : -1000,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
@@ -35,6 +36,7 @@ function vizForceChart(container, options) {
         link_dict = {},
         counter = 0,
         nodes = [],
+        user_vector = {"fftw3": 0.8},
         links = [];
     force
         .nodes(nodes)
@@ -55,6 +57,15 @@ function vizForceChart(container, options) {
                 return 'translate(' + [Math.max(8,Math.min(width-8,d.x)), Math.max(8,Math.min(height-8,d.y))] + ')';
         });
     });
+    function loadUserInfo(user) { 
+      //setTimeout(function() {
+        snmapi.getStat("user_vector", {"id": options.scimapID},
+            function(result) {
+               user_vector = result.data;
+               //updateChart();
+            });
+      //}, 2000);
+    }
     function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
         function(result) {
             var data = result.data,
@@ -118,6 +129,16 @@ function vizForceChart(container, options) {
                   return d.radius;
              });  // 9
 
+        var highlightMe = allGNodes.append("circle")
+            .attr("stroke-width", function(d) { return 10*(user_vector[d.name] || 0); })
+            .attr("stroke", "yellow")
+            .attr("opacity", ".3")
+            .attr("fill", "none")
+            .attr("r", function(d){ 
+                  d.radius = (Math.log(d.publications+1)*2+5);
+                  return d.radius + (user_vector[d.name] || 0);
+             });  // 9
+
         if (options.clickable) {
             allNodes.on("click", function(d) {
                 d.loaded = true;
@@ -131,6 +152,6 @@ function vizForceChart(container, options) {
 
 
     return {
-        start: function(id){loadData(id);}
+        start: function(id){loadUserInfo(); loadData(id);}
     }
 }

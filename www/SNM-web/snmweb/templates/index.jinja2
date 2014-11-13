@@ -20,6 +20,7 @@
     var force_chart = vizForceChart($("#chart"),{
       linkDistance: 100,
       charge: -300,
+      scimapID: "{{request.cookies.get("scimapID",'')}}",
       clickable: false
     });
     force_chart.start();
@@ -62,6 +63,7 @@
       Line width reflects number of co-occurrences.  
       Node size represents the number of publications associated with projects
       that used the application.
+      If you've <a href="/notebook">entered an anonymous key</a>, yellow nodes are ones <em>you</em> have used.
     </p>
 
      {%if sci_platform=="R" %}
