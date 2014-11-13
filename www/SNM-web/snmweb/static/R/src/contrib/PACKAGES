@@ -15,6 +15,6 @@ Package: scimapClient
 Version: 0.1.5
 Imports: RJSONIO, tools, utils
 License: BSD_2_clause + file LICENSE
-MD5sum: 161ec13626a43e823bfbc9c87ac573e5
+MD5sum: 01997e87b7e37315906dca9934858d82
 NeedsCompilation: no
 
