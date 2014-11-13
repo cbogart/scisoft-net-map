@@ -9,14 +9,14 @@ def epoch2readable(epoch):
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(epoch)))
 
 def duration(record):
-    if "endEpoch" not in record or record["endEpoch"] == "":
-        return "??"
-    else:
+    try:
         secs = int(record["endEpoch"]) - int(record["startEpoch"])
         if (secs < 2*60): return(str(secs) + " seconds")
         if (secs < 2*60*60): return(str(secs/60) + " minutes")
         if (secs < 2*60*60*24): return(str(secs/3600) + " hours")
         return(str(secs/(3600*24)) + " days")
+    except Exception, e:
+        return "??"
 
 class SNMAuthorizationPolicy(object):
     def permits(self, context, principals,

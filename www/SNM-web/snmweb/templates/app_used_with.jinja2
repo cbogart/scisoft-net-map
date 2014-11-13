@@ -11,7 +11,7 @@
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
   <script>
-      var force_chart = vizForceChart($("#chart"));
+      var force_chart = vizForceChart($("#chart"), {scimapID: "{{request.cookies.get("scimapID",'')}}"});
       force_chart.start(app_id);
   </script>
 {% endblock %}

@@ -11,6 +11,7 @@
 {% block js %}
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script>
+
    snmapi.getStat("co_occurence", {},
       function(r) {
         var data = r.data;
