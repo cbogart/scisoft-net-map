@@ -27,7 +27,7 @@ queue = Queue()
 def worker(usecache): 
     while True:
         packet = queue.get()
-        print packet
+        print packet["startEpoch"]
         usecache.registerPacket(packet)
         queue.task_done()
         if queue.empty() and usecache.dirty:
@@ -47,7 +47,6 @@ if __name__ == "__main__":
 
     initializeThreads(usecache)
     for raw in c["snm-raw-records"]["scimapInfo"].find():
-        print (raw["startTime"])
         queue.put(raw)
     while (not(queue.empty())):
         time.sleep(1)

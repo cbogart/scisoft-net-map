@@ -198,8 +198,8 @@ class ApiViews:
                          for k in coUses }
             
             def hasLink(coUses):
-                return (coUses["static"]  > 0 or
-                        coUses["logical"] > 0)
+                return (coUses["static"]  >= 1 or
+                        coUses["logical"] >= 1)
 
             if id is None:
                 nodedict = {}
@@ -216,11 +216,12 @@ class ApiViews:
                                       "publications": l.app.publications,
                                       "link": request.route_url('application', name=l.app.title)}
                     for l in c.links:
-                        if hasLink(l.co_uses):
+                        linksize =  normalizeValue(l.co_uses, c.application.usage)
+                        if hasLink(linksize):
                             links.append({
                                 "source": app_id,
                                 "target": l.app.id.__str__(),
-                                "value":  normalizeValue(l.co_uses, c.application.usage) #l.app.usage)
+                                "value":  linksize
                             })
                 nodes = nodedict.values()
             else:
@@ -238,11 +239,16 @@ class ApiViews:
                     for destinf in fan.links:
                         dest = destinf.app.id
                         if (dest in nodelist):
+                            linksize = normalizeValue(destinf.co_uses, src.usage)
+                            if (linksize["logical"] > 10):
+                                print src.title, src.id, src.usage
+                                print destinf.app.title, destinf.app.id, destinf.app.usage
+                                print destinf.co_uses
                             if (hasLink(destinf.co_uses)):
                                 links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
-                                             "value": normalizeValue(destinf.co_uses, app.usage)
-				})    #destinf.app.usage)})
+                                             "value": linksize
+				})    
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
