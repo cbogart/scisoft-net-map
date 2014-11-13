@@ -47,28 +47,31 @@
     <p>
       The Scientific Software Network Map allows
       interactive exploration of data showing which software
-      tools have been used, how use is trending, what applications
+      tools have been used, how use is trending, what packages
       are used together to produce a result, and the publications
       that resulted from that use.
     </p><p>
-      Use the menu on the left to browse a sortable list of applications,
-      compare usage patterns and trends of chosen applications, find out
+      Use the menu on the left to browse a sortable list of packages,
+      compare usage patterns and trends of chosen packages, find out
       about funding and personnel for this project, and read a
       description of the data source for this demonstration.
     </p><p>
-      In the graph shown here, each node represents a single application;
+      In the graph shown here, each node represents a single package;
       connections between them indicate that they were used together.
       Solid lines are static dependencies; dotted lines are "logical" dependencies,
       i.e. non-dependent packages used in the same session.
       Line width reflects number of co-occurrences.  
       Node size represents the number of publications associated with projects
-      that used the application.
+      that used the package.
       If you've <a href="/notebook">entered an anonymous key</a>, yellow nodes are ones <em>you</em> have used.
     </p>
 
      {%if sci_platform=="R" %}
+      You can participate by <a href="/static/html/installR.html">contributing your own R usage data!</a>
+      <p>&nbsp;<p>
       (<a href="http://scisoft-net-map.isri.cmu.edu:7777">If you are looking for the
       TACC supercomputer data, click here</a>)
+      
      {% endif %}
   </div>
 
