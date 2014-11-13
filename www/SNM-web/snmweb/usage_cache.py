@@ -151,6 +151,22 @@ class UsageCache:
         return appname  
         #self.app_info.get(appname, {"title": appname})["title"]
 
+    def appUsage(self, appname): 
+        return sum([self.apps[appname]["usage"][day] for day in self.apps[appname]["usage"]])
+
+    def checkCoUseInvariants(self):
+        for app in self.apps: self.checkCoUseInvariant(app)
+
+    def checkCoUseInvariant(self, appname):
+        cooc = self.apps[appname]["co_occurence"]
+        for dependee in cooc:
+            if cooc[dependee]["static"] > self.appUsage(dependee):
+                print "FAIL static check"
+                pdb.set_trace()
+            if cooc[dependee]["logical"] > self.appUsage(dependee):
+                print "FAIL logical check"
+                pdb.set_trace()
+
     def registerPacket(self, packet):
         "Update in-memory data structure with incoming packet"
 
@@ -192,11 +208,12 @@ class UsageCache:
                             if dependee in self.apps.keys() and dependee != dependor:
                                 self.apps[dependor]["co_occurence"][dependee]["static"] += 1
                                 self.update_max_co_use(self.apps[dependor]["co_occurence"][dependee])
-                        if dependee not in pkgnamelist and dependee in self.apps:
-                            self.apps[dependee]["usage"][dayOf(today)] = \
-                                 self.apps[dependee]["usage"].get(dayOf(today), 0) + 1
-                            self.apps[dependee]["user_list"][dayOf(today)] = \
-                                 list(set(self.apps[dependee]["user_list"].get(dayOf(today), []) + [packet["user"]]))
+                            if dependee not in pkgnamelist:
+                                self.addNewApp(dependee)
+                                self.apps[dependee]["usage"][dayOf(today)] = \
+                                     self.apps[dependee]["usage"].get(dayOf(today), 0) + 1
+                                self.apps[dependee]["user_list"][dayOf(today)] = \
+                                     list(set(self.apps[dependee]["user_list"].get(dayOf(today), []) + [packet["user"]]))
             if (self.logicallyLinkRoots):
                 for l1 in roots:
                     for l2 in roots:
@@ -221,6 +238,7 @@ class UsageCache:
                             pdb.set_trace()
                         self.apps[weakdependor]["co_occurence"][weakdependee]["logical"] += 1
                         self.update_max_co_use(self.apps[weakdependor]["co_occurence"][weakdependee])
+            self.checkCoUseInvariants()
     
     def saveToMongo(self):
         "Update database based on in-memory data structure"
