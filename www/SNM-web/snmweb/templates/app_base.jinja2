@@ -33,7 +33,7 @@
       <div class="col-md-3">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <img src="{{request.static_url('snmweb:static/img/' + app.image)}}" />
+            <img src="{{request.static_url('snmweb:static/img/' + app.image)}}" style="max-width: 200px"/>
           </div>
           <div class="panel-body">
             <a href="{{request.route_url('application', name=app.title)}}" class="btn btn-default btn-block">App profile</a>
