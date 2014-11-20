@@ -55,6 +55,11 @@
       A, then process results with application B; the graph would show an arrow from
       A to B.
       {% endif %}
+         {% if scimapID=="" %}
+           <img src="/static/img/LegendIncremental.png" style="max-width: 345px">
+         {% else %}
+           <img src="/static/img/LegendIncrementalScimapID.png" style="max-width: 345px">
+         {% endif %}
     </div>
   </div>
 </div>

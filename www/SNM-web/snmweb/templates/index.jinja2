@@ -20,7 +20,7 @@
     var force_chart = vizForceChart($("#chart"),{
       linkDistance: 100,
       charge: -300,
-      scimapID: "{{request.cookies.get("scimapID",'')}}",
+      scimapID: "{{scimapID}}",
       clickable: false
     });
     force_chart.start();
@@ -56,14 +56,11 @@
       about funding and personnel for this project, and read a
       description of the data source for this demonstration.
     </p><p>
-      In the graph shown here, each node represents a single package;
-      connections between them indicate that they were used together.
-      Solid lines are static dependencies; dotted lines are "logical" dependencies,
-      i.e. non-dependent packages used in the same session.
-      Line width reflects number of co-occurrences.  
-      Node size represents the number of publications associated with projects
-      that used the package.
-      If you've <a href="/notebook">entered an anonymous key</a>, yellow nodes are ones <em>you</em> have used.
+      {% if scimapID == "" %}
+      <img src="/static/img/Legend.png">
+      {% else%}
+      <img src="/static/img/LegendScimapID.png">
+      {% endif %}
     </p>
 
      {%if sci_platform=="R" %}
