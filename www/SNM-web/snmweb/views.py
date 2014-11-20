@@ -40,7 +40,7 @@ def view_notebook(request):
              renderer='templates/index.jinja2',
              permission='view')
 def view_home(request):
-    return {"status": "200 OK", "visits": count_visits(request)}
+    return {"status": "200 OK", "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
 @view_config(route_name="app_usage",
              renderer='templates/app_usage.jinja2',
@@ -75,7 +75,7 @@ def view_app_pubs(request):
 def view_app_used_with(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
-    return {"app": app, "visits": count_visits(request)}
+    return {"app": app, "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
 @view_config(route_name="application",
              renderer='templates/application.jinja2',
