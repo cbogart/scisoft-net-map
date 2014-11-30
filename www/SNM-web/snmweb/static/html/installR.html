@@ -15,11 +15,20 @@ install.packages("scimapClient", repos="http://scisoft-net-map.isri.cmu.edu/stat
 </pre>
 
 Then set your R installation to load the package (i.e.  <code>library(scimapClient)</code> ) in every session.  
-The easiest way to do this is to add the following line to a .Rprofile file in your home directory:
+The easiest way to do this is to add the following line to a .Rprofile file in your home directory.  (If the
+file doesn't exist, then create it).
 
 <pre>
 options(defaultPackages=c(getOption("defaultPackages"),"scimapClient"))
 </pre>
+
+<b>Windows users:</b> "Your home directory" in most Windows R installations means 
+<code>C:\Users\yourname\Documents</code>, which is
+the same as <code>My Documents</code>.  You can check by typing <code>Sys.getenv("R_HOME")</code> at the R prompt.
+
+You can create the <code>.RProfile</code> file using Windows Notepad, but if you're not careful,
+Notepad will (silently) save it as <code>.RProfile.txt</code>.  To prevent this, surround the name with double quotes, i.e. <code>".RProfile"</code>
+<a href="/static/img/windowsRProfileScreenshot.png">Here's a screenshot of how to save .RProfile in windows.</a>
 
 <h2>Source</h2>
 
