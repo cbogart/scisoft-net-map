@@ -69,7 +69,6 @@ def register(c, data, ip, usecache, dbraw="snm-raw-records"):
     try:
         record = json.loads(data, object_hook = scrub_dots)
         record["receivedEpoch"] = int(time.time())
-        record["ip"] = ip
         registerParsed(c, record, ip, usecache, dbraw)
     except Exception as e:
         print "Error: " + str(e)

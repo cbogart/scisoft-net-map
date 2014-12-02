@@ -49,16 +49,6 @@ mention it prominently in the package documentation, and let users know that the
 can disable tracking by typing (just one time,
 at a command line), <code>disableScimap()</code>.  
 
-<h2>Capturing detailed function-level information</h2>
-You can monitor individual functions within your package by calling <code>scimapIn()</code>
-at the top of the function, and <code>scimapOut()</code> at the bottom, with no arguments.  
-This will capture when one of your functions is calling any other, or in what sequence they're
-called. <p>
-Do <b>not</b> instrument a function that will be called thousands of times in a session;
-this is intended for high-level "main" functions.  It is not resource-intensive, but it
-could still slow down a user's processing if these are called millions of times inside a 
-loop or a deep recursion. 
-
 <hr>
 
 <h1>Technical details for the curious</h1>

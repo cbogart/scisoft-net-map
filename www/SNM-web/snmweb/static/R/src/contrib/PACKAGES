@@ -12,9 +12,10 @@ MD5sum: 72c395622ba8d1435ec43849fd32c830
 NeedsCompilation: yes
 
 Package: scimapClient
-Version: 0.1.5
+Version: 0.1.6
 Imports: RJSONIO, tools, utils
+Suggests: testthat
 License: BSD_2_clause + file LICENSE
-MD5sum: 01997e87b7e37315906dca9934858d82
+MD5sum: 0d27993fbf4392e61da5dbb4ff0417b3
 NeedsCompilation: no
 
