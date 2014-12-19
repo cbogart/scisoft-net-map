@@ -50,3 +50,6 @@ if __name__ == "__main__":
         queue.put(raw)
     while (not(queue.empty())):
         time.sleep(1)
+    print "Refreshing citation info"
+    usecache.refreshCitationInfo()
+    usecache.saveToMongo()

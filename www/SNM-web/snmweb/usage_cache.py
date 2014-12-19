@@ -10,6 +10,8 @@ import datetime
 import pdb
 import json
 from threading import Lock
+from gscholar import getPubsCount
+from PlosEbi import Plos, Ebi
 
 usageCacheLock = Lock()
 
@@ -25,8 +27,11 @@ def freshDb(c, dbname):
     db.global_stats.save({"max_co_uses": { "static": 0, "logical": 0}, "max_publications": 0 })
     return db
 
+def appInfoFile(platform):
+    return "../../data/appinfo." + platform + ".json"
+
 def readAppInfo(sci_platform):
-    inf = json.load(open("../../data/appinfo." + sci_platform + ".json"))
+    inf = json.load(open(appInfoFile(sci_platform)))
     matches = dict()
     if (isinstance(inf, dict)):
         for i in inf:
@@ -59,7 +64,7 @@ class UsageCache:
         self.logicallyLinkRoots = logicallyLinkRoots
         self.sci_platform = sci_platform
         self.app_info = readAppInfo(sci_platform)
-        (self.pub_indexes, self.pub_list) = readPubInfo(sci_platform)
+        (self.account_pub_indexes, self.pub_list) = readPubInfo(sci_platform)
         with usageCacheLock:
             self.today = datetime.date.today()
             self.db = dest
@@ -76,11 +81,15 @@ class UsageCache:
                 }
                 self.appIds[app["_id"]] = app["title"]
            
+            # Make a master list of publications (self.pub_list),
+            # and for each app, store an index into it
             for a_publist in dest.pub_list.find():
                 appname = self.appIds[a_publist["application"]]
                 try:
-                    self.apps[appname]["pub_indexes"] = set(
-                         [self.pub_list.index(pub) for pub in a_publist["publications"]])
+                    for pub in a_publist["publications"]:
+                         if not(pub in self.pub_list):
+                             self.pub_list.append(pub)
+                         self.apps[appname]["pub_indexes"].add(self.pub_list.index(pub))
                 except Exception, e:
                     print "Should not happen: publication should be in the list"
                     print str(e)
@@ -113,11 +122,22 @@ class UsageCache:
 
     def addNewApp(self, pkgname):
         if pkgname not in self.apps:
-            self.apps[pkgname] = dict()
+            self.apps[pkgname] = getUnknownAppInfo(pkgname)
             self.apps[pkgname]["usage"] = defaultdict(int)
             self.apps[pkgname]["user_list"] = defaultdict(list)
-            self.apps[pkgname]["pub_indexes"] = set()
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
+
+            # query plos and ebi for references to this app ->
+            plos = Plos().getPubsCount(inf)
+            ebi = Ebi().getPubsCount(inf)
+            allnewpubs = set(plos).union(set(ebi))
+            uniquenewpubs = set(self.pub_list).difference(allnewpubs)
+            oldPubListSize = len(self.pub_list)
+            self.pub_list = self.pub_list.extend(list(uniquenewpubs))
+            newPubListSize = len(self.pub_list)
+
+            self.apps[pkgname]["pub_indexes"] = set(range(oldPubListSize, newPubListSize))
+            # NB: any publications linked via this user's account will be added in later
 
     def getUnknownAppInfo(self, pkgname):
         if (pkgname in self.app_info):
@@ -126,6 +146,8 @@ class UsageCache:
                 inf["short_description"] = "(" + inf["title"] + ") " + inf["short_description"]
                 inf["description"] = "(" + inf["title"] + ") " + inf["description"]
                 inf["title"] = pkgname
+            inf["publications"] = inf.get("publications", 0)
+            inf["publicationsUrl"] = inf.get("publicationsUrl", "")
         else:
             inf =  {
                "title" : pkgname,
@@ -185,10 +207,10 @@ class UsageCache:
                self.apps[pkgname]["user_list"][dayOf(today)] = \
                     list(set(self.apps[pkgname]["user_list"].get(dayOf(today), []) + [packet["user"]]))
 
-            # Fill in publications
-            if (len(self.pub_indexes) > 0 and "account" in packet):
-                ixs = self.pub_indexes.get(packet["account"], set())
-                self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
+               # Fill in publications
+               if (len(self.account_pub_indexes) > 0 and "account" in packet):
+                   ixs = self.account_pub_indexes.get(packet["account"], set())
+                   self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
             roots = copy.copy(pkgnamelist)
@@ -239,6 +261,19 @@ class UsageCache:
                         self.apps[weakdependor]["co_occurence"][weakdependee]["logical"] += 1
                         self.update_max_co_use(self.apps[weakdependor]["co_occurence"][weakdependee])
             self.checkCoUseInvariants()
+
+    def refreshCitationInfo(self):
+        with usageCacheLock:
+	    for appname in self.apps:
+                app = self.apps[appname]
+                if appname in self.app_info:
+                    (citecount, citelink) = (0,"")#getPubsCount(self.app_info[appname])
+                    print citecount, "citations for", appname, ":", citelink
+                    if (citecount > 0):
+                        app["publications"] = citecount
+                        app["publicationsUrl"] = citelink
+                else:
+                    print "App", appname, "unknown; no way to look up citations"
     
     def saveToMongo(self):
         "Update database based on in-memory data structure"
@@ -271,7 +306,7 @@ class UsageCache:
                 self.db.user_list.save(thisuser_list)
 
                 # Calculate publication list
-                if (len(self.pub_indexes) > 0 and len(app.get("pub_indexes",set()))>0):
+                if (len(self.account_pub_indexes) > 0 and len(app.get("pub_indexes",set()))>0):
                     publist = self.db.pub_list.find_one({"application": id})
                     if (publist is None):
                         publist = {"application": id}
@@ -292,8 +327,11 @@ class UsageCache:
                 appRec["usage"] = app_usage
                 appRec["usage_trend"] = sum([pt["y"] for pt in thisusage["daily"] if self.isTrending(pt["x"]) ])
                 appRec["users"] = app_users
-                if (len(app["pub_indexes"]) > 0):
+                if (app.get("publications",0) == 0):
                     appRec["publications"] = len(app["pub_indexes"])
+                else: 
+                    appRec["publications"] = app["publications"]
+                appRec["publicationsUrl"] = app.get("publicationsUrl","")
                 self.db.application.save(appRec)
 
                 coocRec = self.db.co_occurence.find_one({"application": id})
