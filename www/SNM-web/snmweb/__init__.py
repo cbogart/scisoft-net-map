@@ -68,6 +68,7 @@ def main(global_config, **settings):
     config.add_route("overview", "/overview")
     config.add_route("login", "/login")
     config.add_route("notebook", "/notebook")
+    config.add_route("status", "/status")
     config.add_route("accept_login", "/accept_login")
 
     config.add_route("api_home", "/api")

@@ -4,6 +4,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPClientError
 from pyramid.security import Authenticated, remember, forget
 from mongoengine import *
 from db_objects import *
+from status import check_site_status
 from passlib.apps import custom_app_context as pwd_context
 from pyramid.view import forbidden_view_config
 
@@ -35,6 +36,11 @@ def view_notebook(request):
     scimapID = cached_scimapID(request)
     entries = RawRecords.objects(user=scimapID)
     return {"status": "200 OK", "entries": entries, "visits": count_visits(request), "scimapID": scimapID}
+
+@view_config(route_name="status", permission='view')
+def view_status(request):
+    site_status = check_site_status(request.registry.settings.get("sci_platform", "R"))
+    return Response(site_status)
 
 @view_config(route_name="home",
              renderer='templates/index.jinja2',
