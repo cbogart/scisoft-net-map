@@ -14,21 +14,17 @@ Type this from your R command line:
 install.packages("scimapClient", repos="http://scisoft-net-map.isri.cmu.edu/static/R")
 </pre>
 
-Then set your R installation to load the package (i.e.  <code>library(scimapClient)</code> ) in every session.  
-The easiest way to do this is to add the following line to a .Rprofile file in your home directory.  (If the
-file doesn't exist, then create it).
+After you install it, if you load the package (i.e.  <code>library(scimapClient)</code> ) in the next
+few minutes, it will prompt you for permission to do two things: 
+<ul>
+<li> write to your <code>.RProfile</code> file
+(a script that is run automatically every time you start R), and
+<li> send anonymized usage packets from your machine, once per session.
+</ul>
 
-<pre>
-options(defaultPackages=c(getOption("defaultPackages"),"scimapClient"))
-</pre>
-
-<b>Windows users:</b> "Your home directory" in most Windows R installations means 
-<code>C:\Users\yourname\Documents</code>, which is
-the same as <code>My Documents</code>.  You can check by typing <code>Sys.getenv("R_HOME")</code> at the R prompt.
-
-You can create the <code>.RProfile</code> file using Windows Notepad, but if you're not careful,
-Notepad will (silently) save it as <code>.RProfile.txt</code>.  To prevent this, surround the name with double quotes, i.e. <code>".RProfile"</code>
-<a href="/static/img/windowsRProfileScreenshot.png">Here's a screenshot of how to save .RProfile in windows.</a>
+If you don't happen to load the package right away, or just want to wait and enable it later, you'll
+have to enable it manually: type <code>library(scimapClient)</code> to load it, then
+<code>enableScimap()</code> to trigger the prompt for permission.
 
 <h2>Source</h2>
 
@@ -42,12 +38,13 @@ ours (this is set in the "reghost" variable).
 <h2>Simplest way: package-level information only</h2>
 Add a dependency to scimapClient to your package, and the line: <code>library(scimapClient)</code>
 somewhere in your code, and work with us to make sure
-your package is available from the same repositories yours is available from.  The users
+your package is available from the same repositories yours is available from.  It is 
+currently available on <code>github.com</code> and on <code>r-forge.com</code>. The users
 will not have to do anything special; when they install or use your package, the monitoring
-software will come with it.  We recommend that you make sure your users know about it though;
-mention it prominently in the package documentation, and let users know that they
-can disable tracking by typing (just one time,
-at a command line), <code>disableScimap()</code>.  
+software will come with it, and ask for permission to enable itself.  
+We recommend that you make sure your users know about it ahead of time so they know what's
+going on: mention it prominently in the package documentation, and let users know that they
+can disable tracking later by typing (just one time, at a command line), <code>disableScimap()</code>.  
 
 <hr>
 
