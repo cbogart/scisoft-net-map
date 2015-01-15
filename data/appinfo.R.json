@@ -942,6 +942,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/14/2015",
         "short_description": " magrittr - a forward-pipe operator for R ", 
         "match": [
             "magrittr"
@@ -1050,6 +1051,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " An interruptible progress bar with OpenMP support for c++ in R\npackages ", 
         "match": [
             "RcppProgress"
@@ -2023,6 +2025,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Rcpp integration for MLPACK library ", 
         "match": [
             "RcppMLPACK"
@@ -4135,7 +4138,8 @@
         "title": "maptools", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 99, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8047215008773056326&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools for reading and handling spatial objects ", 
         "match": [
             "maptools"
@@ -4159,7 +4163,8 @@
         "title": "ade4", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 794, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14328734480691435155&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Analysis of Ecological Data : Exploratory and Euclidean methods\nin Environmental sciences ", 
         "match": [
             "ade4"
@@ -6248,7 +6253,8 @@
         "title": "pixmap", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 8, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=15036125153164700885&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Bitmap Images (\u201cPixel Maps\u201d) ", 
         "match": [
             "pixmap"
@@ -6488,7 +6494,8 @@
         "title": "R.utils", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 5, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8366601956239315068&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Various programming utilities ", 
         "match": [
             "R.utils"
@@ -6621,6 +6628,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find 1/14/2015",
         "short_description": " Map filenames to MIME types ", 
         "match": [
             "mime"
@@ -7077,6 +7085,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Fast rolling functions through Rcpp and RcppArmadillo ", 
         "match": [
             "RcppRoll"
@@ -8144,7 +8153,8 @@
         "title": "modeltools", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 4, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4096537612440315039&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools and Classes for Statistical Models ", 
         "match": [
             "modeltools"
@@ -8360,7 +8370,8 @@
         "title": "pgirmess", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 70, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=3000720341446557158&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Data analysis in ecology ", 
         "match": [
             "pgirmess"
@@ -11338,6 +11349,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find 1/14/2015",
         "short_description": " Axis Labeling ", 
         "match": [
             "labeling"
@@ -13113,7 +13125,8 @@
         "title": "XML", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 55, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4679538146425254343&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools for parsing and generating XML within R and S-Plus ", 
         "match": [
             "XML"
@@ -13390,6 +13403,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Rcpp bindings for Redis using the hiredis library ", 
         "match": [
             "RcppRedis"
@@ -16127,6 +16141,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Examples using Rcpp to interface R and C++ ", 
         "match": [
             "RcppExamples"
@@ -17170,7 +17185,8 @@
         "title": "brew", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 12, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=869460807628505714&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Templating Framework for Report Generation ", 
         "match": [
             "brew"
@@ -20676,6 +20692,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found, 1/13/2015",
         "short_description": " Rcpp bindings for Sequential Monte Carlo ", 
         "match": [
             "RcppSMC"
@@ -21407,7 +21424,8 @@
         "title": "dichromat", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 3, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=5146809190566097236&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Color Schemes for Dichromats ", 
         "match": [
             "dichromat"
@@ -21491,7 +21509,9 @@
         "title": "svTools", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 3, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=16826603385092372434&as_sdt=5,39&sciodt=0,39&hl=en",
+        "pubsNote": "There's another ref that's older with 4: http://scholar.google.com/scholar?cites=868255308920056184&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " SciViews GUI API - Tools (wrapper for packages tools and\ncodetools) ", 
         "match": [
             "svTools"
@@ -23941,6 +23961,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Found nothing cited, 1/13/2015",
         "short_description": " R and C++11 ", 
         "match": [
             "Rcpp11"
@@ -25140,7 +25161,8 @@
         "title": "deldir", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 19, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=15717255703346243359&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Delaunay Triangulation and Dirichlet (Voronoi) Tessellation ", 
         "match": [
             "deldir"
@@ -26186,6 +26208,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Classes with reference semantics ", 
         "match": [
             "R6"
@@ -27037,7 +27060,8 @@
         "title": "dendextendRcpp", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 2, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14363433665666583831&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Faster dendrogram manipulation using Rcpp ", 
         "match": [
             "dendextendRcpp"
@@ -28899,6 +28923,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing that refers to this I can find 1/13/2015",
         "short_description": " Deprecated 'classic' Rcpp API ", 
         "match": [
             "RcppClassic"
@@ -30724,6 +30749,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/14/2015",
         "short_description": " Easy pre and post assertions ", 
         "match": [
             "assertthat"
@@ -31685,6 +31711,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Not found 1/14/2015",
         "short_description": " Project MOSAIC (mosaic-web.org) statistics and mathematics\nteaching utilities ", 
         "match": [
             "mosaic"
@@ -32021,6 +32048,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find as of 1/13/2015",
         "short_description": " Interface the xts API via Rcpp ", 
         "match": [
             "RcppXts"
@@ -33497,6 +33525,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing as of 1/14/2015",
         "short_description": " Parsing and evaluation tools that provide more details than the\ndefault ", 
         "match": [
             "evaluate"
@@ -33628,7 +33657,8 @@
         "title": "latticeExtra", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 19, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=2263555591415927809&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Extra Graphical Utilities Based on Lattice ", 
         "match": [
             "latticeExtra"
@@ -33952,7 +33982,9 @@
         "title": "RcppEigen", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 6, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=820943910525945834&as_sdt=5,39&sciodt=0,39&hl=en",
+        "pubsNote": "Also http://scholar.google.com/scholar?cites=15023631420342009626&as_sdt=5,39&sciodt=0,39&hl=en but I dont' have a way to process two references currently",
         "short_description": " Rcpp integration for the Eigen templated linear algebra library ", 
         "match": [
             "RcppEigen"
@@ -34156,7 +34188,8 @@
         "title": "fda", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 61, 
+        "publicaitonsUrl": "http://scholar.google.com/scholar?cites=9425585124506423016&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Functional Data Analysis ", 
         "match": [
             "fda"
@@ -34312,7 +34345,8 @@
         "title": "R.oo", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 43, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=7003967912406345837&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " R object-oriented programming with or without references ", 
         "match": [
             "R.oo"
@@ -34696,7 +34730,8 @@
         "title": "jsonlite", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 2, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=16784347985065356534&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " A smarter JSON encoder/decoder for R ", 
         "match": [
             "jsonlite"
@@ -34829,6 +34864,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "can't find any reference; 1/13/2015",
         "short_description": " Parallel programming tools for Rcpp ", 
         "match": [
             "RcppParallel"
@@ -34840,7 +34876,8 @@
         "title": "RcppBDT", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 4, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1799245525203889399&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Rcpp bindings for the Boost Date_Time library ", 
         "match": [
             "RcppBDT"
@@ -35405,6 +35442,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "No direct ref found 1/14/2015",
         "short_description": " Tools for extracting dendrogram and tree diagram plot data for\nuse with ggplot ", 
         "match": [
             "ggdendro"
@@ -36448,7 +36486,8 @@
         "title": "multcomp", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 1116, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=13733321422736086043&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Simultaneous Inference in General Parametric Models ", 
         "match": [
             "multcomp"
@@ -36796,7 +36835,8 @@
         "title": "RcppOctave", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 1, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=13275896583278703233&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Seamless Interface to Octave \u2013 and Matlab ", 
         "match": [
             "RcppOctave"
@@ -36832,7 +36872,8 @@
         "title": "cladoRcpp", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 16, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=3371824316338041341&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " C++ implementations of phylogenetic cladogenesis calculations ", 
         "match": [
             "cladoRcpp"
@@ -38285,6 +38326,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find 1/14/2015",
         "short_description": " Tools for working with URLs and HTTP ", 
         "match": [
             "httr"
@@ -40025,6 +40067,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Not found 1/14/2015",
         "short_description": " Project MOSAIC (mosaic-web.org) data sets ", 
         "match": [
             "mosaicData"
@@ -40096,7 +40139,8 @@
         "title": "RcppArmadillo", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 19, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=13921280717857526421&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Rcpp integration for Armadillo templated linear algebra library ", 
         "match": [
             "RcppArmadillo"
@@ -40492,7 +40536,8 @@
         "title": "RColorBrewer", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 69, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4438101058414418257&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " ColorBrewer palettes ", 
         "match": [
             "RColorBrewer"
@@ -42172,7 +42217,8 @@
         "title": "rgdal", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 69, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=12924821860094750049&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Bindings for the Geospatial Data Abstraction Library ", 
         "match": [
             "rgdal"
@@ -42868,7 +42914,8 @@
         "title": "LearnBayes", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 12, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4119343447868280407&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Functions for Learning Bayesian Inference ", 
         "match": [
             "LearnBayes"
@@ -43504,7 +43551,8 @@
         "title": "testthat", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 9, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=16033322388695445097&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Testthat code.  Tools to make testing fun :) ", 
         "match": [
             "testthat"
@@ -44706,6 +44754,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Not found 1/14/2015",
         "short_description": " {{mustache}} for R, logicless templating ", 
         "match": [
             "whisker"
@@ -45233,7 +45282,8 @@
         "title": "Hmisc", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 157, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1135968011042410304&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Harrell Miscellaneous ", 
         "match": [
             "Hmisc"
@@ -45689,7 +45739,8 @@
         "title": "Matrix", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 84, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=3554973914252967561&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Sparse and Dense Matrix Classes and Methods ", 
         "match": [
             "Matrix"
@@ -47298,7 +47349,8 @@
         "title": "memisc", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 9, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=518378178181101243&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools for Management of Survey Data, Graphics, Programming,\nStatistics, and Simulation ", 
         "match": [
             "memisc"
@@ -48631,6 +48683,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14804965507949867515&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Cluster Analysis Extended Rousseeuw et al ", 
         "match": [
             "cluster"
@@ -48906,7 +48959,8 @@
         "title": "RcppDE", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 6, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=18022630685893489989&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Global optimization by differential evolution in C++ ", 
         "match": [
             "RcppDE"
@@ -50647,6 +50701,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "none found 1/14/2015",
         "short_description": " The Analysis of Biological Data ", 
         "match": [
             "abd"
@@ -50695,6 +50750,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing specific 1/13/2015",
         "short_description": " Utility function for defining S3 methods ", 
         "match": [
             "R.methodsS3"
@@ -51979,6 +52035,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find 1/14/2015",
         "short_description": " Arrange grobs in tables ", 
         "match": [
             "gtable"
@@ -53419,6 +53476,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "None found 1/14/2015",
         "short_description": " Bitwise Operations ", 
         "match": [
             "bitops"
@@ -54402,7 +54460,8 @@
         "title": "spdep", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 304, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1768247955574262889&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Spatial dependence: weighting schemes, statistics and models ", 
         "match": [
             "spdep"
@@ -54858,7 +54917,8 @@
         "title": "multilevel", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 69, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=3364272836920930192&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Multilevel Functions ", 
         "match": [
             "multilevel"
@@ -55074,7 +55134,8 @@
         "title": "roxygen2", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 5, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1904313692516175348&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " In-source documentation for R ", 
         "match": [
             "roxygen2"
@@ -55532,6 +55593,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=4093796659412145835&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Statistical Procedures for Agricultural Research ", 
         "match": [
             "agricolae"
@@ -57079,7 +57141,8 @@
         "title": "RcppZiggurat", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 2, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=17985694764691320661&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Rcpp integration of different Ziggurat Normal RNG\nimplementations ", 
         "match": [
             "RcppZiggurat"
@@ -57487,7 +57550,8 @@
         "title": "devtools", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 12, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=2275471705154667811&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Tools to make developing R code easier ", 
         "match": [
             "devtools"
@@ -59203,7 +59267,8 @@
         "title": "ads", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 6, 
+        "publicaitonsUrl": "http://scholar.google.com/scholar?cites=12574965036802088046&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Spatial point patterns analysis ", 
         "match": [
             "ads"
@@ -59672,6 +59737,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Can't find 1/14/2015",
         "short_description": " Memoise functions ", 
         "match": [
             "memoise"
@@ -61520,6 +61586,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "No good list of citations as of 1/14/2015, although there are some references that show up in the gscholar search",
         "short_description": " Create cryptographic hash digests of R objects ", 
         "match": [
             "digest"
@@ -61699,7 +61766,8 @@
         "title": "splancs", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 280, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=17498028121930621369&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Spatial and Space-Time Point Pattern Analysis ", 
         "match": [
             "splancs"
@@ -61712,6 +61780,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " R Database Interface ", 
         "match": [
             "DBI"
@@ -62611,7 +62680,8 @@
         "title": "coin", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 205, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=11644824512653044239&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Conditional Inference Procedures in a Permutation Test Framework ", 
         "match": [
             "coin"
@@ -63848,7 +63918,8 @@
         "title": "alabama", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 22, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=5575854270494406952&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Constrained nonlinear optimization ", 
         "match": [
             "alabama"
@@ -65506,6 +65577,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "not found 1/14/2015",
         "short_description": " Safely access the RStudio API ", 
         "match": [
             "rstudioapi"
@@ -66635,6 +66707,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "No Scholar record found 1/13/2015",
         "short_description": " Actigraphy Data Analysis ", 
         "match": [
             "Actigraphy"
@@ -68687,7 +68760,8 @@
         "title": "SDMTools", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 30, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=14013242728301229996&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Species Distribution Modelling Tools: Tools for processing data\nassociated with species distribution modelling exercises ", 
         "match": [
             "SDMTools"
@@ -69299,7 +69373,8 @@
         "title": "dplyr", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 4, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=5023479958364732955&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " dplyr: a grammar of data manipulation ", 
         "match": [
             "dplyr"
@@ -69503,7 +69578,8 @@
         "title": "colorspace", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 29, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=3986158221610375987&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Color Space Manipulation ", 
         "match": [
             "colorspace"
@@ -72181,7 +72257,8 @@
         "title": "RcppCNPy", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 0,
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Rcpp bindings for NumPy files ", 
         "match": [
             "RcppCNPy"
@@ -72793,7 +72870,8 @@
         "title": "RcppClassicExamples", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 0,
+        "pubsNote": "Nothing found 1/13/2015",
         "short_description": " Examples using RcppClassic to interface R and C++ ", 
         "match": [
             "RcppClassicExamples"
@@ -74005,7 +74083,8 @@
         "title": "RJSONIO", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 21, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=1033329025061397882&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Serialize R objects to JSON, JavaScript Object Notation ", 
         "match": [
             "RJSONIO"
@@ -74677,7 +74756,8 @@
         "title": "numDeriv", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 39, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=8994696610933473872&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Accurate Numerical Derivatives ", 
         "match": [
             "numDeriv"
@@ -75338,7 +75418,8 @@
         "title": "RCurl", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 13, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=5055635095558355259&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " General network (HTTP/FTP/...) client interface for R ", 
         "match": [
             "RCurl"
@@ -77165,6 +77246,7 @@
         "image": "unknown.jpg", 
         "version": "all", 
         "publications": 0, 
+        "pubsNote": "None found 1/14/2015",
         "short_description": " Munsell colour system ", 
         "match": [
             "munsell"
@@ -78016,7 +78098,8 @@
         "title": "tmvtnorm", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 180, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=15776167963929266124&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Truncated Multivariate Normal and Student t Distribution ", 
         "match": [
             "tmvtnorm"
@@ -78592,7 +78675,8 @@
         "title": "foreign", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 9, 
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=7435770397982269166&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Read Data Stored by Minitab, S, SAS, SPSS, Stata, Systat, Weka,\ndBase, .. ", 
         "match": [
             "foreign"
@@ -79829,7 +79913,8 @@
         "title": "RcppGSL", 
         "image": "unknown.jpg", 
         "version": "all", 
-        "publications": 0, 
+        "publications": 7,
+        "publicationsUrl": "http://scholar.google.com/scholar?cites=10389987782189260904&as_sdt=5,39&sciodt=0,39&hl=en",
         "short_description": " Rcpp integration for GNU GSL vectors and matrices ", 
         "match": [
             "RcppGSL"
