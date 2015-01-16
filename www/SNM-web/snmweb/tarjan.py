@@ -103,8 +103,9 @@ class Graph:
     def sortByOutdegree(self):
         self.invariant()
         neworder = self.nLabels[:]
+        nonzero = numpy.vectorize(lambda l: l[0] > 0 or l[1] > 0)
         def outdegree(nodename):
-            return len(numpy.extract(lambda l: l["static"] > 0 or l["logical"] > 0, self.dsm[self.lookup[nodename],:]))
+            return len(numpy.extract(nonzero(self.dsm[self.lookup[nodename],:]), self.dsm[self.lookup[nodename],:]))
         neworder = sorted(neworder, key=outdegree)
         self.reorderBy([self.lookup[lab] for lab in neworder])
         self.invariant()

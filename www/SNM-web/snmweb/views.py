@@ -46,7 +46,8 @@ def view_status(request):
              renderer='templates/index.jinja2',
              permission='view')
 def view_home(request):
-    return {"status": "200 OK", "visits": count_visits(request), "scimapID": cached_scimapID(request)}
+    featured = Application.objects(title="devtools").first()
+    return {"status": "200 OK", "featured": featured, "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
 @view_config(route_name="app_usage",
              renderer='templates/app_usage.jinja2',

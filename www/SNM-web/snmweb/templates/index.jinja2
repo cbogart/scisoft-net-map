@@ -21,9 +21,9 @@
       linkDistance: 100,
       charge: -300,
       scimapID: "{{scimapID}}",
-      clickable: false
+      clickable: true
     });
-    force_chart.start();
+    force_chart.start( "{{ featured.id }}" )
   </script>
 {% endblock %}
 
@@ -31,9 +31,18 @@
 {% block content %}
 
   <div class="col-md-8">
+
+
     <div id="chart">
       <svg></svg>
     </div>
+    <center>
+    <h2>Featured package: <a href="{{request.route_url('application', name=featured.title)}}">
+           {{featured.title}}</a></h2>
+    The blue circles have dependency relationships with {{featured.title}}.<br/>
+    Click them to expand the graph to show more of the neighborhood.<br/>
+    Click a title to learn more about a package.
+    </center>
   </div>
   <div class="col-md-4">
     <h1>Scientific Software Network Map</h1>
@@ -57,17 +66,17 @@
       description of the data source for this demonstration.
     </p><p>
       {% if scimapID == "" %}
-      <img src="/static/img/Legend.png">
+      <img src="/static/img/LegendIncremental.png">
       {% else%}
-      <img src="/static/img/LegendScimapID.png">
+      <img src="/static/img/LegendIncrementalScimapID.png">
       {% endif %}
     </p>
 
      {%if sci_platform=="R" %}
       You can participate by <a href="/static/html/installR.html">contributing your own R usage data!</a>
       <p>&nbsp;<p>
-      (<a href="http://scisoft-net-map.isri.cmu.edu:7777">If you are looking for the
-      TACC supercomputer data, click here</a>)
+      (<a href="http://scisoft-net-map.isri.cmu.edu:7777">Click here to browse a larger dataset, from a different 
+         sample domain here: scientific software used on a TACC supercomputer</a>)
       
      {% endif %}
   </div>
