@@ -45,7 +45,7 @@
         <span id="compare-count" class="badge pull-right"></span>Compare
         chosen
         applications</a></li>
-      <li><a href="{{request.route_url('dsm')}}">Design Structure Matrix</a></li>
+      <!--<li><a href="{{request.route_url('dsm')}}">Design Structure Matrix</a></li>-->
       {% if (visits) > 12000 %}
            <li><a class="negotiated-interrupt" href="https://docs.google.com/forms/d/1DZvfS10t7G7VAVHA98-lXBnHCnu7A-HwuJ_g9ij7jMQ/viewform?entry.1231196861={{request.cookies.get('scimapID', '')}}" title="This site is part of an academic research project. Please consider taking this survey to help us evaluate our work!">Take a survey?</a></li>
       {% endif %}

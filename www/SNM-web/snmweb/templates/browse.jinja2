@@ -58,8 +58,11 @@
           {% for app in apps %}
             <tr>
               <td>
+                {% if app.image == "unknown.jpg" %}
+                {% else %}
                 <img src="{{request.static_url('snmweb:static/img/' + app.image)}}"
                      class="app-image" />
+                {% endif %}
               </td>
               <td>
                 <div class="row">
