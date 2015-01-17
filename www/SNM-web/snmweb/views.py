@@ -46,7 +46,7 @@ def view_status(request):
              renderer='templates/index.jinja2',
              permission='view')
 def view_home(request):
-    featured = Application.objects(title="devtools").first()
+    featured = Application.objects(title=request.registry.settings.get("featured")).first()
     return {"status": "200 OK", "featured": featured, "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
 @view_config(route_name="app_usage",
