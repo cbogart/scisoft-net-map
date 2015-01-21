@@ -10,9 +10,12 @@
   {{ super() }}
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/bar-chart.js')}}"></script>
   <script>
       var force_chart = vizForceChart($("#chart"), {scimapID: "{{request.cookies.get("scimapID",'')}}"});
+      var bar_chart = vizBarChart($("#barchart"), {focusid: app_id});
       force_chart.start(app_id);
+      bar_chart.start(app_id);
   </script>
 {% endblock %}
 
@@ -28,6 +31,9 @@
 
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
+      <div id="barchart">
+        <svg></svg>
+      </div>
       <div id="chart">
         <svg></svg>
       </div>
