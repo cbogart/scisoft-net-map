@@ -18,20 +18,28 @@ function vizBarChart(container, options) {
     var mainbartitle = svg.append("text")
         .attr("class", "bartitle")
         .text("Out of _ runs of _");
+    var mainbartitle2 = svg.append("text")
+        .attr("class", "bartitle")
+        .text("Out of _ runs of _");
+    var axis = svg.append("g").attr("class","baraxis");
     var inbartitle = svg.append("text")
         .attr("class", "barsubtitle")
+        .attr("id", "inbartitle")
         .text("Packages that depend on _");
     var outbartitle = svg.append("text")
         .attr("class", "barsubtitle")
+        .attr("id", "outbartitle")
         .text("Packages that _ depends on ");
     var logicbartitle = svg.append("text")
         .attr("class", "barsubtitle")
+        .attr("id", "logicbartitle")
         .text("Packages were used with _");
     function setLabels(focusname) {
-        mainbartitle.text("Out of " + focusnode.uses + " runs of "+ focusname);
-        inbartitle.text("Packages that depend on " + focusname);
-        outbartitle.text("Packages that " + focusname + " depends on");
-        logicbartitle.text("Packages used along with " + focusname);
+        mainbartitle.text("What users used with " + focusname);
+        mainbartitle2.text("Out of " + focusnode.uses + " runs...");
+        inbartitle.text("" + inbars.length + " packages required " + focus + ":")
+        outbartitle.text(focusname + " required " + outbars.length + " packages");
+        logicbartitle.text("User jobs also included " + logicbars.length + " others:")
     }    
     var svginbars = svg.append("g")
     var svgoutbars = svg.append("g")
@@ -98,77 +106,115 @@ function vizBarChart(container, options) {
                 outbars.push( { "count": link.unscaled.static, "node": nodes[link.target] });
             } 
             if (nodes[link.source].id == focusid && link.unscaled.logical > 0) {
-                logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.source] });
+                logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.target] });
             } 
             if (nodes[link.target].id == focusid && link.unscaled.static > 0) {
-                inbars.push({ "count": link.unscaled.static, "node": nodes[link.target] });
+                inbars.push({ "count": link.unscaled.static, "node": nodes[link.source] });
             }
         }         
+        outbars.sort(function(a,b) { return b.count - a.count; });
+        inbars.sort(function(a,b) { return b.count - a.count; });
+        logicbars.sort(function(a,b) { return b.count - a.count; });
         setLabels(focus);
     }
     function updateChart() {
-        svg.append("text").text("updateChart");
-        var barHeight = 25;
+        var barHeight = 20;
+        var heightFudge = 14;
         var titleHeight = 25;
+        var horizpadding = 2;
         var xscale = d3.scale.linear()
             .domain([0, focusnode["uses"]])
-            .range([0,width]);
+            .range([horizpadding,width-horizpadding]);
 
         var vposn = titleHeight;
-        mainbartitle.attr("y", vposn);
+        mainbartitle.attr("y", vposn).attr("x", horizpadding);
 
         vposn = vposn + titleHeight;
-        inbartitle.attr("y", vposn);
+        mainbartitle2.attr("y", vposn).attr("x", horizpadding);
 
         vposn = vposn + titleHeight;
-        svginbars.attr("y", vposn);
+        var xAxis = d3.svg.axis().scale(xscale).orient("top").ticks(4);
+        axis.call(xAxis);
+        axis.attr("transform", "translate(0, " + vposn + ")");
+        
+        function addBorder(title, bars) {
+            svg.insert("rect", "#" + title.attr("id"))
+             .attr("x", 0)
+             .attr("y", title.attr("y")-heightFudge)
+             .attr("stroke", "#888888")
+             .attr("fill-opacity", "0.1")
+             .attr("width", width)
+             .attr("height", barHeight*bars.length+titleHeight);
+        }
+
+        vposn = vposn + titleHeight;
+        inbartitle.attr("y", vposn).attr("x", horizpadding);
+
+        vposn = vposn + titleHeight;
+        svginbars.attr("transform", "translate(" + xscale(0) + "," + (vposn-heightFudge) + ")");
         svginbars.attr("height", barHeight*inbars.length);
  
-        svg.append("text").text(inbars);
         var inbar = svginbars.selectAll("g")
             .data(inbars)
             .enter().append("g")
             .attr("class", "dependencybars")
-            .attr("transform", function(d,i) { return "translate(0," + i*barHeight + ")"; });
+            .attr("transform", function(d,i) { return "translate(" + xscale(0) + "," + i*barHeight + ")"; });
         drawRect(inbar);
-        vposn = vposn + barHeight*inbars.length; //svginbars.node().getBBox().height;
-        svginbars.attr("y", vposn);
+        vposn = vposn + barHeight*inbars.length; 
+        addBorder(inbartitle, inbars);
 
-        outbartitle.attr("y", vposn);
+
+        outbartitle.attr("y", vposn).attr("x", horizpadding);
         vposn = vposn + titleHeight; //outbartitle.node().getBBox().height;
 
-        svgoutbars.attr("y", vposn)
+        svgoutbars.attr("transform", "translate(" + xscale(0) + "," + (vposn-heightFudge) + ")")
                   .attr("height", barHeight*outbars.length);
         var outbar = svgoutbars.selectAll("g")
             .data(outbars)
             .enter().append("g")
             .attr("class", "dependencybars")
-            .attr("transform", function(d,i) { return "translate(0," +i*barHeight + ")"; });
+            .attr("transform", function(d,i) { return "translate(" + xscale(0) + "," +i*barHeight + ")"; });
         drawRect(outbar);
         vposn = vposn + barHeight*outbars.length; //svgoutbars.node().getBBox().height;
+        addBorder(outbartitle, outbars);
 
-        logicbartitle.attr("y", vposn);
-        vposn = vposn + titleHeight; //outbartitle.node().getBBox().height;
 
-        svglogicbars.attr("y", vposn)
+        logicbartitle.attr("y", vposn).attr("x", horizpadding);
+        vposn = vposn + titleHeight; 
+
+        svglogicbars.attr("transform", "translate(" + xscale(0) + "," + (vposn-heightFudge) + ")")
                     .attr("height", barHeight*logicbars.length);
         var logicbar = svglogicbars.selectAll("g")
             .data(logicbars)
             .enter().append("g")
             .attr("class", "dependencybars")
-            .attr("transform", function(d,i) { return "translate(0," +i*barHeight + ")"; });
+            .attr("transform", function(d,i) { return "translate(" + xscale(0) + "," +i*barHeight + ")"; });
         drawRect(logicbar);
+        addBorder(logicbartitle, logicbars);
+
 
         function drawRect(bar) {
             bar.append("rect")
-                .attr("stroke", "blue")
-  
+                .attr("stroke", "red")   //#1f77b4
+                .attr("fill", "red")
                 .attr("width", function(b) { return xscale(b["count"]); })
                 .attr("height", barHeight - 2);
-            bar.append("text")
-                .attr("x", function(b) { return xscale(b["count"])+3; })
-                .attr("y", barHeight/2)
-                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " runs"; });
+
+            bar.append("a")
+                .attr("xlink:href", function(d) { return d.node.link; })
+                .append("text")
+                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " runs"; })
+                .each(function(b) { if (xscale(b["count"]) > this.getComputedTextLength()) {
+                                        b["posn"] = "inside"; } else { b["posn"] = "outside"; } })
+                .attr("style", function(b) { if (b.posn=="outside") { 
+                      return "text-anchor: start; fill:#1f77b4; "; } 
+                    else { 
+                      return "text-anchor: end; fill:#ffffff; "; }})
+                .attr("x", function(b) { 
+                   var pad = horizpadding;
+                   if (b.posn == "inside") { pad = -horizpadding; }
+                   return xscale(b["count"]) + pad; })
+                .attr("y", heightFudge);
         }
 
     }

@@ -9,7 +9,11 @@ from passlib.apps import custom_app_context as pwd_context
 from pyramid.view import forbidden_view_config
 
 def count_visits(request):
-    visits=int(request.cookies.get('visits', "0"))+1
+    try:
+        visits=int(request.cookies.get('visits', "0"))+1
+    except Exception, e:
+        print("Error reading visit cookie: visits=" + request.cookies.get('visits', "0"))
+        visits = 1
     request.response.set_cookie('visits', value=str(visits), max_age=1000000)
     return(visits)
 

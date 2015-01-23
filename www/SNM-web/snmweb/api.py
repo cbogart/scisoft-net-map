@@ -97,6 +97,7 @@ class ApiViews:
                 apps = Application.objects().all()
 
             for app in apps:
+                print "Irrelevantly, Linking ", request.route_url('application', name=app.title)
                 result.append({
                     "id": str(app.id),
                     "name": app.title,
@@ -188,7 +189,7 @@ class ApiViews:
 
             def normalizeValue(coUses, targetUsage):
                 normalized = { k : int(0 if (coUses[k] == 0) else
-                                   coUses[k]*10/targetUsage) 
+                                   1+coUses[k]*9/targetUsage) 
                          for k in coUses }
                 return normalized
             
@@ -220,17 +221,19 @@ class ApiViews:
                 cooc = CoOccurence.objects()
                 for c in cooc:
                     app_id = c.application.id.__str__()
+                    print "Linking ", request.route_url('app_used_with', name=c.application.title)
                     nodedict[app_id] = {"name": c.application.title,
                                   "id": app_id,
                                   "publications": c.application.publications,
                                   "uses": c.application.usage,
-                                  "link": request.route_url('application', name=c.application.title)}
+                                  "link": request.route_url('app_used_with', name=c.application.title)}
                     for l in c.links:
+                        print "Linking ", request.route_url('app_used_with', name=l.app.title)
                         nodedict[l.app.id.__str__()] = {"name": l.app.title,
                                       "id": l.app.id.__str__(),
                                       "publications": l.app.publications,
                                       "uses": l.app.usage,
-                                      "link": request.route_url('application', name=l.app.title)}
+                                      "link": request.route_url('app_used_with', name=l.app.title)}
                     for l in c.links:
                         linksize =  normalizeValue(l.co_uses, c.application.usage)
                         if hasLink(linksize):
@@ -268,16 +271,17 @@ class ApiViews:
                                 links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
                                              "value": linksize,
-                                             "unscaled" : linksize,
+                                             "unscaled" : destinf.co_uses,
 				})    
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
+                    print "Linking ", request.route_url('app_used_with', name=c.title)
                     nodes.append({"name": c.title,
                                   "id": app_id,
                                   "uses": c.usage,
                                   "publications": c.publications,
-                                  "link": request.route_url('application', name=c.title)})
+                                  "link": request.route_url('app_used_with', name=c.title)})
 
             if (clustered):
                 nodes = clusteringOrder(nodes, links)
