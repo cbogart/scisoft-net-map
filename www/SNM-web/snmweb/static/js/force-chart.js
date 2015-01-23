@@ -36,6 +36,7 @@ function vizForceChart(container, options) {
         link_dict = {},
         counter = 0,
         nodes = [],
+        sqrt_max_uses = 0,
         user_vector = {"fftw3": 0.8},
         links = [];
     force
@@ -70,15 +71,23 @@ function vizForceChart(container, options) {
         function(result) {
             var data = result.data,
                 node, link;
+            var max_uses = 0;
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
-                    if (node.id == id) node.loaded = true;
+                    if (node.id == id) {
+                        node.loaded = true;
+                        node.focus_co_uses = node.uses;
+                    } else {
+                        node.focus_co_uses = 0;
+                    }
                     app_dict[node.id] = counter;
                     counter++;
                     nodes.push(node);
+                    max_uses = Math.max(max_uses, node.uses);
                 }
             }
+            sqrt_max_uses = Math.sqrt(max_uses);
 
             for (i in data.links) {
                 link = data.links[i];
@@ -91,8 +100,14 @@ function vizForceChart(container, options) {
                     links.push({
                         "source" : s,
                         "target" : t,
-                        "value"  : link.value
+                        "value"  : link.value,
+                        "unscaled"  : link.unscaled
                     });
+                    if (link.source == id) {
+                        nodes[t].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                    } else if (link.target == id) {
+                        nodes[s].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                    } 
                 }
             }
             updateChart();
@@ -101,6 +116,7 @@ function vizForceChart(container, options) {
 
     function updateChart() {
         force.start();
+        var big = 25, small=4;
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
@@ -118,16 +134,25 @@ function vizForceChart(container, options) {
         var labels = allGNodes.append("a")
             .attr("xlink:href", function(d) {return d.link;})
             .append("text")
-            .attr("transform", function(d) { return "translate(" + (10+Math.log(d.publications+1)*2) + ",0)"; })
+            .attr("transform", function(d) { return "translate(" + (10 + small +big*(Math.sqrt(d.uses)/sqrt_max_uses)) + ",0)"; })
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .classed("loaded", function(d){return d.loaded})
             .attr("r", function(d){ 
-                  d.radius = (Math.log(d.publications+1)*2+5);
+                  d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small;
                   return d.radius;
-             });  // 9
+             });
+        var allPies = allGNodes.append("path")
+             .attr("d", function (d) { 
+                         var angle = 6.28 * d.focus_co_uses / d.uses;
+                         return d3.svg.arc()
+                          .outerRadius(d.radius).innerRadius(0)
+                          .startAngle(0.0)
+                          .endAngle(angle)(); })
+             .attr("fill", "red");
+
 
         var highlightMe = allGNodes.append("circle")
             .attr("stroke-width", function(d) { return 10*(user_vector[d.name] || 0); })
@@ -135,7 +160,7 @@ function vizForceChart(container, options) {
             .attr("opacity", ".3")
             .attr("fill", "none")
             .attr("r", function(d){ 
-                  d.radius = (Math.log(d.publications+1)*2+5);
+                  d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small+1; 
                   return d.radius + (user_vector[d.name] || 0);
              });  // 9
 
