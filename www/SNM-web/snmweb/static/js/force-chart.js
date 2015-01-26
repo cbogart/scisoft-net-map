@@ -151,7 +151,7 @@ function vizForceChart(container, options) {
                           .outerRadius(d.radius).innerRadius(0)
                           .startAngle(0.0)
                           .endAngle(angle)(); })
-             .attr("fill", "red");
+             .attr("class", "co-use-color");
 
 
         var highlightMe = allGNodes.append("circle")

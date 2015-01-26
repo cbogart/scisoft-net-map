@@ -17,10 +17,10 @@ function vizBarChart(container, options) {
         .attr("height", height);
     var mainbartitle = svg.append("text")
         .attr("class", "bartitle")
-        .text("Out of _ runs of _");
+        .text("Out of _ jobs of _");
     var mainbartitle2 = svg.append("text")
         .attr("class", "bartitle")
-        .text("Out of _ runs of _");
+        .text("Out of _ jobs of _");
     var axis = svg.append("g").attr("class","baraxis");
     var inbartitle = svg.append("text")
         .attr("class", "barsubtitle")
@@ -36,7 +36,7 @@ function vizBarChart(container, options) {
         .text("Packages were used with _");
     function setLabels(focusname) {
         mainbartitle.text("What users used with " + focusname);
-        mainbartitle2.text("Out of " + focusnode.uses + " runs...");
+        mainbartitle2.text("Out of " + focusnode.uses + " jobs...");
         inbartitle.text("" + inbars.length + " packages required " + focus + ":")
         outbartitle.text(focusname + " required " + outbars.length + " packages");
         logicbartitle.text("User jobs also included " + logicbars.length + " others:")
@@ -49,7 +49,7 @@ function vizBarChart(container, options) {
         link_dict = {},
         counter = 0,
         nodes = [],
-        user_vector = {"fftw3": 0.8},
+        user_vector = {},
         links = [];
     function loadUserInfo(user) { 
         snmapi.getStat("user_vector", {"id": options.scimapID},
@@ -104,6 +104,9 @@ function vizBarChart(container, options) {
             link = links[linknum]
             if  (nodes[link.source].id == focusid && link.unscaled.static > 0) {
                 outbars.push( { "count": link.unscaled.static, "node": nodes[link.target] });
+            } 
+            if (nodes[link.target].id == focusid && link.unscaled.logical > 0) {
+                logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.source] });
             } 
             if (nodes[link.source].id == focusid && link.unscaled.logical > 0) {
                 logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.target] });
@@ -192,29 +195,52 @@ function vizBarChart(container, options) {
         drawRect(logicbar);
         addBorder(logicbartitle, logicbars);
 
+        function text_CoUsePercentOfFocus(d) {
+            var only = "";
+            if (d["count"] < focusnode["uses"]/2) { only = " only"; }
+            return(
+                  "In " + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the jobs where "
+                   + focusnode["name"] + " was run, "
+                   + d["node"]["name"] + " was also run "
+                   + "(" + d["count"] + "/" + focusnode["uses"] + " jobs)");
+        }
+        function text_FocusPercentOfCoUse(d) {
+            var only = "";
+            if (d["count"] < focusnode["uses"]/2) { only = " only"; }
+            return(
+                  "In " + only + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the jobs where "
+                   + focusnode["name"] + " was run, "
+                   + d["node"]["name"] + " was also run "
+                   + "(" + d["count"] + "/" + focusnode["uses"] + " jobs)");
+        }
 
         function drawRect(bar) {
             bar.append("rect")
-                .attr("stroke", "red")   //#1f77b4
-                .attr("fill", "red")
+               // .attr("stroke", "red")   //#1f77b4
+                //.attr("fill", "red")
+                .attr("class", "co-use-color")
                 .attr("width", function(b) { return xscale(b["count"]); })
                 .attr("height", barHeight - 2);
+
+            bar.append("title").text(text_CoUsePercentOfFocus);
 
             bar.append("a")
                 .attr("xlink:href", function(d) { return d.node.link; })
                 .append("text")
-                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " runs"; })
+                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " jobs"; })
                 .each(function(b) { if (xscale(b["count"]) > this.getComputedTextLength()) {
                                         b["posn"] = "inside"; } else { b["posn"] = "outside"; } })
+                .attr("class", "co-use-color")
                 .attr("style", function(b) { if (b.posn=="outside") { 
-                      return "text-anchor: start; fill:red; "; } 
+                      return "text-anchor: start; "; } 
                     else { 
-                      return "text-anchor: end; fill:#ffffff; "; }})
+                      return "text-anchor: end; fill:#ffffff; stroke:#fff; stroke-width:1px;"; }})
                 .attr("x", function(b) { 
                    var pad = horizpadding;
                    if (b.posn == "inside") { pad = -horizpadding; }
                    return xscale(b["count"]) + pad; })
-                .attr("y", heightFudge);
+                .attr("y", heightFudge)
+                .append("title").text(text_CoUsePercentOfFocus);
         }
 
     }

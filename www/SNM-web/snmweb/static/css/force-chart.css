@@ -15,6 +15,14 @@
   cursor: default;
 }
 
+.default-color {
+  fill: #1F77B4;
+}
+.co-use-color {
+  fill: #D50;
+  stroke: #D50;
+}
+
 .node.loaded:hover {
     stroke: #fff;
     stroke-width: 1px;
