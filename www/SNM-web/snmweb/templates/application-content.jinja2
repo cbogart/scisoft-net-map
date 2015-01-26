@@ -1,0 +1,24 @@
+  <h2>App profile</h2>
+  <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
+  <p>
+    {% if sci_platform == "TACC" %}
+    <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs from 2012-04-09 to 2013-01-27">Usage:</a><span> {{app.usage}}; </span>
+    {% else %}
+    <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs from Sept 2014 present">Usage:</a><span> {{app.usage}}; </span>
+    {% endif %}
+
+    <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs for the last 60 days">Usage trend:</a><span> {{app.usage_trend}}</span>
+
+    {% if sci_platform == "TACC" %}
+    <a href="{{request.route_url('app_users', name=app.title)}}" class="snm-tooltip" title="Number of users from 2012-04-09 to 2013-01-27">Users:</a><span> {{app.users}}</span>
+    {% else %}
+    <a href="{{request.route_url('app_users', name=app.title)}}" class="snm-tooltip" title="Number of users from Sept 2014 to present">Users:</a><span> {{app.users}}</span>
+    {% endif %}
+
+    {% if sci_platform == "TACC" %}
+    <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications resulting from jobs using this package">Publications:</a><span> {{app.publications}}</span>
+    {% else %}
+    <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications known to reference this package">Publications:</a><span> {{app.publications}}</span>
+    {% endif %}
+  </p>
+  <p class="pre-scrollable">{{ app.description|safe }}</p>
