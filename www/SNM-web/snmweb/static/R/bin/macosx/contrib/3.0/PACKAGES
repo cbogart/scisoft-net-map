@@ -16,6 +16,6 @@ Version: 0.2.0
 Imports: RJSONIO, tools, utils
 Suggests: testthat
 License: BSD_2_clause + file LICENSE
-MD5sum: 47561d8413a69d8f04dd01b54e72b76d
+MD5sum: b5589d9a32b5db324517a9ee61a48eb2
 NeedsCompilation: no
 
