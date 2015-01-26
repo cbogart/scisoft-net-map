@@ -188,7 +188,7 @@ class ApiViews:
 
             def normalizeValue(coUses, targetUsage):
                 normalized = { k : int(0 if (coUses[k] == 0) else
-                                   coUses[k]*10/targetUsage) 
+                                   1+coUses[k]*9/targetUsage) 
                          for k in coUses }
                 return normalized
             
@@ -200,6 +200,13 @@ class ApiViews:
             def hasLink(coUses):
                 return (coUses["static"]  >= 1 or
                         coUses["logical"] >= 1)
+
+            def significantLink(link, appUsageStandard):
+                try:
+                    return (hasLink(normalizeValue(link.co_uses, appUsageStandard)))
+                except Exception, e:
+                    print "EXCEPTION: ", repr(e)
+                    return False
 
             if id is None:
                 nodedict = {}
@@ -229,16 +236,17 @@ class ApiViews:
                 app = Application.objects.get(id=id)
                 nodelist = [ObjectId(id)]
                 fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
-                nodelist = nodelist + [fc.application.id for fc in fromcooc]
+                nodelist = nodelist + [fc.application.id for fc in fromcooc 
+                                        if significantLink(fc,fc.application.usage)]
                 tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
                 for tc in tocooc:
-                    nodelist = nodelist + [tcl.app.id for tcl in tc.links]
+                    nodelist = nodelist + [tcl.app.id for tcl in tc.links if significantLink(tcl, app.usage)]
                 edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
                 for fan in edgecooc:
                     src = fan.application
                     for destinf in fan.links:
                         dest = destinf.app.id
-                        if (dest in nodelist):
+                        if (dest in nodelist and src.id in nodelist):
                             linksize = normalizeValue(destinf.co_uses, src.usage)
                             if (linksize["logical"] > 10):
                                 print src.title, src.id, src.usage
