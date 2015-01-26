@@ -207,7 +207,7 @@ function vizBarChart(container, options) {
                 .each(function(b) { if (xscale(b["count"]) > this.getComputedTextLength()) {
                                         b["posn"] = "inside"; } else { b["posn"] = "outside"; } })
                 .attr("style", function(b) { if (b.posn=="outside") { 
-                      return "text-anchor: start; fill:#1f77b4; "; } 
+                      return "text-anchor: start; fill:red; "; } 
                     else { 
                       return "text-anchor: end; fill:#ffffff; "; }})
                 .attr("x", function(b) { 

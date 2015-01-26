@@ -11,13 +11,5 @@
 {% endblock %}
 
 {% block details %}
-  <h2>App profile</h2>
-  <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
-  <p>
-    <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs from 2012-04-09 to 2013-01-27">Usage:</a><span> {{app.usage}}; </span>
-    <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs for the last 60 days">Usage trend:</a><span> {{app.usage_trend}}</span>
-    <a href="{{request.route_url('app_users', name=app.title)}}" class="snm-tooltip" title="Number of users from 2012-04-09 to 2013-01-27">Users:</a><span> {{app.users}}</span>
-    <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications resulting from jobs using this application">Publications:</a><span> {{app.publications}}</span>
-  </p>
-  <p>{{ app.description|safe }}</p>
+  {% include 'application-content.jinja2' %}
 {% endblock %}

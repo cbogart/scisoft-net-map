@@ -53,6 +53,14 @@ def view_home(request):
     featured = Application.objects(title=request.registry.settings.get("featured")).first()
     return {"status": "200 OK", "featured": featured, "visits": count_visits(request), "scimapID": cached_scimapID(request)}
 
+@view_config(route_name="app_dashboard",
+             renderer='templates/app_dashboard.jinja2',
+             permission='view')
+def view_dashboard(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    return {"app": app, "visits": count_visits(request)}
+
 @view_config(route_name="app_usage",
              renderer='templates/app_usage.jinja2',
              permission='view')
