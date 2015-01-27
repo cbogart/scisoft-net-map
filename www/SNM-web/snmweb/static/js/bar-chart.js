@@ -34,12 +34,15 @@ function vizBarChart(container, options) {
         .attr("class", "barsubtitle")
         .attr("id", "logicbartitle")
         .text("Packages were used with _");
+    function titleAndText(elt, content) {
+        elt.text(content).append("title").text(content);
+    }
     function setLabels(focusname) {
-        mainbartitle.text("What users used with " + focusname);
-        mainbartitle2.text("Out of " + focusnode.uses + " jobs...");
-        inbartitle.text("" + inbars.length + " packages required " + focus + ":")
-        outbartitle.text(focusname + " required " + outbars.length + " packages");
-        logicbartitle.text("User jobs also included " + logicbars.length + " others:")
+        titleAndText(mainbartitle, "What users used with " + focusname);
+        titleAndText(mainbartitle2, "Out of " + focusnode.uses + " jobs...");
+        titleAndText(inbartitle, "" + inbars.length + " packages required " + focus + ":")
+        titleAndText(outbartitle, focusname + " required " + outbars.length + " packages");
+        titleAndText(logicbartitle, "User jobs also included " + logicbars.length + " others:")
     }    
     var svginbars = svg.append("g")
     var svgoutbars = svg.append("g")
@@ -199,6 +202,7 @@ function vizBarChart(container, options) {
             var only = "";
             if (d["count"] < focusnode["uses"]/2) { only = " only"; }
             return(
+                  d["node"]["name"] + ": " + d["count"] + " jobs\n" +
                   "In " + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the jobs where "
                    + focusnode["name"] + " was run, "
                    + d["node"]["name"] + " was also run "

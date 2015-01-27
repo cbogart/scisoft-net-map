@@ -10,6 +10,7 @@ function vizForceChart(container, options) {
     }, options);
     var height = options.height;
     var width = options.width;
+    var focusid = "";
     var svg = d3.select("#chart svg")
         .attr("width", width)
         .attr("height", height);
@@ -69,6 +70,7 @@ function vizForceChart(container, options) {
     }
     function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
         function(result) {
+            focusid = id;
             var data = result.data,
                 node, link;
             var max_uses = 0;
@@ -144,14 +146,22 @@ function vizForceChart(container, options) {
                   d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small;
                   return d.radius;
              });
-        var allPies = allGNodes.append("path")
+
+        allGNodes
+             .filter(function(d) { return d.id == focusid; })
+             .append("circle").attr("x",0).attr("y",0).attr("r",function(d) { return d.radius})
+             .classed("focusnode-color", true);
+
+        var allPies = allGNodes
+             .filter(function(d) { return d.id != focusid; })
+             .append("path")
              .attr("d", function (d) { 
                          var angle = 6.28 * d.focus_co_uses / d.uses;
                          return d3.svg.arc()
                           .outerRadius(d.radius).innerRadius(0)
                           .startAngle(0.0)
                           .endAngle(angle)(); })
-             .attr("class", "co-use-color");
+             .attr("class", function(d) { if (d.id == focusid) { return "focusnode-color"; } else { return "co-use-color"}});
 
 
         var highlightMe = allGNodes.append("circle")

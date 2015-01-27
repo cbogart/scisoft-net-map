@@ -18,6 +18,11 @@
 .default-color {
   fill: #1F77B4;
 }
+.focusnode-color {
+  fill: #777;
+  stroke-width: 3;
+  stroke: #D50;
+}
 .co-use-color {
   fill: #D50;
   stroke: #D50;
