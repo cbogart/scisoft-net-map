@@ -6,7 +6,7 @@
 }
 
 .node:hover {
-    stroke: #FF7F0E;
+    stroke: #000; // #FF7F0E;
     stroke-width: 3px;
 }
 
