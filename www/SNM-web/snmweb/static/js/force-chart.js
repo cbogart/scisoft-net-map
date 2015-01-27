@@ -131,10 +131,11 @@ function vizForceChart(container, options) {
             .enter()
             .append('g')
             .classed('gnode', true)
-            .call(force.drag);
+            .call(force.drag)
+            .append("a").attr("xlink:href", function(d) { return d.link; });
 
-        var labels = allGNodes.append("a")
-            .attr("xlink:href", function(d) {return d.link;})
+        var labels = allGNodes //.append("a")
+            //.attr("xlink:href", function(d) {return d.link;})
             .append("text")
             .attr("transform", function(d) { return "translate(" + (10 + small +big*(Math.sqrt(d.uses)/sqrt_max_uses)) + ",0)"; })
             .text(function(d) { return d.name; });
@@ -146,6 +147,7 @@ function vizForceChart(container, options) {
                   d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small;
                   return d.radius;
              });
+             //.append("a").attr("xlink:href", function(d) { return d.link; });
 
         allGNodes
              .filter(function(d) { return d.id == focusid; })
@@ -161,8 +163,7 @@ function vizForceChart(container, options) {
                           .outerRadius(d.radius).innerRadius(0)
                           .startAngle(0.0)
                           .endAngle(angle)(); })
-             .attr("class", function(d) { if (d.id == focusid) { return "focusnode-color"; } else { return "co-use-color"}});
-
+             .attr("class", function(d) { if (d.id == focusid) { return "focusnode-color"; } else { return "co-use-color"}})
 
         var highlightMe = allGNodes.append("circle")
             .attr("stroke-width", function(d) { return 10*(user_vector[d.name] || 0); })
