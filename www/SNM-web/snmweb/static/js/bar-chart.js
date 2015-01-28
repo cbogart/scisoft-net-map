@@ -30,19 +30,36 @@ function vizBarChart(container, options) {
         .attr("class", "barsubtitle")
         .attr("id", "outbartitle")
         .text("Packages that _ depends on ");
+    var hoverhelp = svg.append("text").text("?");
+    var outbarExplanation = "";
     var logicbartitle = svg.append("text")
         .attr("class", "barsubtitle")
         .attr("id", "logicbartitle")
         .text("Packages were used with _");
-    function titleAndText(elt, content) {
-        elt.text(content).append("title").text(content);
+    function titleAndText(elt, content, hover) {
+        var hovertext = true;
+        if (typeof(hover)==='undefined') { 
+            hover = content; hovertext = false; 
+        }
+        elt.text(content).append("title").text(hover);
+        if (hovertext) { 
+            var q = elt.append("circle").attr("fill","blue").attr("r", 16).attr("x","0").attr("y","0").attr("stroke","green").attr("transform","translate(50,0)").append("text");
+            q.text("?").append("title").text(hover);
+        }
     }
     function setLabels(focusname) {
         titleAndText(mainbartitle, "What users used with " + focusname);
         titleAndText(mainbartitle2, "Out of " + focusnode.uses + " jobs...");
-        titleAndText(inbartitle, "" + inbars.length + " packages required " + focus + ":")
-        titleAndText(outbartitle, focusname + " required " + outbars.length + " packages");
-        titleAndText(logicbartitle, "User jobs also included " + logicbars.length + " others:")
+        titleAndText(inbartitle, "" + inbars.length + " reverse dependencies",
+                                  "These packages appeared in jobs alongside " + focusname + ", and listed " + focusname + " as a dependency.");
+        outbarExplanation = "These packages appeared in jobs alongside " + focusname + ", and were listed as dependencies. " +
+                                  "They may not show up in all " + focusnode.uses + " jobs, if there were different versions of " + focusname +
+                                  ", or if some dependency data was unavailable.";
+        titleAndText(outbartitle, "" + outbars.length + " dependencies", outbarExplanation);
+        titleAndText(logicbartitle, "" + logicbars.length + " other packages",
+                                  "These packages appeared in jobs alongside " + focusname + ", with no known dependency relationship.");
+           
+        
     }    
     var svginbars = svg.append("g")
     var svgoutbars = svg.append("g")
@@ -127,7 +144,7 @@ function vizBarChart(container, options) {
         var barHeight = 20;
         var heightFudge = 14;
         var titleHeight = 25;
-        var horizpadding = 2;
+        var horizpadding = 5;
         var xscale = d3.scale.linear()
             .domain([0, focusnode["uses"]])
             .range([horizpadding,width-horizpadding]);
