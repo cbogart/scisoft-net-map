@@ -44,6 +44,12 @@ function vizForceChart(container, options) {
         .nodes(nodes)
         .links(links);
     force.on("tick", function() {
+        svg.selectAll('g.gnode').each(function (d) {
+            if (d.x < 8) { d.x = 8; }
+            if (d.x > width-8) { d.x = width-8; }
+            if (d.y < 8) { d.y = 8; }
+            if (d.y > height-8) { d.y = height-8; }
+        });
         svg.selectAll(".link")
             .attr("x1", function(d) { 
                 d.len = Math.pow(Math.pow(d.source.x-d.target.x,2) + Math.pow(d.source.y-d.target.y,2), .5)
@@ -56,7 +62,7 @@ function vizForceChart(container, options) {
         svg.selectAll('g.gnode')
             .attr("transform", function(d) {
                 // Bounds here keep node centers 8 pix within edges
-                return 'translate(' + [Math.max(8,Math.min(width-8,d.x)), Math.max(8,Math.min(height-8,d.y))] + ')';
+                return 'translate(' + [d.x,d.y] + ')';  
         });
     });
     function loadUserInfo(user) { 
