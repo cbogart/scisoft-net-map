@@ -190,7 +190,6 @@ class ApiViews:
             def normalizeValue(coUses, targetUsage):
                 normalized = { k : int(0 if (coUses[k] == 0) else
                                    1 + coUses[k]*9/targetUsage) 
-                                   1+coUses[k]*9/targetUsage) 
                          for k in coUses }
                 return normalized
             
