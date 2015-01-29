@@ -39,9 +39,9 @@
     <center>
     <h2>Featured package: <a href="{{request.route_url('application', name=featured.title)}}">
            {{featured.title}}</a></h2>
-    The circles are packages with dependency relationships with {{featured.title}}.<br/>
-    Orange slices show how often a package was used alongside {{featured.title}}.<br/>
-    Click them to learn more about a package.
+    The orange slices show how often packages were loaded in the same scripts as {{featured.title}}.<br/>
+    Blue slices show how often packages were used <i>without</i> {{featured.title}}<br/>
+    Click to learn more about a package.
     </center>
   </div>
   <div class="col-md-4">
