@@ -39,9 +39,9 @@
     <center>
     <h2>Featured package: <a href="{{request.route_url('application', name=featured.title)}}">
            {{featured.title}}</a></h2>
-    The blue circles have dependency relationships with {{featured.title}}.<br/>
-    Click them to expand the graph to show more of the neighborhood.<br/>
-    Click a title to learn more about a package.
+    The circles are packages with dependency relationships with {{featured.title}}.<br/>
+    Orange slices show how often a package was used alongside {{featured.title}}.<br/>
+    Click them to learn more about a package.
     </center>
   </div>
   <div class="col-md-4">
@@ -75,8 +75,10 @@
      {%if sci_platform=="R" %}
       You can participate by <a href="/static/html/installR.html">contributing your own R usage data!</a>
       <p>&nbsp;<p>
-      (<a href="http://scisoft-net-map.isri.cmu.edu:7777">Click here to browse a larger dataset, from a different 
-         sample domain here: scientific software used on a TACC supercomputer</a>)
+      (<b>As of Jan, 2015, this new dataset does not contain a large number of use sessions yet.</b>
+         In the mean time you can check out a richer sample dataset: 
+         <a href="http://scisoft-net-map.isri.cmu.edu:7777">click here to browse a year's worth of 
+         scientific software jobs on a TACC supercomputer</a>)
       
      {% endif %}
   </div>
