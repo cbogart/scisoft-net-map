@@ -10,6 +10,7 @@ function vizForceChart(container, options) {
     }, options);
     var height = options.height;
     var width = options.width;
+    var focusid = "";
     var svg = d3.select("#chart svg")
         .attr("width", width)
         .attr("height", height);
@@ -36,12 +37,19 @@ function vizForceChart(container, options) {
         link_dict = {},
         counter = 0,
         nodes = [],
+        sqrt_max_uses = 0,
         user_vector = {"fftw3": 0.8},
         links = [];
     force
         .nodes(nodes)
         .links(links);
     force.on("tick", function() {
+        svg.selectAll('g.gnode').each(function (d) {
+            if (d.x < 8) { d.x = 8; }
+            if (d.x > width-8) { d.x = width-8; }
+            if (d.y < 8) { d.y = 8; }
+            if (d.y > height-8) { d.y = height-8; }
+        });
         svg.selectAll(".link")
             .attr("x1", function(d) { 
                 d.len = Math.pow(Math.pow(d.source.x-d.target.x,2) + Math.pow(d.source.y-d.target.y,2), .5)
@@ -54,7 +62,7 @@ function vizForceChart(container, options) {
         svg.selectAll('g.gnode')
             .attr("transform", function(d) {
                 // Bounds here keep node centers 8 pix within edges
-                return 'translate(' + [Math.max(8,Math.min(width-8,d.x)), Math.max(8,Math.min(height-8,d.y))] + ')';
+                return 'translate(' + [d.x,d.y] + ')';  
         });
     });
     function loadUserInfo(user) { 
@@ -68,17 +76,26 @@ function vizForceChart(container, options) {
     }
     function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
         function(result) {
+            focusid = id;
             var data = result.data,
                 node, link;
+            var max_uses = 0;
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
-                    if (node.id == id) node.loaded = true;
+                    if (node.id == id) {
+                        node.loaded = true;
+                        node.focus_co_uses = node.uses;
+                    } else {
+                        node.focus_co_uses = 0;
+                    }
                     app_dict[node.id] = counter;
                     counter++;
                     nodes.push(node);
+                    max_uses = Math.max(max_uses, node.uses);
                 }
             }
+            sqrt_max_uses = Math.sqrt(max_uses);
 
             for (i in data.links) {
                 link = data.links[i];
@@ -91,8 +108,14 @@ function vizForceChart(container, options) {
                     links.push({
                         "source" : s,
                         "target" : t,
-                        "value"  : link.value
+                        "value"  : link.value,
+                        "unscaled"  : link.unscaled
                     });
+                    if (link.source == id) {
+                        nodes[t].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                    } else if (link.target == id) {
+                        nodes[s].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                    } 
                 }
             }
             updateChart();
@@ -101,6 +124,7 @@ function vizForceChart(container, options) {
 
     function updateChart() {
         force.start();
+        var big = 25, small=4;
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
@@ -113,21 +137,39 @@ function vizForceChart(container, options) {
             .enter()
             .append('g')
             .classed('gnode', true)
-            .call(force.drag);
+            .call(force.drag)
+            .append("a").attr("xlink:href", function(d) { return d.link; });
 
-        var labels = allGNodes.append("a")
-            .attr("xlink:href", function(d) {return d.link;})
+        var labels = allGNodes //.append("a")
+            //.attr("xlink:href", function(d) {return d.link;})
             .append("text")
-            .attr("transform", function(d) { return "translate(" + (10+Math.log(d.publications+1)*2) + ",0)"; })
+            .attr("transform", function(d) { return "translate(" + (10 + small +big*(Math.sqrt(d.uses)/sqrt_max_uses)) + ",0)"; })
             .text(function(d) { return d.name; });
 
         var allNodes = allGNodes.append("circle")
             .attr("class", "node")
             .classed("loaded", function(d){return d.loaded})
             .attr("r", function(d){ 
-                  d.radius = (Math.log(d.publications+1)*2+5);
+                  d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small;
                   return d.radius;
-             });  // 9
+             });
+             //.append("a").attr("xlink:href", function(d) { return d.link; });
+
+        allGNodes
+             .filter(function(d) { return d.id == focusid; })
+             .append("circle").attr("x",0).attr("y",0).attr("r",function(d) { return d.radius})
+             .classed("focusnode-color", true);
+
+        var allPies = allGNodes
+             .filter(function(d) { return d.id != focusid; })
+             .append("path")
+             .attr("d", function (d) { 
+                         var angle = 6.28 * d.focus_co_uses / d.uses;
+                         return d3.svg.arc()
+                          .outerRadius(d.radius).innerRadius(0)
+                          .startAngle(0.0)
+                          .endAngle(angle)(); })
+             .attr("class", function(d) { if (d.id == focusid) { return "focusnode-color"; } else { return "co-use-color"}})
 
         var highlightMe = allGNodes.append("circle")
             .attr("stroke-width", function(d) { return 10*(user_vector[d.name] || 0); })
@@ -135,7 +177,7 @@ function vizForceChart(container, options) {
             .attr("opacity", ".3")
             .attr("fill", "none")
             .attr("r", function(d){ 
-                  d.radius = (Math.log(d.publications+1)*2+5);
+                  d.radius = big*(Math.sqrt(d.uses)/sqrt_max_uses)+small+1; 
                   return d.radius + (user_vector[d.name] || 0);
              });  // 9
 

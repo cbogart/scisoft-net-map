@@ -97,6 +97,7 @@ class ApiViews:
                 apps = Application.objects().all()
 
             for app in apps:
+                print "Irrelevantly, Linking ", request.route_url('application', name=app.title)
                 result.append({
                     "id": str(app.id),
                     "name": app.title,
@@ -189,6 +190,7 @@ class ApiViews:
             def normalizeValue(coUses, targetUsage):
                 normalized = { k : int(0 if (coUses[k] == 0) else
                                    1 + coUses[k]*9/targetUsage) 
+                                   1+coUses[k]*9/targetUsage) 
                          for k in coUses }
                 return normalized
             
@@ -201,27 +203,46 @@ class ApiViews:
                 return (coUses["static"]  >= 1 or
                         coUses["logical"] >= 1)
 
+            def significantLink(link, appUsageStandard):
+              return True
+              try:
+                if (hasLink(normalizeValue(link.co_uses, appUsageStandard))):
+                    print "Including link to ", link.app.title, " value ", link.co_uses, " by standard ", appUsageStandard
+                    return True
+                else:
+                    print "Excluding link to ", link.app.title, " value ", link.co_uses, " by standard ", appUsageStandard
+                    return False
+              except Exception, e:
+                print "EXCEPTION: ", repr(e)
+                return False
+
+
             if id is None:
                 nodedict = {}
                 cooc = CoOccurence.objects()
                 for c in cooc:
                     app_id = c.application.id.__str__()
+                    print "Linking ", request.route_url('app_used_with', name=c.application.title)
                     nodedict[app_id] = {"name": c.application.title,
                                   "id": app_id,
                                   "publications": c.application.publications,
-                                  "link": request.route_url('application', name=c.application.title)}
+                                  "uses": c.application.usage,
+                                  "link": request.route_url('app_used_with', name=c.application.title)}
                     for l in c.links:
+                        print "Linking ", request.route_url('app_used_with', name=l.app.title)
                         nodedict[l.app.id.__str__()] = {"name": l.app.title,
                                       "id": l.app.id.__str__(),
                                       "publications": l.app.publications,
-                                      "link": request.route_url('application', name=l.app.title)}
+                                      "uses": l.app.usage,
+                                      "link": request.route_url('app_used_with', name=l.app.title)}
                     for l in c.links:
                         linksize =  normalizeValue(l.co_uses, c.application.usage)
                         if hasLink(linksize):
                             links.append({
                                 "source": app_id,
                                 "target": l.app.id.__str__(),
-                                "value":  linksize
+                                "value":  linksize,
+                                "unscaled": l.co_uses
                             })
                 nodes = nodedict.values()
             else:
@@ -229,16 +250,19 @@ class ApiViews:
                 app = Application.objects.get(id=id)
                 nodelist = [ObjectId(id)]
                 fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
-                nodelist = nodelist + [fc.application.id for fc in fromcooc]
+                print "here", len(fromcooc)
+                nodelist = nodelist + [fc.application.id for fc in fromcooc if significantLink(fc,fc.application.usage)]
                 tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
+                print "there", len(tocooc)
                 for tc in tocooc:
-                    nodelist = nodelist + [tcl.app.id for tcl in tc.links]
+                    nodelist = nodelist + [tcl.app.id for tcl in tc.links if significantLink(tcl, app.usage)]
                 edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
+                print "everhwhere", len(edgecooc)
                 for fan in edgecooc:
                     src = fan.application
                     for destinf in fan.links:
                         dest = destinf.app.id
-                        if (dest in nodelist):
+                        if (dest in nodelist and src.id in nodelist):
                             linksize = normalizeValue(destinf.co_uses, src.usage)
                             if (linksize["logical"] > 10):
                                 print src.title, src.id, src.usage
@@ -247,15 +271,18 @@ class ApiViews:
                             if (hasLink(destinf.co_uses)):
                                 links.append({"source": src.id.__str__(),
                                              "target": dest.__str__(),
-                                             "value": linksize
+                                             "value": linksize,
+                                             "unscaled" : destinf.co_uses,
 				})    
 
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
+                    print "Linking ", request.route_url('app_used_with', name=c.title)
                     nodes.append({"name": c.title,
                                   "id": app_id,
+                                  "uses": c.usage,
                                   "publications": c.publications,
-                                  "link": request.route_url('application', name=c.title)})
+                                  "link": request.route_url('app_used_with', name=c.title)})
 
             if (clustered):
                 nodes = clusteringOrder(nodes, links)

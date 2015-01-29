@@ -28,3 +28,6 @@ var/
 .ropeproject/
 test_output
 .coverage
+production.*.ini
+development.*.ini
+runboth

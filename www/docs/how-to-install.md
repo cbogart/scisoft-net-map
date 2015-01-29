@@ -38,7 +38,9 @@ Step 8. To leave virtual env type `deactivate`
 
 Step 3. Enter virtenv
 Step 5. Go to `cd SNM/www/SNM-web`
-Step 7. Run serve `pserve development.ini`
+Step 6. Copy configuration.ini to `production.<platform>.ini` or `development.<platform>.ini` and adjust the settings as needed.   If you
+have a Google Analytics key, fill it in.
+Step 7. Run serve `pserve configuration.ini`
 
 # P.S.
 

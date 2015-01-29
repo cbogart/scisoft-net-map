@@ -10,57 +10,66 @@
   {{ super() }}
   <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/bar-chart.js')}}"></script>
   <script>
-      var force_chart = vizForceChart($("#chart"), {scimapID: "{{request.cookies.get("scimapID",'')}}"});
+      var force_chart = vizForceChart($("#chart"), {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false});
+      var bar_chart = vizBarChart($("#barchart"), {focusid: app_id, height:800});
       force_chart.start(app_id);
+      bar_chart.start(app_id);
   </script>
+{% endblock %}
+
+{% block undersidebar %}
+         {% if scimapID=="" %}
+           <img src="/static/img/LegendPies.png" style="max-width: 345px">
+         {% else %}
+           <img src="/static/img/LegendPies.png" style="max-width: 345px">
+         {% endif %}
 {% endblock %}
 
 {% block details %}
   <h2>Application dependencies</h2>
-<div class="panel-body">
-  <ul class="nav nav-tabs" role="tablist" id="myTab">
-    <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
-    <li><a href="#graph-desc-wrapper" role="tab" data-toggle="tab">
-      Chart description
-    </a></li>
-  </ul>
-
-  <div class="tab-content">
-    <div id="chart-wrapper" class="tab-pane active">
-      <div id="chart">
-        <svg></svg>
-      </div>
-    </div>
-    <div id="graph-desc-wrapper" class="tab-pane">
-      <h4>Description</h4>
       {%if sci_platform=="R" %}
-      Each node represents an R package. A link between nodes shows that these
+      Each node represents an R package; the size is how often it was run.
+      The size of its pie slice is how often it was run with this app ({{app.title}}). 
+      A link between nodes shows that these
       packages happened to be loaded at the same time by some script by some user.
       Solid lines indicate static dependencies (i.e. those enforced
       by R's package loading mechanism).  Dotted lines are packages users chose
-      to use during the same R session.
+      to use during the same R session.  Pie slices indicate how
       {% elif sci_platform=="TACC" %}
-      Each node represents an application. A dashed arrow between nodes shows that these
+      Each node represents an application; the size is how often it was run.
+      The size of its pie slice is how often it was run with this app ({{app.title}}). 
+      A dashed arrow between nodes shows that these
       applications happened to be used by the same user on the same day, and that one
       was started after the previous one completed.  For example maybe 
       in order to achieve a goal, a researcher had to run application
       A, then process results with application B; the graph would show an arrow from
       A to B.
       {% else %}
-      Each node represents an application. A dashed arrow between nodes shows that these
+      Each node represents an application; the size is how often it was run.
+      The size of its pie slice is how often it was run with this app ({{app.title}}). 
+      A dashed arrow between nodes shows that these
       applications happened to be used by the same user on the same day, and that one
       was started after the previous one completed.  For example maybe 
       in order to achieve a goal, a researcher had to run application
       A, then process results with application B; the graph would show an arrow from
       A to B.
       {% endif %}
-       <br>
-         {% if scimapID=="" %}
-           <img src="/static/img/LegendIncremental.png" style="max-width: 345px">
-         {% else %}
-           <img src="/static/img/LegendIncrementalScimapID.png" style="max-width: 345px">
-         {% endif %}
+<div class="row top-buffer">
+  <div class="col-md-7">
+    <div id="chart-wrapper" class="tab-pane active">
+      <div id="chart">
+        <svg></svg>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+      <div id="barchart">
+        <svg></svg>
+      </div>
+  </div>
+</div>
     </div>
   </div>
 </div>

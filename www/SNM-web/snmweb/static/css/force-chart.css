@@ -6,13 +6,26 @@
 }
 
 .node:hover {
-    stroke: #FF7F0E;
+    stroke: #000; // #FF7F0E;
     stroke-width: 3px;
 }
 
 .node.loaded {
   fill: #FF7F0E;
   cursor: default;
+}
+
+.default-color {
+  fill: #1F77B4;
+}
+.focusnode-color {
+  fill: #777;
+  stroke-width: 3;
+  stroke: #D50;
+}
+.co-use-color {
+  fill: #D50;
+  stroke: #D52;
 }
 
 .node.loaded:hover {
@@ -42,9 +55,35 @@
   stroke: #bbb;
 }
 
+#barchart {
+  width: 100%;
+  height: 800px;
+}
 #chart {
   width: 100%;
-  height: 400px;
+  height: 600px;
 }
+
+.bartitle {
+   font-size: 15px;
+   font-weight: bold;
+}
+.barsubtitle {
+   font-size: 12px;
+   font-weight: bold;
+}
+
+.baraxis path,
+.baraxis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.baraxis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
 
 

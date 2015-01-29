@@ -13,6 +13,7 @@ def count_visits(request):
         visits=int(request.cookies.get('visits', "0"))+1
     except Exception, e:
         print("Error reading visit cookie: visits=" + request.cookies.get('visits',"0"))
+        print("Error reading visit cookie: visits=" + request.cookies.get('visits', "0"))
         visits = 1
     request.response.set_cookie('visits', value=str(visits), max_age=1000000)
     return(visits)
@@ -52,6 +53,14 @@ def view_status(request):
 def view_home(request):
     featured = Application.objects(title=request.registry.settings.get("featured")).first()
     return {"status": "200 OK", "featured": featured, "visits": count_visits(request), "scimapID": cached_scimapID(request)}
+
+@view_config(route_name="app_dashboard",
+             renderer='templates/app_dashboard.jinja2',
+             permission='view')
+def view_dashboard(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    return {"app": app, "visits": count_visits(request)}
 
 @view_config(route_name="app_usage",
              renderer='templates/app_usage.jinja2',
