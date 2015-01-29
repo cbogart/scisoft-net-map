@@ -1,0 +1,9 @@
+Start supervisor with this command:
+
+    supervisord -c supervisord.conf 
+
+This keeps the registry process running.
+
+If you change something in the database, kill the "python register.py" process,
+and let supervisor restart it.  It caches some database values, but it uses
+a writethrough system so it's safe to kill it.
