@@ -1,0 +1,22 @@
+containers:
+    Rsite:
+        dockerfile: .
+        image: scisoft/website
+        run:
+            cmd: pserve --reload --monitor-restart development.R.ini 
+            link: ["db:db"]
+            publish: ["7777:7777"]
+            detach: true
+    TACCsite:
+        dockerfile: .
+        image: scisoft/website
+        run:
+            cmd: pserve --reload --monitor-restart development.TACC.ini 
+            link: ["db:db"]
+            publish: ["8888:8888"]
+            detach: true
+    db:
+        image: dockerfile/mongodb
+        run:
+            expose: 27017
+            detach: true

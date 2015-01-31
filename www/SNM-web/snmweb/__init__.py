@@ -76,7 +76,7 @@ def main(global_config, **settings):
     config.add_route("api_home.category", "/api/{category}")
     config.add_route("api_home.category.id", "/api/{category}/{id}")
 
-    connect(settings['db_name'])
+    connect(settings['db_name'], host=settings['db_host'], port=int(settings['db_port']))
     register_connection('raw-records', settings['raw_db_name'])
 
     config.scan()
