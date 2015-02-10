@@ -37,10 +37,10 @@
       <svg></svg>
     </div>
     <center>
-    <h2>Featured package: <a href="{{request.route_url('application', name=featured.title)}}">
-           {{featured.title}}</a></h2>
-    The orange slices show how often packages were loaded in the same scripts as {{featured.title}}.<br/>
-    Blue slices show how often packages were used <i>without</i> {{featured.title}}<br/>
+    <h2>Featured package: <a href="{{request.route_url('application', name=featured.title|replace("[dot]","."))}}">
+           {{featured.title|replace("[dot]",".")}}</a></h2>
+    The orange slices show how often packages were loaded in the same scripts as {{featured.title|replace("[dot]",".")}}.<br/>
+    Blue slices show how often packages were used <i>without</i> {{featured.title|replace("[dot]",".")}}<br/>
     Click to learn more about a package.
     </center>
   </div>

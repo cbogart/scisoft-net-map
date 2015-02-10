@@ -69,7 +69,7 @@
                   <div class="col-md-9">
                     <h3>
                       <a href="{{request.route_url('application', name=app.title)}}">
-                        {{app.title}}
+                        {{app.title|replace("[dot]",".")}}
                       </a>
                     </h3>
                     <div class="app-extra-info">
