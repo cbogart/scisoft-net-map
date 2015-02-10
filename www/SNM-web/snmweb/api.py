@@ -100,7 +100,7 @@ class ApiViews:
                 print "Irrelevantly, Linking ", request.route_url('application', name=app.title)
                 result.append({
                     "id": str(app.id),
-                    "name": app.title,
+                    "name": app.title.replace("[dot]","."),
                     "link": request.route_url('application', name=app.title)
                 })
             return result
@@ -128,7 +128,7 @@ class ApiViews:
             stat_object = globals()[stat_type]
             for entry in stat_object.objects(application__in=id.split(",")).all():
                 result.append({"data": entry.to_mongo()[group],
-                               "title": entry.application.title})
+                               "title": entry.application.title.replace("[dot]",".")})
             return result
 
         def user_vector(id):
@@ -222,14 +222,14 @@ class ApiViews:
                 for c in cooc:
                     app_id = c.application.id.__str__()
                     print "Linking ", request.route_url('app_used_with', name=c.application.title)
-                    nodedict[app_id] = {"name": c.application.title,
+                    nodedict[app_id] = {"name": c.application.title.replace("[dot]","."),
                                   "id": app_id,
                                   "publications": c.application.publications,
                                   "uses": c.application.usage,
                                   "link": request.route_url('app_used_with', name=c.application.title)}
                     for l in c.links:
                         print "Linking ", request.route_url('app_used_with', name=l.app.title)
-                        nodedict[l.app.id.__str__()] = {"name": l.app.title,
+                        nodedict[l.app.id.__str__()] = {"name": l.app.title.replace("[dot]","."),
                                       "id": l.app.id.__str__(),
                                       "publications": l.app.publications,
                                       "uses": l.app.usage,
@@ -277,7 +277,7 @@ class ApiViews:
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
                     print "Linking ", request.route_url('app_used_with', name=c.title)
-                    nodes.append({"name": c.title,
+                    nodes.append({"name": c.title.replace("[dot]","."),
                                   "id": app_id,
                                   "uses": c.usage,
                                   "publications": c.publications,
