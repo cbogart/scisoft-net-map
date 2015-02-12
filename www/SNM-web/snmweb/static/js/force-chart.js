@@ -2,9 +2,9 @@ function vizForceChart(container, options) {
     var options = $.extend({ //Default or expected options go here
         height  : container.height(),
         width   : container.width(),
-        linkDistance  : 30, //table selector
+        linkDistance  : 70, //table selector
         scimapID: "",
-        charge  : -1000,
+        charge  : -3000,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
@@ -80,18 +80,21 @@ function vizForceChart(container, options) {
             var data = result.data,
                 node, link;
             var max_uses = 0;
+            var allnodes = []; var alllinks = [];
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
                     if (node.id == id) {
                         node.loaded = true;
+                        node.topTen = true;
                         node.focus_co_uses = node.uses;
                     } else {
+                        node.topTen = false;
                         node.focus_co_uses = 0;
                     }
                     app_dict[node.id] = counter;
                     counter++;
-                    nodes.push(node);
+                    allnodes.push(node);
                     max_uses = Math.max(max_uses, node.uses);
                 }
             }
@@ -105,19 +108,50 @@ function vizForceChart(container, options) {
                     ts = t + ":" + s;
                 if (!(st in link_dict)) {
                     link_dict[st] = link_dict[ts] = true;
-                    links.push({
+                    alllinks.push({
                         "source" : s,
                         "target" : t,
                         "value"  : link.value,
                         "unscaled"  : link.unscaled
                     });
                     if (link.source == id) {
-                        nodes[t].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                        allnodes[t].focus_co_uses += link.unscaled.static + link.unscaled.logical;
                     } else if (link.target == id) {
-                        nodes[s].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                        allnodes[s].focus_co_uses += link.unscaled.static + link.unscaled.logical;
                     } 
                 }
             }
+            
+            // Find the 10 nodes with the biggest mass (not percentage) pie slices, and mark them as "topTen"
+            // We'll just display those in the graph, to keep it simpler.
+
+            var sortedNodes = [];
+            for (n in allnodes) {
+                // Could divide by allnodes[n].uses if we wanted biggest *percentage* users.  It gives a very
+                // different graph, which is possibly more useful for some purposes; but it's harder to understand
+                // in relationship to the bar graph, so I'm not including it for now.  Future work.
+                sortedNodes.push({"id": n, "pct": allnodes[n].focus_co_uses}); //*1.0/allnodes[n].uses*1.0});
+            }
+            sortedNodes.sort(function(a,b) { return b["pct"]-a["pct"]; });
+            for (n = 0; n< Math.min(10,sortedNodes.length); n++) {
+                allnodes[sortedNodes[n].id].topTen = true;
+            }
+            for (n in allnodes) {
+                if (allnodes[n].topTen) {
+                    nodes.push(allnodes[n]);
+                    allnodes[n].newid = nodes.length - 1;
+                }
+            }
+            for (i in alllinks) {
+                var link = alllinks[i];
+                if (allnodes[link.source].topTen && allnodes[link.target].topTen) {
+                    link.source = allnodes[link.source].newid;
+                    link.target = allnodes[link.target].newid;
+                    links.push(link);
+                }
+            }
+                
+            
             updateChart();
         });
     }
