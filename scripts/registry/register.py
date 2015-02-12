@@ -56,6 +56,17 @@ def worker(usecache):
             usecache.saveToMongo()
        
 
+def registerParsedSync(c, record, ip, usecache, dbraw="snm-raw-records", flush=True):
+    try:
+        rawrecords = c[dbraw]
+        rawrecords["scimapInfo"].save(record)
+        usecache.registerPacket(record)
+        if usecache.dirty and flush:
+            usecache.saveToMongo()
+    except Exception as e:
+        print "Error: ", e
+        pdb.set_trace()
+
 def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records"):
     try:
         rawrecords = c[dbraw]
@@ -79,6 +90,11 @@ def initializeThreads(usecache):
     t = Thread(target=worker, args=(usecache,))
     t.daemon = True
     t.start()
+
+def finalizeThreads():
+    """Used by taccParse and reprocess"""
+    while (not(queue.empty())):
+        time.sleep(1)
 
 if __name__ == "__main__":
     c = Connection()

@@ -38,6 +38,10 @@ def initializeThreads(usecache):
     t.daemon = True
     t.start()
 
+def finalizeThreads():
+    while (not(queue.empty())):
+        time.sleep(1)
+
 if __name__ == "__main__":
     c = Connection()
     
@@ -48,5 +52,4 @@ if __name__ == "__main__":
     initializeThreads(usecache)
     for raw in c["snm-raw-records"]["scimapInfo"].find():
         queue.put(raw)
-    while (not(queue.empty())):
-        time.sleep(1)
+    finalizeThreads()

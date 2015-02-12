@@ -14,7 +14,7 @@ import datetime
 import pdb
 import json
 import copy
-from register import scrub_dots, registerParsed, initializeThreads
+from register import scrub_dots, registerParsed, initializeThreads, registerParsedSync, finalizeThreads
 from pymongo import Connection
 from snmweb.usage_cache import freshDb, UsageCache
     
@@ -166,6 +166,8 @@ def forTaccDay(taccfiles):
         print fname
         yield load_json(fname)
 
+# Returns list where each item contains all jobs for ONE user in ONE day.  E.g. a item about Jake's jobs on Nov 28th
+# Each of those items contains, in turn, a list of specific jobs (for that user on that day)
 def forTaccLongJob(taccfiles):
     for day in forTaccDay(taccfiles):
         users = defaultdict(list)
@@ -239,7 +241,6 @@ def importTaccData(taccfiles):
     jobsizeHist = defaultdict(int)
     counter = 0
     for job in forTaccLongJob(taccfiles):
-       counter += 1
        jobsizeHist[len(job)] += 1
 
        # Make jobnum -> {start: N, end: N, appset: [a,b,c], follows: {J->delay, J->delay}}
@@ -273,6 +274,7 @@ def importTaccData(taccfiles):
 
 
        for j in job:
+           counter = counter + 1
            app = guess1App(j)
            if (app != ''):
                rec = copy.copy(j)
@@ -292,13 +294,16 @@ def importTaccData(taccfiles):
                if (isinstance(rec["pkgT"], list)):
                    rec["pkgT"] = {}
                else:
-                   rec["pkgT"] = { k: v["libA"] for (k,v) in rec["pkgT"].items() }
+                   # commented-out version includes some less-interesting library information
+                   rec["pkgT"] = { k: [] for (k,v) in rec["pkgT"].items()  } 
+                   # rec["pkgT"] = { k: v["libA"] for (k,v) in rec["pkgT"].items() }
                rec["pkgT"][app] = rec["pkgT"].keys()
                rec["pkgT"] = scrub_dots(rec["pkgT"])
                data = json.dumps(rec)
                registerParsed(c, rec, "0.0.0.0", usecache, dbraw="snm-tacc-raw")
                prevapp = app
                prevapptime = rec["endEpoch"]
+    finalizeThreads()
 
 
 def hashColor(key, selected = False):
