@@ -4,7 +4,7 @@ function vizForceChart(container, options) {
         width   : container.width(),
         linkDistance  : 70, //table selector
         scimapID: "",
-        charge  : -3000,
+        charge  : -1000,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
