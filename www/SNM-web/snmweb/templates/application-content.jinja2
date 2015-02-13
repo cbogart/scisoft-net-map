@@ -17,8 +17,10 @@
 
     {% if sci_platform == "TACC" %}
     <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications resulting from jobs using this package">Publications:</a><span> {{app.publications}}</span>
-    {% else %}
+    {% elif app.publications > 0 %}
     <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications known to reference this package">Publications:</a><span> {{app.publications}}</span>
+    {% else %}
+    <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications known to reference this package">Publications:</a><span> (no count available)</span>
     {% endif %}
   </p>
   <p class="pre-scrollable">{{ app.description|safe }}</p>

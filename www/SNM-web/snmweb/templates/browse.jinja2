@@ -86,11 +86,14 @@
                          class="snm-tooltip"
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
+                        {% if app.publications > 0 %}
                       Publications:
                       <a href="{{request.route_url('app_pubs', name=app.title)}}"
                          class="snm-tooltip"
                          title="Number of publications resulting from jobs using this application">
-                        {{app.publications}}</a>
+                        {{app.publications}}
+                        </a>
+                        {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
