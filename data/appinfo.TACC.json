@@ -1,5 +1,5 @@
 [
-{ "match":["charm","charmm"],
+{ "match":["charm","charmm","charmrun"],
   "title":"CHARMM",
   "description":"CHARMM (Chemistry at HARvard Macromolecular Mechanics): <ul><li>  is a versatile and widely used molecular simulation program with broad application to many-particle systems </li><li>< has been developed with a primary focus on the study of molecules of biological interest, including peptides, proteins, prosthetic groups, small molecule ligands, nucleic acids, lipids, and carbohydrates, as they occur in solution, crystals, and membrane environments </li><li> provides a large suite of computational tools that encompass numerous conformational and path sampling methods, free energy estimates, molecular minimization, dynamics, and analysis techniques, and model-building capabilities</li><li> is useful for a much broader class of many-particle systems</li><li>  can be utilized with various energy functions and models, from mixed quantum mechanical-molecular mechanical force fields, to all-atom classical potentials with explicit solvent and various boundary conditions, to implicit solvent and membrane models</li><li>has been ported to numerous platforms in both serial and parallel architectures</li></ul>",
   "short_description": "CHARMM is a molecular simulation program",
@@ -182,7 +182,7 @@
   "website": "http://www.ks.uiuc.edu/Research/namd/"
 },
 {
-  "match": ["lmp_"],
+  "match": ["lmp_", "lammps"],
   "title": "LAMMPS",
   "description": "LAMMPS is a classical molecular dynamics code, and an acronym for Large-scale Atomic/Molecular Massively Parallel Simulator.<p>LAMMPS has potentials for solid-state materials (metals, semiconductors) and soft matter (biomolecules, polymers) and coarse-grained or mesoscopic systems. It can be used to model atoms or, more generically, as a parallel particle simulator at the atomic, meso, or continuum scale.<p>LAMMPS runs on single processors or in parallel using message-passing techniques and a spatial-decomposition of the simulation domain. The code is designed to be easy to modify or extend with new functionality.",
   "short_description": "LAMMPS is a classical molecular dynamics code, and an acronym for Large-scale Atomic/Molecular Massively Parallel Simulator.",
@@ -206,7 +206,7 @@
   "website": ""
 },
 {
-  "match": ["fftw", "fftw3"],
+  "match": ["fftw", "fftw3", "fftw3_3"],
   "title": "FFTW",
   "description": "FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data (as well as of even/odd data, i.e. the discrete cosine/sine transforms or DCT/DST). We believe that FFTW, which is free software, should become the FFT library of choice for most applications.",
   "short_description": "FFTW is a C subroutine library for computing the discrete Fourier transform (DFT)",
@@ -238,7 +238,7 @@
   "website": "http://www.schrodinger.com/Desmond"
 },
 {
-  "match": ["mdrun"],
+  "match": ["mdrun", "gromacs"],
   "title": "GROMACS",
   "description": "GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles.<p>It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, e.g. polymers.",
   "short_description": "GROMACS is a molecular dynamics package, which simulates Newtonian equations of motion for systems with hundreds to millions of particles.",
