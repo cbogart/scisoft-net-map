@@ -4,7 +4,7 @@ function vizForceChart(container, options) {
         width   : container.width(),
         linkDistance  : 70, //table selector
         scimapID: "",
-        charge  : -1000,
+        charge  : -2000,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
@@ -31,14 +31,15 @@ function vizForceChart(container, options) {
         .charge(options.charge)
         .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
-        .linkStrength(function(d) { return( Math.max(d.value.logical, d.value.static)/10.0); })
+        .linkStrength(function(d) { return( d.scaled*4); })
         .size([width, height]);
     var app_dict = {},
         link_dict = {},
         counter = 0,
         nodes = [],
         sqrt_max_uses = 0,
-        user_vector = {"fftw3": 0.8},
+        max_uses = 0,
+        user_vector = {"fftw3xyz": 0.8},
         links = [];
     force
         .nodes(nodes)
@@ -53,11 +54,15 @@ function vizForceChart(container, options) {
         svg.selectAll(".link")
             .attr("x1", function(d) { 
                 d.len = Math.pow(Math.pow(d.source.x-d.target.x,2) + Math.pow(d.source.y-d.target.y,2), .5)
-                return d.source.x; 
+                d.xtoffset = (d.target.x-d.source.x)*(d.target.radius/d.len); 
+                d.ytoffset = (d.target.y-d.source.y)*(d.target.radius/d.len); 
+                d.xsoffset = (d.target.x-d.source.x)*(d.source.radius/d.len); 
+                d.ysoffset = (d.target.y-d.source.y)*(d.source.radius/d.len); 
+                return d.source.x+d.xsoffset; 
              })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x - (d.target.x-d.source.x)*(d.target.radius/d.len); })
-            .attr("y2", function(d) { return d.target.y - (d.target.y-d.source.y)*(d.target.radius/d.len); })
+            .attr("y1", function(d) { return d.source.y + d.ysoffset; })
+            .attr("x2", function(d) { return d.target.x - d.xtoffset; })
+            .attr("y2", function(d) { return d.target.y - d.ytoffset; })
             ;
         svg.selectAll('g.gnode')
             .attr("transform", function(d) {
@@ -74,13 +79,12 @@ function vizForceChart(container, options) {
             });
       //}, 2000);
     }
-    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
+    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "limit": 10},
         function(result) {
             focusid = id;
             var data = result.data,
                 node, link;
-            var max_uses = 0;
-            var allnodes = []; var alllinks = [];
+            max_uses = 0;
             for (i in data.nodes) {
                 node = data.nodes[i];
                 if (!(node.id in app_dict)) {
@@ -94,7 +98,7 @@ function vizForceChart(container, options) {
                     }
                     app_dict[node.id] = counter;
                     counter++;
-                    allnodes.push(node);
+                    nodes.push(node);
                     max_uses = Math.max(max_uses, node.uses);
                 }
             }
@@ -108,50 +112,20 @@ function vizForceChart(container, options) {
                     ts = t + ":" + s;
                 if (!(st in link_dict)) {
                     link_dict[st] = link_dict[ts] = true;
-                    alllinks.push({
-                        "source" : s,
-                        "target" : t,
-                        "value"  : link.value,
-                        "unscaled"  : link.unscaled
+                    links.push({
+                        "source" : nodes[s],
+                        "target" : nodes[t], 
+                        "type"  : link.type,
+                        "scaled"  : link.scaled,
+                        "raw"  : link.raw
                     });
                     if (link.source == id) {
-                        allnodes[t].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                        nodes[t].focus_co_uses += link.raw;
                     } else if (link.target == id) {
-                        allnodes[s].focus_co_uses += link.unscaled.static + link.unscaled.logical;
+                        nodes[s].focus_co_uses += link.raw;
                     } 
                 }
             }
-            
-            // Find the 10 nodes with the biggest mass (not percentage) pie slices, and mark them as "topTen"
-            // We'll just display those in the graph, to keep it simpler.
-
-            var sortedNodes = [];
-            for (n in allnodes) {
-                // Could divide by allnodes[n].uses if we wanted biggest *percentage* users.  It gives a very
-                // different graph, which is possibly more useful for some purposes; but it's harder to understand
-                // in relationship to the bar graph, so I'm not including it for now.  Future work.
-                sortedNodes.push({"id": n, "pct": allnodes[n].focus_co_uses}); //*1.0/allnodes[n].uses*1.0});
-            }
-            sortedNodes.sort(function(a,b) { return b["pct"]-a["pct"]; });
-            for (n = 0; n< Math.min(10,sortedNodes.length); n++) {
-                allnodes[sortedNodes[n].id].topTen = true;
-            }
-            for (n in allnodes) {
-                if (allnodes[n].topTen) {
-                    nodes.push(allnodes[n]);
-                    allnodes[n].newid = nodes.length - 1;
-                }
-            }
-            for (i in alllinks) {
-                var link = alllinks[i];
-                if (allnodes[link.source].topTen && allnodes[link.target].topTen) {
-                    link.source = allnodes[link.source].newid;
-                    link.target = allnodes[link.target].newid;
-                    links.push(link);
-                }
-            }
-                
-            
             updateChart();
         });
     }
@@ -162,9 +136,10 @@ function vizForceChart(container, options) {
         var allLinks = svglinks.selectAll(".link")
             .data(force.links())
             .enter().append("line")
-            .attr("class", function(d) { if (d.value.static > 0) { return("link static-link") } else { return("link logical-link") }})
-            .attr("marker-end", function(d) { if (d.value.static > 0) { return("url(#Triangle)") } else { return("") }})
-            .style("stroke-width", function(d) { if (d.value.static > 0) { return(d.value.static)/4+1; } else if (d.value.logical > 0) { return(d.value.logical)/4+1; } else { return(0); }});
+            .attr("class", function(d) { if (d.type=="usedwith" ) { return("link logical-link") } else { return("link static-link") }})
+            .attr("marker-end", function(d) { if (d.type=="downstream") { return("url(#Triangle)") } else { return("") }})
+            .attr("marker-start", function(d) { if (d.type=="upstream") { return("url(#Triangle)") } else { return("") }})
+            .style("stroke-width", function(d) { return(d.scaled)*2+1; } );
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())

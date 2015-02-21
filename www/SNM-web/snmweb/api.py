@@ -173,6 +173,48 @@ class ApiViews:
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
+        def dictsum(d1, d2):
+            for k in d2:
+                d1[k] = d1.get(k,0) + d2[k]
+
+        def force_directed(id=None, clustered=False, limit=9999):
+            from bson.objectid import ObjectId
+            app = Application.objects.get(id=id)
+
+            print "st1 limit=", int(limit)
+            mainlinks = list(CoOccurenceLinks.objects(focal= app.id).limit(int(limit)+1))
+            print("st2 mainlinks",len(mainlinks))
+            threshhold = mainlinks[-1]["scaled_count"]
+            print("st3")
+            neighbors = [link["other"] for link in mainlinks]
+            print("st4")
+            neighbor_ids = [link["other"].id for link in mainlinks]
+            print("st5")
+            sidelinks = CoOccurenceLinks.objects(__raw__ = \
+                  {"focal": { "$in": neighbor_ids },"other": { "$in": neighbor_ids+[app.id]}})
+            print("st6")
+            sidelinks = list(sidelinks)
+            print("st6.5 found",len(sidelinks), "side links")
+            
+            alll = mainlinks + sidelinks
+            print("st6.6 on ", len(alll), "records")
+            links = [{"source": l["focal"].id.__str__(),
+                      "target": l["other"].id.__str__(),
+                      "type": l["type"],
+                      "raw": l["raw_count"],
+                      "scaled": l["scaled_count"]} for l in alll]
+            
+            print("st7")
+            apps = Application.objects(__raw__={ "_id": { "$in": neighbor_ids + [app.id] } } )
+            nodes = [{"name": app.title.replace("[dot]","."),
+                      "id": app.id.__str__(),
+                      "uses": app.usage,
+                      "publications": app.publications,
+                      "link": request.route_url('app_used_with', name=app.title)
+                     } for app in apps]
+            print("st8")
+
+            return {"nodes": nodes, "links": links}
 
         #
         #  N.B. the "co_uses" element is not a simple count; it's a little
@@ -181,7 +223,7 @@ class ApiViews:
         #   is the static count, UNLESS the count is zero, in which case the
         #   logical count.
         #
-        def force_directed(id=None, clustered=False):
+        def force_directed_old(id=None, clustered=False):
             nodes = []
             links = []
 
@@ -215,6 +257,11 @@ class ApiViews:
                 print "EXCEPTION: ", repr(e)
                 return False
 
+            def getCoUse(link): 
+                try:
+                    return max(link.co_uses[0], link.co_uses[1])
+                except:
+                    return 0
 
             if id is None:
                 nodedict = {}
@@ -245,20 +292,44 @@ class ApiViews:
                             })
                 nodes = nodedict.values()
             else:
+                print "step1"
                 from bson.objectid import ObjectId
                 app = Application.objects.get(id=id)
-                nodelist = [ObjectId(id)]
+                nodescores = [(ObjectId(id), 9999)]
                 fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
-                print "here", len(fromcooc)
-                nodelist = nodelist + [fc.application.id for fc in fromcooc if significantLink(fc,fc.application.usage)]
+
+                print "step2", len(fromcooc)
+                nodescores = dict(nodescores + \
+                     [(fc.application.id, getCoUse(lnk)) for fc in fromcooc for lnk in fc.links if lnk.app == fc.application.id]) # if significantLink(fc,fc.application.usage)]
+
+                print "From links:"
+                pprint(nodescores)
+
+                print "step2.5", len(fromcooc)
                 tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
-                print "there", len(tocooc)
+
+                print "step3", len(tocooc)
+                tolinks = {tcl.app.id: getCoUse(tcl) for tcl in tc.links} # if significantLink(tcl, app.usage)})
+
+                print "To links"
+                pprint(tolinks)
+
                 for tc in tocooc:
-                    nodelist = nodelist + [tcl.app.id for tcl in tc.links if significantLink(tcl, app.usage)]
+                    dictsum(nodescores, {tcl.app.id: getCoUse(tcl) for tcl in tc.links}) # if significantLink(tcl, app.usage)})
+                print "Combined links"
+                pprint(nodescores)
+
+                print "step3.1", len(tocooc)
+                nodescores.sort(key=lambda kv: kv[1])
+                print "step3.2", len(tocooc)
+                nodelist = [k for (k,v) in nodescores[:11] if v > 0]
+
+                print "step4", len(tocooc)
                 edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
-                print "everhwhere", len(edgecooc)
+                print "step5", len(edgecooc)
                 for fan in edgecooc:
                     src = fan.application
+                    print "step5.1", len(fan.links)
                     for destinf in fan.links:
                         dest = destinf.app.id
                         if (dest in nodelist and src.id in nodelist):
@@ -274,6 +345,12 @@ class ApiViews:
                                              "unscaled" : destinf.co_uses,
 				})    
 
+                #
+                # want a flat list of links: source/target/value/unscaled
+                # and a flat list of node: name/id/uses/pubs/link
+                #
+
+                print "step6"
                 for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
                     app_id = c.id.__str__()
                     print "Linking ", request.route_url('app_used_with', name=c.title)
@@ -282,9 +359,12 @@ class ApiViews:
                                   "uses": c.usage,
                                   "publications": c.publications,
                                   "link": request.route_url('app_used_with', name=c.title)})
+                print "step7"
 
             if (clustered):
+                print "step8.1"
                 nodes = clusteringOrder(nodes, links)
+                print "step8.2"
 
             return {"nodes": nodes, "links": links}
 

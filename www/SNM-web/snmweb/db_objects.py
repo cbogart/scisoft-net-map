@@ -82,6 +82,32 @@ class Link(EmbeddedDocument):
 
 
 """
+This structure represents a flat list of all links between
+applications, with absolute counts of co-usages (static and logical)
+
+   focal: reference to an application
+   other: reference to an application
+   type: upstream, downstream, or usedwith (or other)
+   count: raw count
+   countDivTarget: count/target app count
+   
+Note that every link will appear twice, with focal and other reversed,
+and only the countDivTarget value will be different.
+The list should be sorted by countDivTarget (descending).
+
+force_directed api should return the top N values matching focal.
+The Nth one becomes a threshhold.
+Then search all the N "other" apps found, each as focal, 
+returning all the ones whose countDivTarget > that threshhold.
+"""
+class CoOccurenceLinks(Document):
+    focal = ReferenceField(Application, required=True)
+    other = ReferenceField(Application, required=True)
+    type = StringField(required=True)
+    raw_count = IntField(required=True)
+    scaled_count = FloatField()
+
+"""
 User logins: these are for people logging into the web service,
 not users of the scientific software being tracked.
 Password is encrypted using passlib
@@ -89,6 +115,7 @@ Password is encrypted using passlib
 class WebUsers(Document):
     userid = StringField(required=True)
     password = StringField(required=True)
+
 
 """
 This collection stores applications that happened to co-occur with given

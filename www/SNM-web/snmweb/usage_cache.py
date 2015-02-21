@@ -3,6 +3,7 @@
 from pymongo import MongoClient, Connection
 import json
 import copy
+import time
 from collections import defaultdict
 from datetime import date, timedelta
 from datetime import datetime as dt
@@ -53,10 +54,11 @@ def readPubInfo(sci_platform):
 
 class UsageCache:
 
-    def __init__(self, dest, logicallyLinkRoots, sci_platform):
+    def __init__(self, dest, autogenLogicalDeps, sci_platform, useWeakDeps=True):
         "Load a fresh database from mongo"
 
-        self.logicallyLinkRoots = logicallyLinkRoots
+        self.autogenLogicalDeps = autogenLogicalDeps
+        self.useWeakDeps = useWeakDeps
         self.sci_platform = sci_platform
         self.app_info = readAppInfo(sci_platform)
         (self.pub_indexes, self.pub_list) = readPubInfo(sci_platform)
@@ -155,7 +157,8 @@ class UsageCache:
         return sum([self.apps[appname]["usage"][day] for day in self.apps[appname]["usage"]])
 
     def checkCoUseInvariants(self):
-        for app in self.apps: self.checkCoUseInvariant(app)
+        pass
+        #for app in self.apps: self.checkCoUseInvariant(app)
 
     def checkCoUseInvariant(self, appname):
         cooc = self.apps[appname]["co_occurence"]
@@ -185,10 +188,12 @@ class UsageCache:
                self.apps[pkgname]["user_list"][dayOf(today)] = \
                     list(set(self.apps[pkgname]["user_list"].get(dayOf(today), []) + [packet["user"]]))
 
-            # Fill in publications
-            if (len(self.pub_indexes) > 0 and "account" in packet):
-                ixs = self.pub_indexes.get(packet["account"], set())
-                self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
+               # Fill in publications
+               if (len(self.pub_indexes) > 0 and "account" in packet):
+                   ixs = self.pub_indexes.get(packet["account"], set())
+                   if (packet["account"] == "TG-CTS100062"):
+                       print "Why don't we find pub info for TG-CTS10062?: ", pkgname
+                   self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
             roots = copy.copy(pkgnamelist)
@@ -214,7 +219,7 @@ class UsageCache:
                                      self.apps[dependee]["usage"].get(dayOf(today), 0) + 1
                                 self.apps[dependee]["user_list"][dayOf(today)] = \
                                      list(set(self.apps[dependee]["user_list"].get(dayOf(today), []) + [packet["user"]]))
-            if (self.logicallyLinkRoots):
+            if (self.autogenLogicalDeps):
                 for l1 in roots:
                     for l2 in roots:
                         if (l1 != l2):
@@ -224,7 +229,7 @@ class UsageCache:
                                 pdb.set_trace()
                             self.update_max_co_use(self.apps[l1]["co_occurence"][l2])
     
-            if ("weakPackDeps" in packet and isinstance(packet["weakPackDeps"], dict)):
+            if (self.useWeakDeps and "weakPackDeps" in packet and isinstance(packet["weakPackDeps"], dict)):
                 for weakdependor in packet["weakPackDeps"]:
                     if (isinstance(packet["weakPackDeps"][weakdependor], (list, dict))):
                         for weakdependee in packet["weakPackDeps"][weakdependor]:
@@ -250,7 +255,13 @@ class UsageCache:
                 if "id" not in app:
                     app["id"] = self.writeNewApp(appname)
 
+            print "Saving", len(self.apps), "apps"
+            tempUsage = {}
+            appcount = 0
 	    for appname in self.apps:
+                if (appcount % 100 == 0):
+                    print "   #", appcount," ", appname
+                appcount = appcount + 1
                 app = self.apps[appname]
                 id = app["id"] 
             
@@ -261,6 +272,7 @@ class UsageCache:
                 thisusage["weekly"] = usageData["weekly"]
                 thisusage["monthly"] = usageData["monthly"]
                 app_usage = usageData["total"]
+                tempUsage[appname] = usageData["total"]
                 self.db.usage.save(thisusage)
 
                 # Save list of users.  We won't save the weekly/monthly sets, but we'll use them a few lines down
@@ -306,6 +318,41 @@ class UsageCache:
                 except:
                     pdb.set_trace()
                 self.db.co_occurence.save(coocRec)
+
+            def linkinfo(cooc, cooc_opposite):
+                if cooc["static"] > 0:  return ("upstream", cooc["static"])
+                elif cooc_opposite["static"] > 0: return ("downstream", cooc_opposite["static"])
+                elif cooc["logical"] > 0: return ("usedwith", cooc["logical"])
+                else: return ("none", 0)
+
+            try:
+                self.db.co_occurence_links.drop()
+            except:
+                pass
+
+            def linksRecords():
+               for app1 in self.apps:
+                  for app2 in self.apps:
+                     if app1 != app2:
+                        linkinf = linkinfo(self.apps[app1]["co_occurence"][app2], self.apps[app2]["co_occurence"][app1])
+                        if (linkinf[1] > 4 and tempUsage[app1] > 4 and tempUsage[app2] > 4):
+                            yield { 
+                                "focal": self.apps[app1]["id"],
+                                "other": self.apps[app2]["id"],
+                                "type": linkinf[0],
+                                "raw_count": linkinf[1],
+                                "scaled_count": linkinf[1]*1.0/tempUsage[app2] }
+
+            t1 = time.time()
+            print "Generating"
+            lr = list(linksRecords())
+            print "Sorting", time.time() - t1
+            lr.sort(key=lambda rec: -rec["scaled_count"]-rec["raw_count"]/100000.0)
+            print "writing", time.time() - t1
+            self.db.co_occurence_links.insert(lr)
+            #print "indexing", time.time() - t1
+            #self.db.co_occurence_links.ensure_index({ "focal": 1 })
+            print "done", time.time() - t1
 
             gs = self.db.global_stats.find_one()
             gs["max_co_uses"] = self.max_co_uses
