@@ -16,6 +16,16 @@ function vizForceChart(container, options) {
         .attr("height", height);
    // Arrowhead definition from http://www.w3.org/TR/SVG/painting.html#Markers
     svg.append("defs").append("marker")
+        .attr("id", "TriangleBack")
+        .attr("viewBox", "0 0 10 10")
+        .attr("refX", "0").attr("refY", "5")
+        .attr("markerUnits", "userSpaceOnUse")
+        .attr("markerWidth", "10") 
+        .attr("markerHeight", "10") 
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M 10 0 L 0 5 L 10 10 z");
+    svg.append("defs").append("marker")
         .attr("id", "Triangle")
         .attr("viewBox", "0 0 10 10")
         .attr("refX", "10").attr("refY", "5")
@@ -137,8 +147,8 @@ function vizForceChart(container, options) {
             .data(force.links())
             .enter().append("line")
             .attr("class", function(d) { if (d.type=="usedwith" ) { return("link logical-link") } else { return("link static-link") }})
-            .attr("marker-end", function(d) { if (d.type=="downstream") { return("url(#Triangle)") } else { return("") }})
-            .attr("marker-start", function(d) { if (d.type=="upstream") { return("url(#Triangle)") } else { return("") }})
+            .attr("marker-end", function(d) { if (d.type=="upstream") { return("url(#Triangle)") } else { return("") }})
+            .attr("marker-start", function(d) { if (d.type=="downstream") { return("url(#TriangleBack)") } else { return("") }})
             .style("stroke-width", function(d) { return(d.scaled)*2+1; } );
 
         var allGNodes = svgnodes.selectAll('g.gnode')

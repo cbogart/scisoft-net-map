@@ -126,13 +126,19 @@ function vizBarChart(container, options) {
             if  (nodes[link.source].id == focusid && link.type == "upstream") {
                 outbars.push( { "count": link.raw, "node": nodes[link.target] });
             } 
-            if (nodes[link.target].id == focusid && link.type=="usedwith" ) {
+            else if (nodes[link.target].id == focusid && link.type=="usedwith" ) {
                 logicbars.push({ "count": link.raw, "node": nodes[link.source] });
             } 
-            if (nodes[link.source].id == focusid && link.type=="usedwith") {
+            else if (nodes[link.source].id == focusid && link.type=="usedwith") {
                 logicbars.push({ "count": link.raw, "node": nodes[link.target] });
             } 
-            if (nodes[link.target].id == focusid &&  link.type=="downstream") {
+            else if (nodes[link.source].id == focusid &&  link.type=="downstream") {
+                inbars.push({ "count": link.raw, "node": nodes[link.target] });
+            }
+            else if (nodes[link.target].id == focusid &&  link.type=="upstream") {
+                inbars.push({ "count": link.raw, "node": nodes[link.source] });
+            }
+            else if (nodes[link.target].id == focusid &&  link.type=="downstream") {
                 inbars.push({ "count": link.raw, "node": nodes[link.source] });
             }
         }         
