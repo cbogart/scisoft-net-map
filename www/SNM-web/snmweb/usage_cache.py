@@ -191,8 +191,8 @@ class UsageCache:
                # Fill in publications
                if (len(self.pub_indexes) > 0 and "account" in packet):
                    ixs = self.pub_indexes.get(packet["account"], set())
-                   if (packet["account"] == "TG-CTS100062"):
-                       print "Why don't we find pub info for TG-CTS10062?: ", pkgname
+                   #if (packet["account"] == "TG-CTS100062"):
+                       #print "Why don't we find pub info for TG-CTS10062?: ", pkgname
                    self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
@@ -349,7 +349,9 @@ class UsageCache:
             print "Sorting", time.time() - t1
             lr.sort(key=lambda rec: -rec["scaled_count"]-rec["raw_count"]/100000.0)
             print "writing", time.time() - t1
-            self.db.co_occurence_links.insert(lr)
+            if len(lr) > 0:
+                print "Not writing any links because lr=[]"
+                self.db.co_occurence_links.insert(lr)
             #print "indexing", time.time() - t1
             #self.db.co_occurence_links.ensure_index({ "focal": 1 })
             print "done", time.time() - t1
