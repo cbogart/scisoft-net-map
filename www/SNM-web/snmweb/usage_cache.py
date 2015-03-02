@@ -54,6 +54,55 @@ def readPubInfo(sci_platform):
 
 class UsageCache:
 
+    def insertGitData(self, reposcrape):
+        with usageCacheLock:
+            git_imports = reposcrape.getGitDailyImportCount()  # package -> day -> number
+            git_co_use = reposcrape.getGitCoOccurence() #  package -> package -> number
+            (lastGitProject, numGitProjectsTotal, numGitProjectsScraped) = reposcrape.getGitCounts()
+
+            for pkgname in git_import:
+                self.addNewApp(pkgname)
+                if "id" not in self.app[pkgname]:
+                    self.app[pkgname]["id"] = self.writeNewApp(pkgname)
+
+                usageData = fillInDayWeekMonth(git_imports[pkgname], 0, lambda x,y: x+y, "x", "y")
+                thisusage = self.db.git_usage.find_one({"application": id})
+                thisusage["daily"] = usageData["daily"]
+                thisusage["weekly"] = usageData["weekly"]
+                thisusage["monthly"] = usageData["monthly"]
+                self.db.git_usage.save(thisusage)
+              
+		appRec = self.db.application.find_one({"_id": self.app[pkgname]["id"]})
+                appRec["git_usage"] = usageData["total"]
+                self.db.application.save(appRec)
+
+            def linksRecords():
+               for app1 in git_co_use:
+                  for app2 in git_co_use[app1]:
+                     if app1 != app2:
+                        linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
+                        if (linkinf[1] > 4 and git_imports[app1] > 4 and git_imports[app2] > 4):
+                            yield { 
+                                "focal": self.app[app1]["id"],
+                                "other": self.app[app2]["id"],
+                                "type": linkinf[0],
+                                "raw_count": linkinf[1],
+                                "scaled_count": linkinf[1]*1.0/git_imports[app2] }
+
+            lr = list(linksRecords())
+            lr.sort(key=lambda rec: -rec["scaled_count"]-rec["raw_count"]/100000.0)
+            if len(lr) > 0:
+                print "Git import: Not writing any links because lr=[]"
+                self.db.git_co_occurence_links.insert(lr)
+
+            gs = self.db.global_stats.find_one()
+            gs["last_git_project"] = lastGitProject
+            gs["num_git_projects_total"] = numGitProjectsTotal
+            gs["num_git_projects_scraped"] = numGitProjectsScraped
+            self.db.global_stats.save(gs)
+            self.dirty = False
+
+
     def __init__(self, dest, autogenLogicalDeps, sci_platform, useWeakDeps=True):
         "Load a fresh database from mongo"
 
@@ -67,6 +116,7 @@ class UsageCache:
             self.db = dest
             self.apps = dict()
             self.dirty = False
+            self.lastRpacket = 0
             self.appIds = {}
             for app in dest.application.find():
                 self.apps[app["title"]] = { 
@@ -143,6 +193,7 @@ class UsageCache:
 
         id = self.db.application.save(thisappinfo)
         self.db.usage.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
+        self.db.git_usage.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
         self.db.users_usage.save({ "application": id, "daily" : [], "weekly" : [], "monthly" : [] })
         self.db.user_list.save({ "application": id, "users" : [] })
         self.db.co_occurence.save({ "application": id, "links" : [] })
@@ -176,6 +227,9 @@ class UsageCache:
         with usageCacheLock:
             self.dirty = True
             today = epoch2date(packet["startEpoch"])
+            epoch = int(packet.get("receivedEpoch", packet["startEpoch"]))
+            if epoch > self.lastRpacket:
+                self.lastRpacket = epoch
             pkgnamelist = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
             for pkgT in packet["pkgT"]:
                pkgname = self.translateAppname(pkgT.split("/")[0])
@@ -358,6 +412,7 @@ class UsageCache:
 
             gs = self.db.global_stats.find_one()
             gs["max_co_uses"] = self.max_co_uses
+            gs["last_r_packet"] = str(self.lastRpacket or int(time.time()))
             self.db.global_stats.save(gs)
             self.dirty = False
 

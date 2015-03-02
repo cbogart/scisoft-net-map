@@ -19,6 +19,7 @@ from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
 from snmweb.usage_cache import UsageCache, openOrCreate
+form snmweb.reposcrape import RepoScrape
 from Queue import Queue
 from threading import Thread
 
@@ -45,6 +46,9 @@ def finalizeThreads():
 if __name__ == "__main__":
     c = Connection()
     
+    rs = RepoScrape("/Users/cbogart/rscraper/repoScrape.db")
+    rs.makeAppInfo("../../data/appinfo.R.json")
+
     # True=assume logical link between "root" non-dependent packages
     c.drop_database("snm-r")
     usecache = UsageCache(openOrCreate(c, "snm-r"), True, "R")  
@@ -53,3 +57,5 @@ if __name__ == "__main__":
     for raw in c["snm-raw-records"]["scimapInfo"].find():
         queue.put(raw)
     finalizeThreads()
+
+    usecache.insertGitData(rs)

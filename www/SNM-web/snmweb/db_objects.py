@@ -1,8 +1,12 @@
 from mongoengine import *
 
 class GlobalStats(Document):
-    max_co_uses = MapField(field=IntField())
-    max_publications = IntField()
+    max_co_uses = MapField(field=IntField())   # biggest number of times 2 packages used together ever (for scaling) (obs)
+    max_publications = IntField()         # Biggest number of publications any software has seen (for scaling) (obs)
+    last_r_packet = StringField()           # epoch of last R packet received
+    last_git_project = StringField()        # epoch of last R packet received
+    num_git_projects_total = IntField()      # Number of github projects seen
+    num_git_projects_scraped = IntField()    # number of github project sampled
 
 """
 This class represents collection with applications
@@ -16,6 +20,7 @@ class Application(Document):
     usage = IntField()
     usage_trend = IntField()
     users = IntField()
+    git_usage = IntField()
     website = StringField(default="")
     publications = IntField()
     publicationsUrl = StringField(default="")
@@ -54,6 +59,44 @@ class Usage(Document):
     daily = ListField(EmbeddedDocumentField(ByDateStat))
     weekly = ListField(EmbeddedDocumentField(ByDateStat))
     monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+"""
+Same format as Usage, but records git projects, as one
+project (or subproject) per usage, and the date is the
+last update we've checked of that project.
+"""
+class GitUsage(Document):
+    application = ReferenceField(Application, required=True)
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+
+"""
+Same format as Usage, but this is for overall stats about
+the data sources for the site: how many R sessions have been
+recorded (category="R sessions"); how many Git projects have
+been scraped (category = "Github projects"); how many R packages
+have been downloaded from R studio's cran mirror (category =
+"R studio downloads")
+"""
+class SystemUsage(Document):
+    category = StringField()
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+
+""" 
+Same format as UsersUsage, but capturing total overall data
+sources; see SystemUsage for the values of category.
+"""
+class SystemUsersUsage(Document):
+    category = StringField()
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
 
 """
 Similar to the above, this collection stores number of users
@@ -106,6 +149,18 @@ class CoOccurenceLinks(Document):
     type = StringField(required=True)
     raw_count = IntField(required=True)
     scaled_count = FloatField()
+
+"""
+Same as CoOccurenceLinks, but taken from Github project
+data
+"""
+class GitCoOccurenceLinks(Document):
+    focal = ReferenceField(Application, required=True)
+    other = ReferenceField(Application, required=True)
+    type = StringField(required=True)
+    raw_count = IntField(required=True)
+    scaled_count = FloatField()
+
 
 """
 User logins: these are for people logging into the web service,
@@ -171,7 +226,11 @@ class PubList(Document):
     application = ReferenceField(Application, required=True)
     publications = ListField(EmbeddedDocumentField(PubInfo))
 
-
+class GitProjects(Document):
+    user = StringField()
+    jobID = StringField()
+    lastUpdateEpoch = StringField()
+    pkgT = DictField()
 
 """
 Raw Records: Provide access to the raw records recieved directly
