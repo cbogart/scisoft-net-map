@@ -56,23 +56,29 @@ class UsageCache:
 
     def insertGitData(self, reposcrape):
         with usageCacheLock:
-            git_imports = reposcrape.getGitDailyImportCount()  # package -> day -> number
-            git_co_use = reposcrape.getGitCoOccurence() #  package -> package -> number
+            #print "Querying github i#mport counts"    REMOVE ME
+            #git_imports = reposcrape.getGitDailyImportCount()  # package -> day -> number
+
+            print "Querying github co-usage counts"
+            (git_imports, git_co_use) = reposcrape.getGitCoOccurence() #  package -> package -> number
+            print "Querying github overall counts"
             (lastGitProject, numGitProjectsTotal, numGitProjectsScraped) = reposcrape.getGitCounts()
 
-            for pkgname in git_import:
+            print "Augmenting applications table"
+            for pkgname in git_imports:
                 self.addNewApp(pkgname)
-                if "id" not in self.app[pkgname]:
-                    self.app[pkgname]["id"] = self.writeNewApp(pkgname)
+                if "id" not in self.apps[pkgname]:
+                    self.apps[pkgname]["id"] = self.writeNewApp(pkgname)
 
                 usageData = fillInDayWeekMonth(git_imports[pkgname], 0, lambda x,y: x+y, "x", "y")
-                thisusage = self.db.git_usage.find_one({"application": id})
+                thisusage = self.db.git_usage.find_one({"application": self.apps[pkgname]["id"]})
                 thisusage["daily"] = usageData["daily"]
                 thisusage["weekly"] = usageData["weekly"]
                 thisusage["monthly"] = usageData["monthly"]
                 self.db.git_usage.save(thisusage)
+                self.apps[pkgname]["gitusage"] = usageData["total"]
               
-		appRec = self.db.application.find_one({"_id": self.app[pkgname]["id"]})
+		appRec = self.db.application.find_one({"_id": self.apps[pkgname]["id"]})
                 appRec["git_usage"] = usageData["total"]
                 self.db.application.save(appRec)
 
@@ -81,15 +87,18 @@ class UsageCache:
                   for app2 in git_co_use[app1]:
                      if app1 != app2:
                         linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
-                        if (linkinf[1] > 4 and git_imports[app1] > 4 and git_imports[app2] > 4):
+                        if (linkinf[1] > 4 and self.apps[app1]["gitusage"] > 4 and self.apps[app2]["gitusage"] > 4):
+                            print app1, app2, linkinf
                             yield { 
-                                "focal": self.app[app1]["id"],
-                                "other": self.app[app2]["id"],
+                                "focal": self.apps[app1]["id"],
+                                "other": self.apps[app2]["id"],
                                 "type": linkinf[0],
                                 "raw_count": linkinf[1],
-                                "scaled_count": linkinf[1]*1.0/git_imports[app2] }
+                                "scaled_count": linkinf[1]*1.0/self.apps[app2]["gitusage"] }
 
+            print "Collecting co occurence lists"
             lr = list(linksRecords())
+            print "Sorting co occurence lists"
             lr.sort(key=lambda rec: -rec["scaled_count"]-rec["raw_count"]/100000.0)
             if len(lr) > 0:
                 print "Git import: Not writing any links because lr=[]"

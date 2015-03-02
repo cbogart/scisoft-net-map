@@ -19,7 +19,7 @@ from os import walk
 from datetime import datetime as dt
 from snmweb.db_objects import *
 from snmweb.usage_cache import UsageCache, openOrCreate
-form snmweb.reposcrape import RepoScrape
+from snmweb.reposcrape import RepoScrape
 from Queue import Queue
 from threading import Thread
 
@@ -47,7 +47,8 @@ if __name__ == "__main__":
     c = Connection()
     
     rs = RepoScrape("/Users/cbogart/rscraper/repoScrape.db")
-    rs.makeAppInfo("../../data/appinfo.R.json")
+    rs.makeAppInfo()
+    rs.writeAppInfo("../../data/appinfo.R.json")
 
     # True=assume logical link between "root" non-dependent packages
     c.drop_database("snm-r")
