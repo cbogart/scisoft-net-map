@@ -155,4 +155,5 @@ def view_explore(request):
     order = request.params.get("order", "usage")
     query = request.params.get("query", "")
     apps = Application.objects(title__icontains=query).order_by(order)
-    return {"apps": apps, "visits": count_visits(request)}
+    global_stats = GlobalStats.objects().first()
+    return {"apps": apps, "visits": count_visits(request), "global_stats": global_stats}

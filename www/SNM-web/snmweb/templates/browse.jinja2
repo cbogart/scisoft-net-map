@@ -35,6 +35,8 @@
         <a id="order-usage_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-usage_trend'})}}">Usage trend</a>
         <a id="order-users" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-users'})}}">Users</a>
         <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
+        <a id="order-git_users" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-git_usage'})}}">Github Projects</a>
+        <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
       </div>
     </div>
     <form class="form-group">
@@ -81,13 +83,18 @@
                          class="snm-tooltip"
                          title="Number of runs for the last 60 days">
                         {{app.usage_trend}}</a> for the last 60 days.
-                      Unique users:
+                      &nbsp;&nbsp;Unique users:
                       <a href="{{request.route_url('app_users', name=app.title)}}"
                          class="snm-tooltip"
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
+                      &nbsp;&nbsp;Github Projects:
+                      <span
+                         class="snm-tooltip"
+                         title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
+                        {{app.git_usage}}</span>
                         {% if app.publications > 0 %}
-                      Publications:
+                      &nbsp;&nbsp;Publications:
                       <a href="{{request.route_url('app_pubs', name=app.title)}}"
                          class="snm-tooltip"
                          title="Number of publications resulting from jobs using this application">
