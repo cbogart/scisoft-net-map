@@ -89,6 +89,17 @@ def view_app_pubs(request):
 
     return {"app": app, "pubs": publist, "visits": count_visits(request)}
 
+@view_config(route_name="app_gitprojects",
+             renderer='templates/app_gitprojects.jinja2',
+             permission='view')
+def view_app_pubs(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    git_referers = GitReferers.objects(dependencies= name.replace("[dot]",".")).limit(50)
+
+    return {"app": app, "git_referers": git_referers, "visits": count_visits(request)}
+
+
 @view_config(route_name="app_used_with",
              renderer='templates/app_used_with.jinja2',
              permission='view')

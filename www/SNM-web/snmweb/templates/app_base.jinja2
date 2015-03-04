@@ -56,6 +56,13 @@
                class="btn btn-default btn-block">
               Publications
             </a>
+            {% if sci_platform == "R" %}
+            <a href="{{request.route_url('app_gitprojects', name=app.title)}}"
+               class = "btn btn-default btn-block">
+               Users' projects
+            </a>
+            {% endif%}
+          
           </div>
         </div>
         {% block undersidebar %} {% endblock %}

@@ -61,6 +61,7 @@ def main(global_config, **settings):
     config.add_route("app_dashboard",   "/application/{name}/dashboard")
     config.add_route("application",     "/application/{name}")
     config.add_route("app_pubs", "/application/{name}/publications")
+    config.add_route("app_gitprojects", "/application/{name}/gitprojects")
 
     config.add_route("compare", "/compare")
     config.add_route("about", "/about")

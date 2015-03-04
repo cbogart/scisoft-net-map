@@ -1,0 +1,30 @@
+{% extends "app_base.jinja2" %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+
+
+{% block details %}
+  {% if app.git_usage == 0 %}
+     <h2>No github projects</h2>
+     No project in our sample so far uses {{app.title|replace("[dot]",".")}}.
+  {% else %}
+      <h2>Github projects that depend on {{app.title|replace("[dot]",".")}}</h2>
+      {{app.git_usage}} projects found:
+      <ul>
+      {% for git in git_referers %}
+         <li style="margin:0 0 8px 0;">
+             <b><a href="{{git.url|replace("api.","")|replace("/repos/","/")}}">{{git.name}}</a>:</b>
+             {{git.description}}
+             <br>&nbsp;Dependencies: <i>{% for dep in git.dependencies %} {{ dep }}, {% endfor %}</i>
+      {% endfor %}
+      {% if app.git_usage > 50 %}
+      </ul>
+      <p>
+      ...and {{ app.git_usage - 50 }} more
+      </p>
+      {%endif%}
+  {% endif %}
+{% endblock %}

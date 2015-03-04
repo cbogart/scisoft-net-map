@@ -46,7 +46,7 @@ function vizForceChart(selector, options) {
         .charge(options.charge)
         .gravity(.2)    // Makes the nodes cluster a little tighter than default of .1
         .linkDistance(options.linkDistance)
-        .linkStrength(function(d) { return( d.scaled*4); })
+        .linkStrength(function(d) { return( d.scaled*4.0); })
         .size([width, height]);
     var app_dict = {},
         link_dict = {},
@@ -133,7 +133,7 @@ function vizForceChart(selector, options) {
                         "source" : nodes[s],
                         "target" : nodes[t], 
                         "type"  : link.type,
-                        "scaled"  : link.scaled,
+                        "scaled"  : Math.min(link.scaled, 1.0),
                         "raw"  : link.raw
                     });
                     if (link.source == id) {
@@ -163,7 +163,7 @@ function vizForceChart(selector, options) {
             .attr("class", function(d) { if (d.type=="usedwith" ) { return("link logical-link") } else { return("link static-link") }})
             .attr("marker-end", function(d) { if (d.type=="upstream") { return("url(#Triangle)") } else { return("") }})
             .attr("marker-start", function(d) { if (d.type=="downstream") { return("url(#TriangleBack)") } else { return("") }})
-            .style("stroke-width", function(d) { return(d.scaled)*2+1; } );
+            .style("stroke-width", function(d) { return(d.scaled*2.0+1); } );
 
         var allGNodes = svgnodes.selectAll('g.gnode')
             .data(force.nodes())
