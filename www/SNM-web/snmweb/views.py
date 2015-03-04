@@ -92,7 +92,7 @@ def view_app_pubs(request):
 @view_config(route_name="app_gitprojects",
              renderer='templates/app_gitprojects.jinja2',
              permission='view')
-def view_app_pubs(request):
+def view_app_gitprojects(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
     git_referers = GitReferers.objects(dependencies= name.replace("[dot]",".")).limit(50)
