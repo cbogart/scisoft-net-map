@@ -27,7 +27,7 @@
 
         chart.yAxis
             .axisLabel("Runs")
-            .tickFormat(d3.format(".0f"));
+            .tickFormat(d3.format("d"));
         chart.forceY([0,1]);
 
         function clear_diagram() {

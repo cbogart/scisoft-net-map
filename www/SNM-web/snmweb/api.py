@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import pdb
 from db_objects import *
 from pymongo import Connection
 from tarjan import clusteringOrder
@@ -168,7 +169,9 @@ class ApiViews:
                                
         def usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "Usage")
-
+           
+        def git_usage_over_time(group_by="day", id=None):
+           return data_over_time(group_by, id, "GitUsage")
 
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
@@ -177,43 +180,40 @@ class ApiViews:
             for k in d2:
                 d1[k] = d1.get(k,0) + d2[k]
 
+        def git_force_directed(id=None, clustered=False, limit=9999):
+            return force_directed_helper(id,clustered,limit,datasource=GitCoOccurenceLinks,relevantUsage = lambda app: app.git_usage)
+            
         def force_directed(id=None, clustered=False, limit=9999):
+            return force_directed_helper(id,clustered,limit,datasource=CoOccurenceLinks,relevantUsage = lambda app: app.usage)
+            
+        def force_directed_helper(id=None, clustered=False, limit=9999, datasource=CoOccurenceLinks,relevantUsage = lambda app: app.usage):
             from bson.objectid import ObjectId
             app = Application.objects.get(id=id)
 
-            print "st1 limit=", int(limit)
-            mainlinks = list(CoOccurenceLinks.objects(focal= app.id).limit(int(limit)+1))
-            print("st2 mainlinks",len(mainlinks))
+            #pdb.set_trace()
+            mainlinks = list(datasource.objects(focal= app.id).limit(int(limit)+1))
             threshhold = mainlinks[-1]["scaled_count"]
-            print("st3")
             neighbors = [link["other"] for link in mainlinks]
-            print("st4")
             neighbor_ids = [link["other"].id for link in mainlinks]
-            print("st5")
-            sidelinks = CoOccurenceLinks.objects(__raw__ = \
+            sidelinks = datasource.objects(__raw__ = \
                   {"focal": { "$in": neighbor_ids },"other": { "$in": neighbor_ids+[app.id]}})
-            print("st6")
             sidelinks = list(sidelinks)
-            print("st6.5 found",len(sidelinks), "side links")
             
             alll = mainlinks + sidelinks
-            print("st6.6 on ", len(alll), "records")
             links = [{"source": l["focal"].id.__str__(),
                       "target": l["other"].id.__str__(),
                       "type": l["type"],
                       "raw": l["raw_count"],
                       "scaled": l["scaled_count"]} for l in alll]
             
-            print("st7")
             apps = Application.objects(__raw__={ "_id": { "$in": neighbor_ids + [app.id] } } )
             nodes = [{"name": app.title.replace("[dot]","."),
                       "id": app.id.__str__(),
-                      "uses": app.usage,
+                      "uses": relevantUsage(app),
                       "publications": app.publications,
                       "link": request.route_url('app_used_with', name=app.title)
                      } for app in apps]
-            print("st8")
-
+            
             return {"nodes": nodes, "links": links}
 
         #

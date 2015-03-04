@@ -59,6 +59,11 @@ class UsageCache:
             #print "Querying github i#mport counts"    REMOVE ME
             #git_imports = reposcrape.getGitDailyImportCount()  # package -> day -> number
 
+            print "Loading raw github projects in"
+            self.db.git_referers.remove()
+            recs = reposcrape.transferUsageDetails()
+            self.db.git_referers.insert(recs)
+
             print "Querying github co-usage counts"
             (git_imports, git_co_use) = reposcrape.getGitCoOccurence() #  package -> package -> number
             print "Querying github overall counts"
@@ -76,25 +81,28 @@ class UsageCache:
                 thisusage["weekly"] = usageData["weekly"]
                 thisusage["monthly"] = usageData["monthly"]
                 self.db.git_usage.save(thisusage)
-                self.apps[pkgname]["gitusage"] = usageData["total"]
+                self.apps[pkgname]["git_usage"] = usageData["total"]
               
-		appRec = self.db.application.find_one({"_id": self.apps[pkgname]["id"]})
+                appRec = self.db.application.find_one({"_id": self.apps[pkgname]["id"]})
                 appRec["git_usage"] = usageData["total"]
                 self.db.application.save(appRec)
-
+            
+            # How many projects must share two imports before it's worth mentioning them?  .1%?
+            threshold = 4; #numGitProjectsScraped/1000
+            
             def linksRecords():
                for app1 in git_co_use:
                   for app2 in git_co_use[app1]:
                      if app1 != app2:
                         linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
-                        if (linkinf[1] > 4 and self.apps[app1]["gitusage"] > 4 and self.apps[app2]["gitusage"] > 4):
+                        if (linkinf[1] > threshold and self.apps[app1]["git_usage"] > threshold and self.apps[app2]["git_usage"] > threshold):
                             print app1, app2, linkinf
                             yield { 
                                 "focal": self.apps[app1]["id"],
                                 "other": self.apps[app2]["id"],
                                 "type": linkinf[0],
                                 "raw_count": linkinf[1],
-                                "scaled_count": linkinf[1]*1.0/self.apps[app2]["gitusage"] }
+                                "scaled_count": linkinf[1]*1.0/self.apps[app2]["git_usage"] }
 
             print "Collecting co occurence lists"
             lr = list(linksRecords())
@@ -184,8 +192,10 @@ class UsageCache:
         if (pkgname in self.app_info):
             inf = self.app_info[pkgname].copy()
             if (inf["title"] != pkgname):
-                inf["short_description"] = "(" + inf["title"] + ") " + inf["short_description"]
-                inf["description"] = "(" + inf["title"] + ") " + inf["description"]
+                if inf["title"] != inf["short_description"]:
+                    inf["short_description"] = "(" + inf["title"] + ") " + inf["short_description"]
+                if inf["title"] != inf["description"]:
+                    inf["description"] = "(" + inf["title"] + ") " + inf["description"]
                 inf["title"] = pkgname
         else:
             inf =  {
@@ -363,8 +373,9 @@ class UsageCache:
                 app_users = len(userListData["total"])
                
                 # Save application metadata.
-		appRec = self.db.application.find_one({"_id": id})
+                appRec = self.db.application.find_one({"_id": id})
                 appRec["usage"] = app_usage
+                appRec["git_usage"] = 0
                 appRec["usage_trend"] = sum([pt["y"] for pt in thisusage["daily"] if self.isTrending(pt["x"]) ])
                 appRec["users"] = app_users
                 if (len(app["pub_indexes"]) > 0):

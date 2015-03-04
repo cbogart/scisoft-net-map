@@ -36,6 +36,27 @@ def iso2epoch(dt):
 class RepoScrape:
     def __init__(self, dbname):
         self.db = getConnection(dbname)
+        
+    def transferUsageDetails(self):
+       uses = self.db.execute("select gitprojects.*, group_concat(distinct(package_name)) deps from gitprojects " +\
+                   " left join gitimports on gitprojects.id=gitimports.project_id where gitprojects.cb_last_scan > 0 " +\
+                   " and error == '' group by gitprojects.id having deps!='';");
+       referers = []
+       for use in uses:
+           ref = {
+               "url" : use["gitprojects.url"],
+               "name": use["gitprojects.name"],
+               "description": use["gitprojects.description"],
+               "created_at": use["gitprojects.created_at"],
+               "cb_last_scan": use["gitprojects.cb_last_scan"],
+               "pushed_at": use["gitprojects.pushed_at"],
+               "watchers_count": use["gitprojects.watchers_count"],
+               "stargazers_count": use["gitprojects.stargazers_count"],
+               "forks_count": use["gitprojects.forks_count"],
+               "dependencies": use["deps"].split(",")
+           }
+           referers.append(ref)
+       return referers
 
     def makeAppInfo(self):
        """Dump info from database into appinfo.R.json"""

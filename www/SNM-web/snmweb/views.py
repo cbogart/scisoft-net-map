@@ -103,7 +103,8 @@ def view_app_used_with(request):
 def view_application(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
-    return {"app": app, "visits": count_visits(request)}
+    global_stats = GlobalStats.objects().first()
+    return {"app": app, "visits": count_visits(request), "global_stats": global_stats}
 
 
 @view_config(route_name="compare",

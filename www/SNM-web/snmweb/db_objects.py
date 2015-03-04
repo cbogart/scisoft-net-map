@@ -16,13 +16,14 @@ class Application(Document):
     description = StringField(required=True, default="")
     short_description = StringField(default="")
     image = StringField(default="unknown.jpg")
+    repository = StringField(default="")
     version = StringField(default="")
-    usage = IntField()
-    usage_trend = IntField()
-    users = IntField()
-    git_usage = IntField()
+    usage = IntField(default=0)
+    usage_trend = IntField(default=0)
+    users = IntField(default=0)
+    git_usage = IntField(default=0)
     website = StringField(default="")
-    publications = IntField()
+    publications = IntField(default=0)
     publicationsUrl = StringField(default="")
 
 """
@@ -71,6 +72,22 @@ class GitUsage(Document):
     weekly = ListField(EmbeddedDocumentField(ByDateStat))
     monthly = ListField(EmbeddedDocumentField(ByDateStat))
 
+
+"""
+Actual git projects that refer to Git, CRAN, or Bioconductor packages.
+"""
+class GitReferers(Document):
+    url = StringField()
+    name = StringField()
+    description = StringField()
+    created_at= StringField()
+    forked_from= StringField()
+    cb_last_scan= StringField()
+    pushed_at= StringField()
+    watchers_count= StringField()
+    stargazers_count= StringField()
+    forks_count= StringField()
+    dependencies = ListField(StringField())
 
 """
 Same format as Usage, but this is for overall stats about

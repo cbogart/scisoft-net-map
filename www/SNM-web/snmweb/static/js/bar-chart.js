@@ -1,7 +1,7 @@
-function vizBarChart(container, options) {
+function vizBarChart(selector, options) {
     var options = $.extend({ //Default or expected options go here
-        height  : container.height(),
-        width   : container.width(),
+        height  : $(selector).height(),
+        width   : $(selector).width(),
         scimapID: "",
         focusid : "0",
         stat_id: "force_directed",  // api/stat/{stat_id},
@@ -12,7 +12,7 @@ function vizBarChart(container, options) {
     var focusid = options.focusid;
     var focusnode = {};
     var focus = "focus";
-    var svg = d3.select("#barchart svg")
+    var svg = d3.select(selector)
         .attr("width", width)
         .attr("height", height);
     var mainbartitle = svg.append("text")
@@ -110,6 +110,8 @@ function vizBarChart(container, options) {
             }
             setBarInfo(focusid);
             updateChart();
+        }, function() {  // on failure, clear the chart
+           svg.remove();
         });
     }
     function setBarInfo(focusid) {

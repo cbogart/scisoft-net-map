@@ -108,7 +108,10 @@
                   </div>
                 </div>
                 <p>
-                  {{ app.short_description }}
+                  {{ app.short_description }}.
+                {% if app.repository %}
+                    Distributed through {{ app.repository }}.
+                {% endif %}
                 </p>
               </td>
             </tr>

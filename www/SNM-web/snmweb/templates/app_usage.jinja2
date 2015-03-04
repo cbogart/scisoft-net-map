@@ -7,6 +7,9 @@
     #chart svg {
       height: 400px;
     }
+    #git_chart svg {
+      height: 400px;
+    }
   </style>
 {% endblock %}
 
@@ -17,12 +20,18 @@
   <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
   <script>
     $(function main() {
+      var git_chart = $.vizLineChart("#git_chart svg",
+        {
+          table   : $("#git-graph-data"),
+          stat_id : "git_usage_over_time"
+        });
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
           stat_id : "usage_over_time"
         });
-      var btns = $("#filters-group button");
+       var btns = $("#filters-group button");
+       var git_btns = $("#git-filters-group button");
       btns.click(function() {
         btns.removeClass("active");
         $(this).addClass("active");
@@ -31,13 +40,26 @@
           id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
         });
       });
+      git_btns.click(function() {
+        git_btns.removeClass("active");
+        $(this).addClass("active");
+        git_chart.drawDiagram({
+          group_by: $(this).data("period"),
+          id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
+        });
+        
+      });
       chart.drawDiagram({group_by: "week", id: app_id});
+      git_chart.drawDiagram({group_by: "week", id: app_id});
+      
     });
 
     $('#myTab a').click(function (e) {
       e.preventDefault()
       $(this).tab('show')
+      $(window).trigger('resize');
     })
+        
   </script>
 {% endblock %}
 
@@ -45,15 +67,23 @@
   <h2>Usage over time</h2>
   <div class="panel-body">
   <ul class="nav nav-tabs" role="tablist" id="myTab">
-    <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab">Chart</a></li>
-    <li><a href="#graph-data-wrapper" role="tab" data-toggle="tab">Data</a></li>
+    <li class="active"><a href="#chart-wrapper" role="tab" data-toggle="tab"><b>Usage Chart</b></a></li>
+    <li><a href="#graph-data-wrapper" role="tab" data-toggle="tab">Usage Data</a></li>
     <li><a href="#graph-desc-wrapper" role="tab" data-toggle="tab">
-      Chart description
+      Usage explanation
     </a></li>
+    
+    {% if sci_platform == "R" %}
+     <li><a href="#git-chart-wrapper" role="tab" data-toggle="tab"><b>Github Chart</b></a></li>
+     <li><a href="#git-desc-wrapper" role="tab" data-toggle="tab">
+      Github explanation
+    </a></li>
+    {% endif %}
   </ul>
 
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
+      <h3>Usage counts by volunteers with instrumented R installations</h3>
       <div id="chart">
         <svg></svg>
       </div>
@@ -66,6 +96,37 @@
         </div>
       </div>
     </div>
+ 
+   {% if sci_platform == "R" %}
+   <div id="git-chart-wrapper" class="tab-pane">
+      <h3>Most recent update for Github projects using this package</h3>
+      <div id="git_chart">
+        <svg></svg>
+      </div>
+      <div class="row" id="filters">
+        <div id="git-filters-group" class="btn-group">
+          <button type="button" class="btn disabled">Period:</button>
+          <button data-period="day" type="button" class="btn btn-default">Day</button>
+          <button data-period="week" type="button" class="btn active btn-default">Week</button>
+          <button data-period="month" type="button" class="btn btn-default">Month</button>
+        </div>
+      </div>
+    </div>
+    <div id="git-desc-wrapper" class="tab-pane">
+      <h4>Description</h4>
+      Each data point on the chart shows the number of github projects <em>last udpated</em>
+      that day that made use
+      of this package. For instance, if chart shows usage = 212
+      on 2012-07-15 it means that that day was the most recent update for
+      212 github projects that referenced this package.
+      <p>
+      Note that github projects might be quite a bit older than their last update,
+      so although the graph looks like an increase in usage, it is not necessarily;
+      a package heavily weighted towards recent dates might have been in use for a 
+      very long time, but most of its projects are still under active development.
+    </div>
+    {% endif %}
+
 
     <div id="graph-data-wrapper" class="tab-pane">
       <table class="table" id="graph-data">
@@ -79,13 +140,16 @@
         </tbody>
       </table>
     </div>
+    
     <div id="graph-desc-wrapper" class="tab-pane">
       <h4>Description</h4>
-      Each data-point on the chart shows number of runs of the application
+      Each data point on the chart shows number of uses of a package
       for a given day (week, month). For instance, if chart shows usage = 212
-      on 2012-07-15 it means that during this day this application was run
-      212 times.
+      on 2012-07-15 it means that during this day this package was used
+      212 times that day.
     </div>
+    
+    
   </div>
 </div>
 {% endblock %}

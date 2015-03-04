@@ -1,19 +1,24 @@
-function vizForceChart(container, options) {
+function vizForceChart(selector, options) {
     var options = $.extend({ //Default or expected options go here
-        height  : container.height(),
-        width   : container.width(),
-        linkDistance  : 70, //table selector
+        height  : $(selector).height(),
+        width   : $(selector).width(),
+        linkDistance  : 120, //table selector
         scimapID: "",
         charge  : -2000,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
+    var retrieved = false;
+    var selector = selector;
     var height = options.height;
     var width = options.width;
     var focusid = "";
-    var svg = d3.select("#chart svg")
+    var svg = d3.select(selector)
         .attr("width", width)
         .attr("height", height);
+    svg.selectAll("text").remove();
+    svg.append("text").attr("y", 150).text("Calculating...");
+
    // Arrowhead definition from http://www.w3.org/TR/SVG/painting.html#Markers
     svg.append("defs").append("marker")
         .attr("id", "TriangleBack")
@@ -89,7 +94,9 @@ function vizForceChart(container, options) {
             });
       //}, 2000);
     }
-    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "limit": 10},
+    function loadData(id) {
+        
+        snmapi.getStat(options.stat_id, {"id": id, "limit": 10},
         function(result) {
             focusid = id;
             var data = result.data,
@@ -137,10 +144,17 @@ function vizForceChart(container, options) {
                 }
             }
             updateChart();
+        }, function() {  // on failure
+           console.log("FAILURE!");
+           svg.selectAll("*").remove();
+           svg.append("text").attr("y", 150).text("No data available");
         });
     }
 
     function updateChart() {
+        svg.selectAll("text").remove();
+        svg.attr("width", $(selector).width())
+           .attr("height", $(selector).height());
         force.start();
         var big = 25, small=4;
         var allLinks = svglinks.selectAll(".link")
@@ -213,6 +227,6 @@ function vizForceChart(container, options) {
 
 
     return {
-        start: function(id){loadUserInfo(); loadData(id);}
+        start: function(id){var ret = loadUserInfo(); loadData(id); return(retrieved); }
     }
 }
