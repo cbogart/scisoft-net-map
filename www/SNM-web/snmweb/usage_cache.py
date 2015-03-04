@@ -88,7 +88,7 @@ class UsageCache:
                 self.db.application.save(appRec)
             
             # How many projects must share two imports before it's worth mentioning them?  .1%?
-            threshold = 4; #numGitProjectsScraped/1000
+            threshold = 7; #numGitProjectsScraped/1000
             
             def linksRecords():
                for app1 in git_co_use:

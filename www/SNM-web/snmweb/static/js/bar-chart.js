@@ -77,7 +77,7 @@ function vizBarChart(selector, options) {
                user_vector = result.data;
             });
     }
-    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "limit":99},
+    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "limit":30},
         function(result) {
             var data = result.data,
                 node, link;
