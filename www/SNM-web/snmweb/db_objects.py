@@ -25,6 +25,14 @@ class Application(Document):
     website = StringField(default="")
     publications = IntField(default=0)
     publicationsUrl = StringField(default="")
+    views = ListField(StringField())
+
+"""
+Just a list of task views; each is in the form repo/viewname,
+e.g. cran/Optimization
+"""
+class Views(Document):
+    viewname = StringField()
 
 """
 This class represents nested structure that looks like this:

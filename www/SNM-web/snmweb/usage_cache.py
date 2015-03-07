@@ -54,6 +54,14 @@ def readPubInfo(sci_platform):
 
 class UsageCache:
 
+    def allTaskViews(self):
+        v = set()
+        for app in self.app_info:
+            v = v.union(set(self.app_info[app]["views"]))
+        v = sorted(list(v), key=lambda k:k.split("/")[1])
+        return v
+        
+
     def insertGitData(self, reposcrape):
         with usageCacheLock:
             #print "Querying github i#mport counts"    REMOVE ME
@@ -86,6 +94,10 @@ class UsageCache:
                 appRec = self.db.application.find_one({"_id": self.apps[pkgname]["id"]})
                 appRec["git_usage"] = usageData["total"]
                 self.db.application.save(appRec)
+
+            print "Saving task view information"
+            self.db.views.remove()
+            self.db.views.insert([{"viewname": v} for v in self.allTaskViews()])
             
             # How many projects must share two imports before it's worth mentioning them?  .1%?
             threshold = 7; #numGitProjectsScraped/1000
@@ -204,6 +216,7 @@ class UsageCache:
                "short_description" : "unknown",
                "image" : "unknown.jpg",
                "version" : "",
+               "views" : [],
                "publications" : 0 }
         return inf
 

@@ -46,13 +46,25 @@ def finalizeThreads():
 if __name__ == "__main__":
     c = Connection()
     
-    rs = RepoScrape("/Users/cbogart/rscraper/repoScrape.db")
+    if len(sys.argv) < 4:
+        print "Usage:", sys.argv[0], "<sqlite repo db>", "<mongo db>", "<appinfo file>"
+        quit()
+
+    sqlitedb = sys.argv[1]
+    snmdb = sys.argv[2]
+    appinfo = sys.argv[3]
+    
+    if (not os.path.isfile(sqlitedb)):
+        print sqlitedb, "does not exist."
+        quit()
+     
+    rs = RepoScrape(sqlitedb)
     rs.makeAppInfo()
-    rs.writeAppInfo("../../data/appinfo.R.json")
+    rs.writeAppInfo(appinfo)
 
     # True=assume logical link between "root" non-dependent packages
-    c.drop_database("snm-r")
-    usecache = UsageCache(openOrCreate(c, "snm-r"), True, "R")  
+    c.drop_database(snmdb)
+    usecache = UsageCache(openOrCreate(c, snmdb), True, "R")  
 
     initializeThreads(usecache)
     for raw in c["snm-raw-records"]["scimapInfo"].find():

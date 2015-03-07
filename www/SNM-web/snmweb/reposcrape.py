@@ -60,7 +60,7 @@ class RepoScrape:
 
     def makeAppInfo(self):
        """Dump info from database into appinfo.R.json"""
-       packages = self.db.execute("select * from packages")      
+       packages = self.db.execute("select packages.*, group_concat(distinct(tags.tag)) views from packages left join tags on packages.name = tags.package_name group by packages.name;")
 
         # prefer cran to bioc to github
        self.appinfo = {}
@@ -78,6 +78,7 @@ class RepoScrape:
            self.appinfo[name]["title"]= pack["packages.title"]
            self.appinfo[name]["short_description"]=pack["packages.title"]
            self.appinfo[name]["match"]=[ name ]
+           self.appinfo[name]["views"]=pack["views"].split(",") if pack["views"] is not None else []
            self.deps[name]= []
 
        deps = self.db.execute("select * from staticdeps")
