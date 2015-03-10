@@ -21,40 +21,158 @@
     }
     $("#order-" + order).addClass("active");
 
-    var query = SNM.getParameterByName("query");
-    $("#query-input").val(query);
+    var start_at = SNM.getParameterByName("start-at");
+    console.log("{{start_at}} is not " + start_at);
+    var app_count = SNM.getParameterByName("app-count");
+    var per_page = SNM.getParameterByName("per-page");
+    var queryname = SNM.getParameterByName("queryname");
+    $("#query-name-input").val("{{queryname}}");
+    var queryview = SNM.getParameterByName("queryview");
+    $("#query-views-input").val("{{queryview}}");
+    
+    // NEW STUFF vv
+    
+    var names = [ {%for n in allnames %} "{{n}}", 
+    {%endfor%} ];
+    var views = [ {%for v in allviews %} "{{v}}",
+     {%endfor%} ];
+    
+    function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+ 
+    $( "#query-name-input" )
+      // don't navigate away from the field on tab when selecting an item
+      .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function( request, response ) {
+          // delegate back to autocomplete, but extract the last term
+          response( $.ui.autocomplete.filter(
+            names, request.term ) );
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          this.value = ui.item.value;
+          $("#query-views-input").val("");
+          return false;
+        }
+      });
+      
+    $( "#query-views-input" )
+      // don't navigate away from the field on tab when selecting an item
+      .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function( request, response ) {
+          // delegate back to autocomplete, but extract the last term
+          response( $.ui.autocomplete.filter(
+            views, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( ", " );
+          $("#query-name-input").val("");
+          return false;
+        }
+      });
+    
+    
+    // NEW STUFF ^^
   </script>
 {% endblock %}
 
 {% block content %}
+  
   <div id="applications" class="col-md-12">
     <div id="sort-by-panel" style="float:left">
       <div class="btn-group">
         <button type="button" class="btn disabled">Order by:</button>
-        <a id="order-usage" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-usage'})}}">Usage</a>
-        <a id="order-usage_trend" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-usage_trend'})}}">Usage trend</a>
-        <a id="order-users" class="btn btn-default active" href="{{request.route_url('browse', _query={'order': '-users'})}}">Users</a>
-        <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
-        <a id="order-git_users" class="btn btn-default" href="{{request.route_url('browse', _query={'order': '-git_usage'})}}">Github Projects</a>
-        <a id="order-title" class="btn btn-default" href="{{request.route_url('browse', _query={'order': 'title'})}}">Alphabetically</a>
+        <a id="order-usage" class="btn btn-default" onClick="$('#order-input').val('-usage'); $('#criteria').submit();">Usage</a>
+        <a id="order-usage_trend" class="btn btn-default" onClick="$('#order-input').val('-usage_trend'); $('#criteria').submit();">Usage trend</a>
+        <a id="order-users" class="btn btn-default" onClick="$('#order-input').val('-users'); $('#criteria').submit();">Users</a>
+        <a id="order-title" class="btn btn-default" onClick="$('#order-input').val('-title'); $('#criteria').submit();">Alphabetically</a>
+        <a id="order-git_usage" class="btn btn-default" onClick="$('#order-input').val('-git_usage'); $('#criteria').submit();">Github References</a>
       </div>
+         
+      
     </div>
-    <form class="form-group">
-      <div id="search" class="input-group" style="float: right">
-        <input id="query-input" name="query" type="text" class="form-control">
-        <span class="input-group-btn">
-          <input class="btn btn-default" type="submit" style="margin-left: -5px">Search</button>
-        </span>
-        <input name="order" type="hidden" id="order-input" />
-      </div>
-    </form>
+    
 
     <div style="clear: both"></div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 >Applications</h3>
+    
+   <form class="form-horizontal" id="criteria">
+      <div class="row">
+        <div class="col-md-4">
+          Find package name(s):
+          <input id="query-name-input" name="query-name" type="text" class="form-control" style="margin-bottom: 5px;">
+        </div>
+        <div class="col-md-4">
+          Find CRAN/Bioconductor task view(s):
+          <input id="query-views-input" name="query-view" type="text" class="form-control" style="margin-bottom: 5px;">
+        </div>
+        <div class="col-md-2">
+          &nbsp;<br>
+          <span class="input-group-btn">
+            <input class="btn btn-default" type="submit">Package Name</button>
+          </span>
+          <input name="order" type="hidden" id="order-input" />
+          <input name="start-at" type="hidden" id="start-at"/>
+        </div>
       </div>
+    </form>
+    <div style="clear: both"></div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix"> 
+        <h3 class="pull-left" style="padding-top: 7px;">Applications</h3>
+            <nav class="pull-right">
+              <ul  class="pagination" style="margin:0px;">
+                {% if start_at > 1 %}
+                <li><a  onClick="$('#start-at').val(1); $('#criteria').submit();">|&lt;</a></li>
+                <li ><a  onClick="$('#start-at').val({{start_at}}-{{per_page}}); $('#criteria').submit();">&lt;&lt;</a></li>
+                {% else %}
+                <li class="disabled"><a class="btn-default" onClick="$('#start-at').val(1); $('#criteria').submit();">|&lt;</a></li>
+                <li class="disabled"><a class="btn-default disabled">&lt;&lt;</a></li>
+                {% endif %}
+                <li class="active"><a>{{start_at}}&mdash;{{end_at}} of {{app_count}}</a>
+                {% if end_at < app_count %}
+                <li ><a   onClick="$('#start-at').val({{end_at+1}}); $('#criteria').submit();">&gt&gt;</a></li>
+                <li  ><a onClick="$('#start-at').val({{app_count}}); $('#criteria').submit();">&gt;|</a></li>
+                {% else %}
+                <li class="disabled"><a class="btn-default">&gt&gt;</a></li>
+                <li class="disabled"><a class="btn-default" onClick="$('#start-at').val({{app_count}}); $('#criteria').submit();">&gt;|</a></li>
+                {% endif %}
+              </ul>
+            </nav>
+            
+       </div>
       <div class="panel-body">
         <table class="table table-striped table-hover">
           {% for app in apps %}
@@ -88,7 +206,7 @@
                          class="snm-tooltip"
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
-                      &nbsp;&nbsp;Github Projects:
+                      <br/>Github Projects:
                       <span
                          class="snm-tooltip"
                          title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
@@ -113,6 +231,10 @@
                     Distributed through {{ app.repository }}.
                 {% endif %}
                 </p>
+                {% if sci_platform == "R" and app.views != [] %}
+                    <p>Task views: {{ app.views|join(', ') }}</a>
+                {% endif %}
+
               </td>
             </tr>
           {% endfor %}

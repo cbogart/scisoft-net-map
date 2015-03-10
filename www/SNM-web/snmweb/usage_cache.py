@@ -108,7 +108,6 @@ class UsageCache:
                      if app1 != app2:
                         linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
                         if (linkinf[1] > threshold and self.apps[app1]["git_usage"] > threshold and self.apps[app2]["git_usage"] > threshold):
-                            print app1, app2, linkinf
                             yield { 
                                 "focal": self.apps[app1]["id"],
                                 "other": self.apps[app2]["id"],
@@ -193,6 +192,8 @@ class UsageCache:
         self.today = thedate
 
     def addNewApp(self, pkgname):
+        if "\n" in pkgname:
+            pdb.set_trace()
         if pkgname not in self.apps:
             self.apps[pkgname] = dict()
             self.apps[pkgname]["usage"] = defaultdict(int)
@@ -201,6 +202,8 @@ class UsageCache:
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
 
     def getUnknownAppInfo(self, pkgname):
+        if "\n" in pkgname:
+            pdb.set_trace()
         if (pkgname in self.app_info):
             inf = self.app_info[pkgname].copy()
             if (inf["title"] != pkgname):
@@ -221,6 +224,8 @@ class UsageCache:
         return inf
 
     def writeNewApp(self, apptitle):
+        if "\n" in apptitle:
+            pdb.set_trace()
         thisappinfo = self.getUnknownAppInfo(apptitle)
 
         id = self.db.application.save(thisappinfo)

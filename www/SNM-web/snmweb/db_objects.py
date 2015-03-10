@@ -87,6 +87,7 @@ Actual git projects that refer to Git, CRAN, or Bioconductor packages.
 class GitReferers(Document):
     url = StringField()
     name = StringField()
+    owner = StringField()
     description = StringField()
     created_at= StringField()
     forked_from= StringField()
