@@ -46,7 +46,7 @@ def scrub_dots(dottyDict):
         newdict[k.replace(".","[dot]")] = dottyDict[k]
     return newdict
     
-def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records"):
+def registerParsed(c, record, ip, dbraw="snm-raw-records"):
     try:
         rawrecords = c[dbraw]
         rawrecords["scimapInfo"].save(record)
@@ -54,11 +54,11 @@ def registerParsed(c, record, ip, usecache, dbraw="snm-raw-records"):
         print "Error: ", e
         pdb.set_trace()
 
-def register(c, data, ip, usecache, dbraw="snm-raw-records"):
+def register(c, data, ip, dbraw="snm-raw-records"):
     try:
         record = json.loads(data, object_hook = scrub_dots)
         record["receivedEpoch"] = int(time.time())
-        registerParsed(c, record, ip, usecache, dbraw)
+        registerParsed(c, record, ip, dbraw)
     except Exception as e:
         print "Error: " + str(e)
         (r1,r2,r3) = sys.exc_info()
