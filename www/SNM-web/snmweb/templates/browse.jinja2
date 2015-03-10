@@ -133,10 +133,12 @@
           Find package name(s):
           <input id="query-name-input" name="query-name" type="text" class="form-control" style="margin-bottom: 5px;">
         </div>
+        {% if sci_platform == "R" %}
         <div class="col-md-4">
           Find CRAN/Bioconductor task view(s):
           <input id="query-views-input" name="query-view" type="text" class="form-control" style="margin-bottom: 5px;">
         </div>
+        {% endif %}
         <div class="col-md-2">
           &nbsp;<br>
           <span class="input-group-btn">
@@ -206,13 +208,16 @@
                          class="snm-tooltip"
                          title="Number of users from 2012-04-09 to 2013-01-27">
                         {{app.users}}</a>
-                      <br/>Github Projects:
-                      <span
-                         class="snm-tooltip"
-                         title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
-                        {{app.git_usage}}</span>
-                        {% if app.publications > 0 %}
-                      &nbsp;&nbsp;Publications:
+                      {% if sci_platform == "R" %}
+                          <br/>Github Projects:
+                          <span
+                             class="snm-tooltip"
+                             title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
+                            {{app.git_usage}}</span>
+                            {% if app.publications > 0 %}
+                          &nbsp;&nbsp;
+                      {% endif %}
+                      Publications:
                       <a href="{{request.route_url('app_pubs', name=app.title)}}"
                          class="snm-tooltip"
                          title="Number of publications resulting from jobs using this application">

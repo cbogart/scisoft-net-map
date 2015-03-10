@@ -41,7 +41,13 @@
       if (firsttime == false) {  
           force_opt = {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false, height:400};
           force_chart = vizForceChart("#chart svg", force_opt);
-          bar_chart = vizBarChart("#barchart svg", {focusid: app_id, height:800, retrieved:false});
+          bar_chart = vizBarChart("#barchart svg", {focusid: app_id, height:800, retrieved:false, 
+           {% if sci_platform == "R" %}
+            jobname:"sessions"
+           {% else %}
+            jobname:"jobs"
+           {% endif %}
+          });
           var retrieved = force_chart.start(app_id);
           bar_chart.start(app_id);
           firsttime = true;
@@ -53,7 +59,7 @@
       if (firstgit == false) {  
           gforce_opt = {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false, height:400, stat_id: "git_force_directed"};
           git_force_chart = vizForceChart("#git-chart svg", gforce_opt);
-          git_bar_chart = vizBarChart("#git-barchart svg", {focusid: app_id, height:800, stat_id: "git_force_directed", retrieved:false});
+          git_bar_chart = vizBarChart("#git-barchart svg", {focusid: app_id, height:800, stat_id: "git_force_directed", jobname:"projects", retrieved:false});
           git_force_chart.start(app_id);
           git_bar_chart.start(app_id);
           firstgit = true;
@@ -81,7 +87,7 @@
 {% block details %}
   <div class="panel-body col-md-12">
   <ul class="nav nav-tabs" role="tablist" id="myTab">
-    <li><a href="#chart-wrapper" role="tab" data-toggle="tab">Live usage</a></li>
+    <li><a href="#chart-wrapper" role="tab" data-toggle="tab">Recorded usage</a></li>
     {% if sci_platform == "R" %}
     <li><a href="#github-chart-wrapper" role="tab" data-toggle="tab" id="gittab">Github projects</a></li>
     {% endif %}
@@ -105,7 +111,7 @@
       by R's package loading mechanism).  Dotted lines are packages users chose
       to use during the same R session.  
 
-      <h3>Live usage</h3>
+      <h3>Recorded usage</h3>
       The data shows how often R packages were used together by volunteers who are allowing
       us to track their use of R from day to day.
       <br><p>

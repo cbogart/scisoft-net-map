@@ -4,9 +4,11 @@ function vizBarChart(selector, options) {
         width   : $(selector).width(),
         scimapID: "",
         focusid : "0",
+        jobname : "instances",
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
+    var jobname = options.jobname;
     var height = options.height;
     var width = options.width;
     var focusid = options.focusid;
@@ -17,10 +19,10 @@ function vizBarChart(selector, options) {
         .attr("height", height);
     var mainbartitle = svg.append("text")
         .attr("class", "bartitle")
-        .text("Out of _ jobs of _");
+        .text("Out of _ " + jobname + " of _");
     var mainbartitle2 = svg.append("text")
         .attr("class", "bartitle")
-        .text("Out of _ jobs of _");
+        .text("Out of _ " + jobname + " of _");
     var axis = svg.append("g").attr("class","baraxis");
     var inbartitle = svg.append("text")
         .attr("class", "barsubtitle")
@@ -49,15 +51,15 @@ function vizBarChart(selector, options) {
     }
     function setLabels(focusname) {
         titleAndText(mainbartitle, "What users used with " + focusname);
-        titleAndText(mainbartitle2, "Out of " + focusnode.uses + " jobs...");
+        titleAndText(mainbartitle2, "Out of " + focusnode.uses + " " + jobname + "...");
         titleAndText(inbartitle, "" + inbars.length + " downstream dependencies",
-                                  "These packages appeared in jobs alongside " + focusname + ", and listed " + focusname + " as a dependency.");
-        outbarExplanation = "These packages appeared in jobs alongside " + focusname + ", and were listed as dependencies. " +
-                                  "They may not show up in all " + focusnode.uses + " jobs, if there were different versions of " + focusname +
+                                  "These packages appeared in " + jobname + " alongside " + focusname + ", and listed " + focusname + " as a dependency.");
+        outbarExplanation = "These packages appeared in " + jobname + " alongside " + focusname + ", and were listed as dependencies. " +
+                                  "They may not show up in all " + focusnode.uses + " " + jobname + ", if there were different versions of " + focusname +
                                   ", or if some dependency data was unavailable.";
         titleAndText(outbartitle, "" + outbars.length + " upstream dependencies", outbarExplanation);
         titleAndText(logicbartitle, "" + logicbars.length + " other packages",
-                                  "These packages appeared in jobs alongside " + focusname + ", with no known dependency relationship.");
+                                  "These packages appeared in " + jobname + " alongside " + focusname + ", with no known dependency relationship.");
            
         
     }    
@@ -228,20 +230,20 @@ function vizBarChart(selector, options) {
             var only = "";
             if (d["count"] < focusnode["uses"]/2) { only = " only"; }
             return(
-                  d["node"]["name"] + ": " + d["count"] + " jobs\n" +
-                  "In " + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the jobs where "
+                  d["node"]["name"] + ": " + d["count"] + " " + jobname + "\n" +
+                  "In " + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the " + jobname + " where "
                    + focusnode["name"] + " was run, "
                    + d["node"]["name"] + " was also run "
-                   + "(" + d["count"] + "/" + focusnode["uses"] + " jobs)");
+                   + "(" + d["count"] + "/" + focusnode["uses"] + " " + jobname + ")");
         }
         function text_FocusPercentOfCoUse(d) {
             var only = "";
             if (d["count"] < focusnode["uses"]/2) { only = " only"; }
             return(
-                  "In " + only + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the jobs where "
+                  "In " + only + (Math.floor(d["count"]*100/focusnode["uses"])) + "% of the " + jobname + " where "
                    + focusnode["name"] + " was run, "
                    + d["node"]["name"] + " was also run "
-                   + "(" + d["count"] + "/" + focusnode["uses"] + " jobs)");
+                   + "(" + d["count"] + "/" + focusnode["uses"] + " " + jobname + ")");
         }
 
         function drawRect(bar) {
@@ -257,7 +259,7 @@ function vizBarChart(selector, options) {
             bar.append("a")
                 .attr("xlink:href", function(d) { return d.node.link; })
                 .append("text")
-                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " jobs"; })
+                .text(function(b) { return b["node"]["name"] + ": " + b["count"] + " " + jobname; })
                 .each(function(b) { if (xscale(b["count"]) > this.getComputedTextLength()) {
                                         b["posn"] = "inside"; } else { b["posn"] = "outside"; } })
                 .attr("class", "co-use-color")
