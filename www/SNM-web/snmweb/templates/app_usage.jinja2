@@ -83,7 +83,11 @@
 
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
+      {% if sci_platform == "R" %}
       <h3>Usage counts by volunteers with instrumented R installations</h3>
+      {% else %}
+      <h3>TACC job counts</h3>
+      {% endif %}
       <div id="chart">
         <svg></svg>
       </div>
