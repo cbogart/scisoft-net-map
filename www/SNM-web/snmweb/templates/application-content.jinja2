@@ -1,19 +1,33 @@
   <h2>App profile</h2>
   <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
+    {% if sci_platform == "R" and app.views != [] %}
+    <p>Task views: {{ app.views|join(', ') }}
+    {% endif %}
+
   <p>
     {% if sci_platform == "TACC" %}
     <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs from 2012-04-09 to 2013-01-27">Usage:</a><span> {{app.usage}}; </span>
     {% else %}
     <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs from Sept 2014 present">Usage:</a><span> {{app.usage}}; </span>
     {% endif %}
+    
+&nbsp;&nbsp;
 
     <a href="{{request.route_url('app_usage', name=app.title)}}" class="snm-tooltip" title="Number of runs for the last 60 days">Usage trend:</a><span> {{app.usage_trend}}</span>
+
+&nbsp;&nbsp;
 
     {% if sci_platform == "TACC" %}
     <a href="{{request.route_url('app_users', name=app.title)}}" class="snm-tooltip" title="Number of users from 2012-04-09 to 2013-01-27">Users:</a><span> {{app.users}}</span>
     {% else %}
     <a href="{{request.route_url('app_users', name=app.title)}}" class="snm-tooltip" title="Number of users from Sept 2014 to present">Users:</a><span> {{app.users}}</span>
     {% endif %}
+
+&nbsp;&nbsp;
+
+    {% if sci_platform == "R" %}
+    <span class="snm-tooltip" title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">Github projects:</span><span> {{app.git_usage}}</span>
+    {% endif %} 
 
     {% if sci_platform == "TACC" %}
     <a href="{{request.route_url('app_pubs', name=app.title)}}" class="snm-tooltip" title="Number of publications resulting from jobs using this package">Publications:</a><span> {{app.publications}}</span>
@@ -24,3 +38,5 @@
     {% endif %}
   </p>
   <p class="pre-scrollable">{{ app.description|safe }}</p>
+
+

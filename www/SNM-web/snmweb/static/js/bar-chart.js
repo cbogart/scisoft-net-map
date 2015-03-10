@@ -1,7 +1,7 @@
-function vizBarChart(container, options) {
+function vizBarChart(selector, options) {
     var options = $.extend({ //Default or expected options go here
-        height  : container.height(),
-        width   : container.width(),
+        height  : $(selector).height(),
+        width   : $(selector).width(),
         scimapID: "",
         focusid : "0",
         stat_id: "force_directed",  // api/stat/{stat_id},
@@ -12,7 +12,7 @@ function vizBarChart(container, options) {
     var focusid = options.focusid;
     var focusnode = {};
     var focus = "focus";
-    var svg = d3.select("#barchart svg")
+    var svg = d3.select(selector)
         .attr("width", width)
         .attr("height", height);
     var mainbartitle = svg.append("text")
@@ -50,12 +50,12 @@ function vizBarChart(container, options) {
     function setLabels(focusname) {
         titleAndText(mainbartitle, "What users used with " + focusname);
         titleAndText(mainbartitle2, "Out of " + focusnode.uses + " jobs...");
-        titleAndText(inbartitle, "" + inbars.length + " reverse dependencies",
+        titleAndText(inbartitle, "" + inbars.length + " downstream dependencies",
                                   "These packages appeared in jobs alongside " + focusname + ", and listed " + focusname + " as a dependency.");
         outbarExplanation = "These packages appeared in jobs alongside " + focusname + ", and were listed as dependencies. " +
                                   "They may not show up in all " + focusnode.uses + " jobs, if there were different versions of " + focusname +
                                   ", or if some dependency data was unavailable.";
-        titleAndText(outbartitle, "" + outbars.length + " dependencies", outbarExplanation);
+        titleAndText(outbartitle, "" + outbars.length + " upstream dependencies", outbarExplanation);
         titleAndText(logicbartitle, "" + logicbars.length + " other packages",
                                   "These packages appeared in jobs alongside " + focusname + ", with no known dependency relationship.");
            
@@ -77,7 +77,7 @@ function vizBarChart(container, options) {
                user_vector = result.data;
             });
     }
-    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id},
+    function loadData(id) {snmapi.getStat(options.stat_id, {"id": id, "limit":30},
         function(result) {
             var data = result.data,
                 node, link;
@@ -102,13 +102,16 @@ function vizBarChart(container, options) {
                     links.push({
                         "source" : s,
                         "target" : t,
-                        "value"  : link.value,
-                        "unscaled"  : link.unscaled
+                        "type"  : link.type,
+                        "scaled"  : link.scaled,
+                        "raw"  : link.raw
                     });
                 }
             }
             setBarInfo(focusid);
             updateChart();
+        }, function() {  // on failure, clear the chart
+           svg.remove();
         });
     }
     function setBarInfo(focusid) {
@@ -122,17 +125,23 @@ function vizBarChart(container, options) {
         outbars = []; inbars=[]; logicbars = [];
         for (linknum in links) { 
             link = links[linknum]
-            if  (nodes[link.source].id == focusid && link.unscaled.static > 0) {
-                outbars.push( { "count": link.unscaled.static, "node": nodes[link.target] });
+            if  (nodes[link.source].id == focusid && link.type == "upstream") {
+                outbars.push( { "count": link.raw, "node": nodes[link.target] });
             } 
-            if (nodes[link.target].id == focusid && link.unscaled.logical > 0) {
-                logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.source] });
+            else if (nodes[link.target].id == focusid && link.type=="usedwith" ) {
+                logicbars.push({ "count": link.raw, "node": nodes[link.source] });
             } 
-            if (nodes[link.source].id == focusid && link.unscaled.logical > 0) {
-                logicbars.push({ "count": link.unscaled.logical, "node": nodes[link.target] });
+            else if (nodes[link.source].id == focusid && link.type=="usedwith") {
+                logicbars.push({ "count": link.raw, "node": nodes[link.target] });
             } 
-            if (nodes[link.target].id == focusid && link.unscaled.static > 0) {
-                inbars.push({ "count": link.unscaled.static, "node": nodes[link.source] });
+            else if (nodes[link.source].id == focusid &&  link.type=="downstream") {
+                inbars.push({ "count": link.raw, "node": nodes[link.target] });
+            }
+            else if (nodes[link.target].id == focusid &&  link.type=="upstream") {
+                inbars.push({ "count": link.raw, "node": nodes[link.source] });
+            }
+            else if (nodes[link.target].id == focusid &&  link.type=="downstream") {
+                inbars.push({ "count": link.raw, "node": nodes[link.source] });
             }
         }         
         outbars.sort(function(a,b) { return b.count - a.count; });

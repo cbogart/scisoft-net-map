@@ -46,10 +46,14 @@
 }
 
 .logical-link {
-  stroke: #55f;
+  stroke: #aaf;
   stroke-dasharray: 3,3;
 }
 
+#TriangleBack {
+  fill: #bbb;
+  stroke: #bbb;
+}
 #Triangle {
   fill: #bbb;
   stroke: #bbb;

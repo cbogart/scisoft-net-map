@@ -89,6 +89,35 @@ def view_app_pubs(request):
 
     return {"app": app, "pubs": publist, "visits": count_visits(request)}
 
+@view_config(route_name="app_gitprojects",
+             renderer='templates/app_gitprojects.jinja2',
+             permission='view')
+def view_app_gitprojects(request):
+    name = request.matchdict["name"]
+    app = Application.objects(title=name).first()
+    total_git_referers = GitReferers.objects(dependencies= name.replace("[dot]",".")).count()
+    
+    try:
+       start_at = int(request.params.get("start-at"))
+    except:
+       start_at = 1
+    if (start_at < 1): start_at = 1
+    per_page = 20
+    
+    if (start_at > (per_page*int(total_git_referers/per_page))):
+        start_at = per_page*int(total_git_referers/per_page)+1
+
+    git_referers = GitReferers.objects(dependencies= name.replace("[dot]",".")).order_by("-stargazers_count").skip(start_at-1).limit(50)
+    
+    return {"app": app, 
+            "git_referers": git_referers, 
+            "start_at": start_at,
+            "end_at": min(start_at+per_page-1,total_git_referers),
+            "per_page": per_page,
+            "app_count": total_git_referers,
+            "visits": count_visits(request)}
+
+
 @view_config(route_name="app_used_with",
              renderer='templates/app_used_with.jinja2',
              permission='view')
@@ -103,7 +132,8 @@ def view_app_used_with(request):
 def view_application(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
-    return {"app": app, "visits": count_visits(request)}
+    global_stats = GlobalStats.objects().first()
+    return {"app": app, "visits": count_visits(request), "global_stats": global_stats}
 
 
 @view_config(route_name="compare",
@@ -148,11 +178,55 @@ def view_accept_login(request):
     except Exception as e:
         return HTTPClientError(str(e))
 
+def splitEmpty(listing):
+    splitlist = listing.split(",")
+    if '' in splitlist: splitlist.remove('')
+    return splitlist
+
 @view_config(route_name="browse",
              renderer='templates/browse.jinja2',
              permission='view')
 def view_explore(request):
+    queries = dict()
+    allviews = [view.viewname for view in Views.objects()]
+    allapps = [app.title for app in Application.objects().order_by("title")]
     order = request.params.get("order", "usage")
-    query = request.params.get("query", "")
-    apps = Application.objects(title__icontains=query).order_by(order)
-    return {"apps": apps, "visits": count_visits(request)}
+    
+    if order=="-title": order = "title"
+    
+    queryname_raw = request.params.get("query-name", "").replace(" ","")
+    queryname = splitEmpty(queryname_raw)
+    if queryname != []: 
+        queries["title__in"] = queryname
+        
+    queryview_raw = request.params.get("query-view", "").replace(" ","")
+    queryview = splitEmpty(queryview_raw)
+    if queryview != []: 
+        queries["views__in"] = queryview
+        
+    relevantAppCount = Application.objects(**queries).count()
+    
+    try:
+       start_at = int(request.params.get("start-at"))
+    except:
+       start_at = 1
+    if (start_at < 1): start_at = 1
+    per_page = 20
+    
+    if (start_at > (per_page*int(relevantAppCount/per_page))):
+        start_at = per_page*int(relevantAppCount/per_page)+1
+    
+    apps = Application.objects(**queries).order_by(order).skip(start_at-1).limit(per_page)
+    
+    global_stats = GlobalStats.objects().first()
+    return {"apps": apps, 
+            "visits": count_visits(request), 
+            "global_stats": global_stats,
+            "queryname": queryname_raw, 
+            "queryview": queryview_raw, 
+            "allviews": allviews, 
+            "allnames": allapps,
+            "start_at": start_at, 
+            "end_at":  min(relevantAppCount, start_at + per_page - 1),
+            "per_page": per_page, 
+            "app_count": relevantAppCount }

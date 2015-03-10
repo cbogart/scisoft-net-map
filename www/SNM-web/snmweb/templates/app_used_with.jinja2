@@ -4,6 +4,22 @@
   {{ super() }}
   <link href="{{request.static_url('snmweb:static/css/force-chart.css')}}"
         rel="stylesheet">
+  <style>
+    #chart svg {
+      width: 100%;
+      height: 400px;
+    }
+    #git-chart svg {
+      width: 100%;
+      height: 400px;
+    }
+    #barchart svg {
+      height: 800px;
+    }
+    #git-barchart svg {
+       height: 800px;
+    }
+  </style>
 {% endblock %}
 
 {% block js %}
@@ -12,10 +28,45 @@
   <script src="{{request.static_url('snmweb:static/js/force-chart.js')}}"></script>
   <script src="{{request.static_url('snmweb:static/js/bar-chart.js')}}"></script>
   <script>
-      var force_chart = vizForceChart($("#chart"), {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false, height:400});
-      var bar_chart = vizBarChart($("#barchart"), {focusid: app_id, height:800});
-      force_chart.start(app_id);
-      bar_chart.start(app_id);
+   $(function main() {
+        {%if sci_platform=="R" %}
+          $('#myTab a[href="#github-chart-wrapper"').click();
+        {% else %} 
+          $('#myTab a[href="#chart-wrapper"').click();
+        {% endif %}
+      });
+     
+     var firsttime = false;
+     $('#myTab a[href="#chart-wrapper"]').on('shown.bs.tab', function(e) {  
+      if (firsttime == false) {  
+          force_opt = {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false, height:400};
+          force_chart = vizForceChart("#chart svg", force_opt);
+          bar_chart = vizBarChart("#barchart svg", {focusid: app_id, height:800, retrieved:false});
+          var retrieved = force_chart.start(app_id);
+          bar_chart.start(app_id);
+          firsttime = true;
+      };
+    });
+    
+    var firstgit = false;
+     $('#myTab a[href="#github-chart-wrapper"]').on('shown.bs.tab', function(e) {  
+      if (firstgit == false) {  
+          gforce_opt = {scimapID: "{{request.cookies.get("scimapID",'')}}", clickable: false, height:400, stat_id: "git_force_directed"};
+          git_force_chart = vizForceChart("#git-chart svg", gforce_opt);
+          git_bar_chart = vizBarChart("#git-barchart svg", {focusid: app_id, height:800, stat_id: "git_force_directed", retrieved:false});
+          git_force_chart.start(app_id);
+          git_bar_chart.start(app_id);
+          firstgit = true;
+      };
+    });
+      
+     
+    $('#myTab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+      $(window).trigger('resize');
+    });
+      
   </script>
 {% endblock %}
 
@@ -28,15 +79,48 @@
 {% endblock %}
 
 {% block details %}
-  <h2>Application dependencies</h2>
+  <div class="panel-body col-md-12">
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li><a href="#chart-wrapper" role="tab" data-toggle="tab">Live usage</a></li>
+    {% if sci_platform == "R" %}
+    <li><a href="#github-chart-wrapper" role="tab" data-toggle="tab" id="gittab">Github projects</a></li>
+    {% endif %}
+    <li><a href="#desc-wrapper" role="tab" data-toggle="tab">
+      Explanation
+    </a></li>
+   </ul>
+
+  <div class="row top-buffer">
+   <div class="col-md-10">
+    <div class="tab-content">
+     <div id="desc-wrapper" class="tab-pane">
+           
+      <h2>Application dependencies</h2>
       {%if sci_platform=="R" %}
-      Each node represents an R package; the size is how often it was run.
+      Each node represents an R package; the size is how often it was used.
       The size of its pie slice is how often it was run with this app (<i>{{app.title|replace("[dot]",".")}}</i>). 
       A link between nodes shows that these
       packages happened to be loaded at the same time by some script by some user.
       Solid lines indicate static dependencies (i.e. those enforced
       by R's package loading mechanism).  Dotted lines are packages users chose
       to use during the same R session.  
+
+      <h3>Live usage</h3>
+      The data shows how often R packages were used together by volunteers who are allowing
+      us to track their use of R from day to day.
+      <br><p>
+      (<a name="validity"></a><b>Validity warning</b>: As of March, 2015, the "live usage" data is in its early stages:
+         publication data is not yet available for all packages, and usage 
+         stats do not contain a large number of use sessions.  So the numbers and relationships
+         portrayed here are not representative of overall global usage.
+         Github data is drawn from a much larger sample.)
+      
+      <h3>Github projects</h3>
+      The data shows how often R packages were used together in a sample of
+      R projects in Github.  We assume that if a package was loaded (as evidenced by
+      mention in a DESCRIPTION file or code that uses library() or require()), that its
+      dependencies were also loaded.
+      
       {% elif sci_platform=="TACC" %}
       Each node represents an application; the size is how often it was run.
       The size of its pie slice is how often it was run with this app ({{app.title|replace("[dot]",".")}}). 
@@ -56,21 +140,45 @@
       A, then process results with application B; the graph would show an arrow from
       A to B.
       {% endif %}
-<div class="row top-buffer">
-  <div class="col-md-7">
-    <div id="chart-wrapper" class="tab-pane active">
-      <div id="chart">
-        <svg></svg>
       </div>
+      
+    
+    
+    
+    <div id="chart-wrapper" class="tab-pane">
+       <div class="row">
+              <div class="col-md-8">
+                  <div id="chart">
+                    <svg></svg>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div id="barchart">
+                    <svg></svg>
+                  </div>
+              </div>
+        </div>
     </div>
+    
+    <div id="github-chart-wrapper" class="tab-pane">
+      <div class="row">
+          <div class="col-md-8">
+              <div id="git-chart">
+                <svg></svg>
+              </div>
+          <a href="{{request.route_url('app_gitprojects', name=app.title)}}">Click to list the relevant Github projects</a>
+          </div>
+          <div class="col-md-4">
+              <div id="git-barchart">
+                <svg></svg>
+              </div>
+          </div>
+        </div>
+    </div>
+    
+  
   </div>
-  <div class="col-md-5">
-      <div id="barchart">
-        <svg></svg>
-      </div>
   </div>
 </div>
-    </div>
-  </div>
-</div>
+
 {% endblock %}

@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import pdb
 from db_objects import *
 from pymongo import Connection
 from tarjan import clusteringOrder
@@ -10,8 +11,45 @@ from pyramid.view import (
     view_defaults
 )
 
-"""
+class LimitedDict:
+    def __init__(self, size):
+        self.size = size
+        self.content = {}
+        self.keys = []
+        
+    def __getitem__(self, index):
+        return self.content[index]
+        
+    def get(self, index, default):
+        return self.content.get(index, default)
+        
+    def __setitem__(self, index, value):
+        print "Memoizing ", index, " = ", value
+        if index in self.content:
+            self.content[index] = value
+            self.keys.remove(index)
+            self.keys.append(index)
+            return
+        if len(self.keys) > self.size:
+            del self.content[self.keys[0]]
+            self.keys = self.keys[1:]            
+        self.keys.append(index)
+        self.content[index] = value
+        
+    def memoize(self, index, fn, fnargs):
+        print "Memoizing ", index
+        if index not in self.content: 
+            print "   executing fn"
+            #pdb.set_trace()
+            self[index] = fn(**fnargs)
+            print "   done"
+        print " ---> ", str(self[index])
+        return self[index]
 
+memoCache = LimitedDict(10)
+
+
+"""
 All API calls have the following structure:
 /api/:category/:id
 
@@ -168,124 +206,51 @@ class ApiViews:
                                
         def usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "Usage")
-
+           
+        def git_usage_over_time(group_by="day", id=None):
+           return data_over_time(group_by, id, "GitUsage")
 
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
 
+        def dictsum(d1, d2):
+            for k in d2:
+                d1[k] = d1.get(k,0) + d2[k]
 
-        #
-        #  N.B. the "co_uses" element is not a simple count; it's a little
-        #   dict with 2 keys: "static" and "logical", with separate counts
-        #   for both kinds of usage.  The effective "value" of this element
-        #   is the static count, UNLESS the count is zero, in which case the
-        #   logical count.
-        #
-        def force_directed(id=None, clustered=False):
-            nodes = []
-            links = []
-
-            max_co_uses = GlobalStats.objects()[0].max_co_uses
-
-            def normalizeValue(coUses, targetUsage):
-                normalized = { k : int(0 if (coUses[k] == 0) else
-                                   1 + coUses[k]*9/targetUsage) 
-                         for k in coUses }
-                return normalized
+        def git_force_directed(id=None, clustered=False, limit=9999):
+            return force_directed_helper(id,clustered,limit,datasource=GitCoOccurenceLinks,relevantUsage = lambda app: app.git_usage)
             
-            def oldNormalizeValue(coUses):
-                return { k : (0 if (coUses[k] == 0) else
-                                   1+coUses[k]*9/max(coUses[k], max_co_uses[k], 1)) 
-                         for k in coUses }
+        def force_directed(id=None, clustered=False, limit=9999):
+            return force_directed_helper(id,clustered,limit,datasource=CoOccurenceLinks,relevantUsage = lambda app: app.usage)
             
-            def hasLink(coUses):
-                return (coUses["static"]  >= 1 or
-                        coUses["logical"] >= 1)
+        def force_directed_helper(id=None, clustered=False, limit=9999, datasource=CoOccurenceLinks,relevantUsage = lambda app: app.usage):
+            from bson.objectid import ObjectId
+            app = Application.objects.get(id=id)
 
-            def significantLink(link, appUsageStandard):
-              return True
-              try:
-                if (hasLink(normalizeValue(link.co_uses, appUsageStandard))):
-                    print "Including link to ", link.app.title, " value ", link.co_uses, " by standard ", appUsageStandard
-                    return True
-                else:
-                    print "Excluding link to ", link.app.title, " value ", link.co_uses, " by standard ", appUsageStandard
-                    return False
-              except Exception, e:
-                print "EXCEPTION: ", repr(e)
-                return False
-
-
-            if id is None:
-                nodedict = {}
-                cooc = CoOccurence.objects()
-                for c in cooc:
-                    app_id = c.application.id.__str__()
-                    print "Linking ", request.route_url('app_used_with', name=c.application.title)
-                    nodedict[app_id] = {"name": c.application.title.replace("[dot]","."),
-                                  "id": app_id,
-                                  "publications": c.application.publications,
-                                  "uses": c.application.usage,
-                                  "link": request.route_url('app_used_with', name=c.application.title)}
-                    for l in c.links:
-                        print "Linking ", request.route_url('app_used_with', name=l.app.title)
-                        nodedict[l.app.id.__str__()] = {"name": l.app.title.replace("[dot]","."),
-                                      "id": l.app.id.__str__(),
-                                      "publications": l.app.publications,
-                                      "uses": l.app.usage,
-                                      "link": request.route_url('app_used_with', name=l.app.title)}
-                    for l in c.links:
-                        linksize =  normalizeValue(l.co_uses, c.application.usage)
-                        if hasLink(linksize):
-                            links.append({
-                                "source": app_id,
-                                "target": l.app.id.__str__(),
-                                "value":  linksize,
-                                "unscaled": l.co_uses
-                            })
-                nodes = nodedict.values()
-            else:
-                from bson.objectid import ObjectId
-                app = Application.objects.get(id=id)
-                nodelist = [ObjectId(id)]
-                fromcooc = CoOccurence.objects(__raw__= { "links": { "$elemMatch": { "app": ObjectId(id) } } })
-                print "here", len(fromcooc)
-                nodelist = nodelist + [fc.application.id for fc in fromcooc if significantLink(fc,fc.application.usage)]
-                tocooc = CoOccurence.objects(__raw__= { "application": ObjectId(id)} )
-                print "there", len(tocooc)
-                for tc in tocooc:
-                    nodelist = nodelist + [tcl.app.id for tcl in tc.links if significantLink(tcl, app.usage)]
-                edgecooc = CoOccurence.objects(__raw__= { "application": { "$in" : nodelist }, "links": { "$elemMatch": { "app": { "$in" : nodelist } } }})
-                print "everhwhere", len(edgecooc)
-                for fan in edgecooc:
-                    src = fan.application
-                    for destinf in fan.links:
-                        dest = destinf.app.id
-                        if (dest in nodelist and src.id in nodelist):
-                            linksize = normalizeValue(destinf.co_uses, src.usage)
-                            if (linksize["logical"] > 10):
-                                print src.title, src.id, src.usage
-                                print destinf.app.title, destinf.app.id, destinf.app.usage
-                                print destinf.co_uses
-                            if (hasLink(destinf.co_uses)):
-                                links.append({"source": src.id.__str__(),
-                                             "target": dest.__str__(),
-                                             "value": linksize,
-                                             "unscaled" : destinf.co_uses,
-				})    
-
-                for c in Application.objects(__raw__={ "_id": { "$in": nodelist } } ):
-                    app_id = c.id.__str__()
-                    print "Linking ", request.route_url('app_used_with', name=c.title)
-                    nodes.append({"name": c.title.replace("[dot]","."),
-                                  "id": app_id,
-                                  "uses": c.usage,
-                                  "publications": c.publications,
-                                  "link": request.route_url('app_used_with', name=c.title)})
-
-            if (clustered):
-                nodes = clusteringOrder(nodes, links)
-
+            #pdb.set_trace()
+            mainlinks = list(datasource.objects(focal= app.id).limit(int(limit)+1))
+            threshhold = mainlinks[-1]["scaled_count"]
+            neighbors = [link["other"] for link in mainlinks]
+            neighbor_ids = [link["other"].id for link in mainlinks]
+            sidelinks = datasource.objects(__raw__ = \
+                  {"focal": { "$in": neighbor_ids },"other": { "$in": neighbor_ids+[app.id]}})
+            sidelinks = list(sidelinks)
+            
+            alll = mainlinks + sidelinks
+            links = [{"source": l["focal"].id.__str__(),
+                      "target": l["other"].id.__str__(),
+                      "type": l["type"],
+                      "raw": l["raw_count"],
+                      "scaled": l["scaled_count"]} for l in alll]
+            
+            apps = Application.objects(__raw__={ "_id": { "$in": neighbor_ids + [app.id] } } )
+            nodes = [{"name": app.title.replace("[dot]","."),
+                      "id": app.id.__str__(),
+                      "uses": relevantUsage(app),
+                      "publications": app.publications,
+                      "link": request.route_url('app_used_with', name=app.title)
+                     } for app in apps]
+            
             return {"nodes": nodes, "links": links}
 
         def unknown_stat(*args, **kwargs):
@@ -294,7 +259,10 @@ class ApiViews:
         if type is None:
             return [{"id": "usage_over_time"},
                     {"id": "users_over_time"},
-                    {"id": "force_directed"}]
+                    {"id": "force_directed"},
+                    {"id": "git_force_directed"}]
 
-        return locals().get(type, unknown_stat)(**request.params)
+        #  locals().get(type, unknown_stat)(**request.params)
+        return memoCache.memoize(type + str(request.params), 
+               locals().get(type, unknown_stat), request.params)
 
