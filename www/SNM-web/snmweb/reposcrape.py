@@ -113,7 +113,7 @@ class RepoScrape:
        cocounts = defaultdict(lambda: defaultdict(lambda: ("", 0)))
        counts = defaultdict(lambda: defaultdict(int))
        for r in refs:
-           deps = filter(legalimport.match, r["deps"].split(","))
+           deps = filter(legalimport.match, (r["deps"] or "").split(","))
            alldeps = calcDependencyClosure(deps, self.deps)
            alldepscomplete = set(alldeps.keys() + [d for i in alldeps for d in alldeps[i]])
            for d1 in alldepscomplete:
