@@ -118,7 +118,9 @@
         <a id="order-usage_trend" class="btn btn-default" onClick="$('#order-input').val('-usage_trend'); $('#criteria').submit();">Usage trend</a>
         <a id="order-users" class="btn btn-default" onClick="$('#order-input').val('-users'); $('#criteria').submit();">Users</a>
         <a id="order-title" class="btn btn-default" onClick="$('#order-input').val('-title'); $('#criteria').submit();">Alphabetically</a>
+        {% if sci_platform == "R" %}
         <a id="order-git_usage" class="btn btn-default" onClick="$('#order-input').val('-git_usage'); $('#criteria').submit();">Github References</a>
+        {% endif %}
       </div>
          
       
