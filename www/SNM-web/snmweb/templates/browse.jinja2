@@ -120,6 +120,8 @@
         <a id="order-title" class="btn btn-default" onClick="$('#order-input').val('-title'); $('#criteria').submit();">Alphabetically</a>
         {% if sci_platform == "R" %}
         <a id="order-git_usage" class="btn btn-default" onClick="$('#order-input').val('-git_usage'); $('#criteria').submit();">Github References</a>
+        <a id="order-git_centrality" title="Sort by the application's eigenvector centrality"
+            class="btn btn-default" onClick="$('#order-input').val('-git_centrality'); $('#criteria').submit();">Centrality</a>
         {% endif %}
       </div>
          
@@ -212,19 +214,24 @@
                         {{app.users}}</a>
                       {% if sci_platform == "R" %}
                           <br/>Github Projects:
-                          <span
+                          <a href="{{request.route_url('app_gitprojects', name=app.title)}}"
                              class="snm-tooltip"
                              title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
-                            {{app.git_usage}}</span>
-                            {% if app.publications > 0 %}
-                          &nbsp;&nbsp;
+                            {{app.git_usage}}</a>
+                          &nbsp;&nbsp;Centrality:
+                          <a href="{{request.route_url('app_used_with', name=app.title)}}"
+                             class="snm-tooltip"
+                             title="A measure of how central this package is (eigenvector centrality over the network of packages used together in Github projects) High numbers are more central">
+                             {{(app.git_centrality*100000)|int(0)}}</a>
                       {% endif %}
-                      Publications:
-                      <a href="{{request.route_url('app_pubs', name=app.title)}}"
-                         class="snm-tooltip"
-                         title="Number of publications resulting from jobs using this application">
-                        {{app.publications}}
-                        </a>
+                      {% if app.publications > 0 %}
+                         &nbsp;&nbsp;
+                         Publications:
+                         <a href="{{request.route_url('app_pubs', name=app.title)}}"
+                            class="snm-tooltip"
+                            title="Number of publications resulting from jobs using this application">
+                           {{app.publications}}
+                           </a>
                         {% endif %}
                     </div>
                   </div>

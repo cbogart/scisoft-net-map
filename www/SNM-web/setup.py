@@ -15,6 +15,7 @@ requires = [
     "passlib",
     "waitress",
     "nose",
+    "networkx",
     "WebTest",
     "mongoengine",
     "pymongo",
