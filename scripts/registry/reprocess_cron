@@ -1,0 +1,4 @@
+#!/bin/bash
+source /var/www/SSNM/env/bin/activate
+cd /var/www/SSNM/scripts/registry
+bash reprocess
