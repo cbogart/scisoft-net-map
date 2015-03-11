@@ -12,7 +12,7 @@ def check_site_status(sci_platform):
     pslines = ps.read()
     servername = "pserve production." + sci_platform + ".ini"
     servers = servername in pslines
-    registries = "python register.py" in pslines
+    registries = "python listenForRPackets.py" in pslines
     if (sci_platform == "R"):
         if (servers and registries):
             return "UP"
