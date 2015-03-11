@@ -22,6 +22,7 @@ class Application(Document):
     usage_trend = IntField(default=0)
     users = IntField(default=0)
     git_usage = IntField(default=0)
+    git_centrality = FloatField(default=0.0)
     website = StringField(default="")
     publications = IntField(default=0)
     publicationsUrl = StringField(default="")

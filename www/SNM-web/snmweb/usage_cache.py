@@ -10,6 +10,7 @@ from datetime import datetime as dt
 import datetime
 import pdb
 import json
+import networkx as nx
 from threading import Lock
 
 usageCacheLock = Lock()
@@ -51,6 +52,21 @@ def readPubInfo(sci_platform):
         print "ERROR: ", str(e)
     return (byproject, inf)
 
+
+def calcCentrality(linkrecords):
+    """Calculate betweenness centrality measure for each package or application
+    
+    Linkrecords: list of dicts with keys: focal, other, type, raw_count, scaled_count"""
+    
+    G = nx.Graph()
+    for link in linkrecords:
+        G.add_node(link["focal"])
+        G.add_node(link["other"])
+        G.add_edge(link["focal"], link["other"], weight=link["raw_count"])
+    from networkx.algorithms.centrality import eigenvector_centrality
+    #centralities = betweenness_centrality(G, k=G.number_of_nodes(), weight="weight", endpoints=True)
+    centralities = eigenvector_centrality(G)
+    return centralities
 
 class UsageCache:
 
@@ -117,10 +133,22 @@ class UsageCache:
 
             print "Collecting co occurence lists"
             lr = list(linksRecords())
-            print "Sorting co occurence lists"
+            print "Calculating betweenness centrality of nodes over", len(lr), "dependencies"
+            print "This could take a while..."
+            centralities = calcCentrality(lr)
+            print "Done calculating centrality."
+            
+            print "Augmenting applications table with centrality"
+            for pkgname in git_imports:              
+                ident = self.apps[pkgname]["id"]
+                appRec = self.db.application.find_one({"_id": ident})
+                appRec["git_centrality"] = centralities.get(ident,0.0)
+                self.db.application.save(appRec)
+            
+            print "Sorting co occurence lists by scaled count"
             lr.sort(key=lambda rec: -rec["scaled_count"]-rec["raw_count"]/100000.0)
             if len(lr) > 0:
-                print "Git import: Not writing any links because lr=[]"
+                print "Git import: inserting", len(lr), "dependencies between packages"
                 self.db.git_co_occurence_links.insert(lr)
 
             gs = self.db.global_stats.find_one()
