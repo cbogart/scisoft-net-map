@@ -233,7 +233,8 @@ class ApiViews:
             neighbors = [link["other"] for link in mainlinks]
             neighbor_ids = [link["other"].id for link in mainlinks]
             sidelinks = datasource.objects(__raw__ = \
-                  {"focal": { "$in": neighbor_ids },"other": { "$in": neighbor_ids+[app.id]}})
+                  {"focal": { "$in": neighbor_ids },
+                   "other": { "$in": neighbor_ids+[app.id]}})
             sidelinks = list(sidelinks)
             
             alll = mainlinks + sidelinks
