@@ -1,1 +1,1 @@
-python reprocess.py /Users/cbogart/rscraper/repoScrape.db snm-rgit ../../data/appinfo.R.json
+python reprocess.py /home/wwwuser/rscraper/repoScrape.db snm-r ../../data/appinfo.R.json
