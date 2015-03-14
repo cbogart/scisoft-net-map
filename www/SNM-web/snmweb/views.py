@@ -7,6 +7,7 @@ from db_objects import *
 from status import check_site_status
 from passlib.apps import custom_app_context as pwd_context
 from pyramid.view import forbidden_view_config
+import time
 
 def count_visits(request):
     try:
@@ -183,13 +184,25 @@ def splitEmpty(listing):
     if '' in splitlist: splitlist.remove('')
     return splitlist
 
+allapps = []
+allviews = []
+lastappcheck = 0
+secondsPerDay = 24*3600
+
+def recalcAppList():
+    """Requery a list of apps and views if it has not been queried in the last calendar day"""
+    global lastappcheck, allviews, allapps, secondsPerDay
+    if time.time() // secondsPerDay > lastappcheck // secondsPerDay:
+        allapps = [app.title for app in Application.objects().order_by("title")]    
+        allviews = [view.viewname for view in Views.objects()]
+        lastappcheck = time.time()
+
 @view_config(route_name="browse",
              renderer='templates/browse.jinja2',
              permission='view')
 def view_explore(request):
     queries = dict()
-    allviews = [view.viewname for view in Views.objects()]
-    allapps = [app.title for app in Application.objects().order_by("title")]
+    recalcAppList()
     order = request.params.get("order", "usage")
     
     if order=="-title": order = "title"
