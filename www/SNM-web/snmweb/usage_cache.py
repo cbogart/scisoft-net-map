@@ -209,6 +209,7 @@ class UsageCache:
                 }
                 self.appIds[app["_id"]] = app["title"]
            
+            # Load in existing list of publications
             for a_publist in dest.pub_list.find():
                 appname = self.appIds[a_publist["application"]]
                 try:
@@ -219,10 +220,12 @@ class UsageCache:
                     print str(e)
                     pdb.set_trace()
 
+            # Load in just the daily usage for each app (week/month can be calculated from this)
             for a_usage in dest.usage.find():
                 appname = self.appIds[a_usage["application"]]
                 self.apps[appname]["usage"] = pairlist2dict(a_usage["daily"], "x", "y")
     
+            # Load in the daily user list for each app (week/month can be calculated from this)
             for a_user_list in dest.user_list.find():
                 appname = self.appIds[a_user_list["application"]]
                 self.apps[appname]["user_list"] = pairlist2dict(a_user_list["users"], "date", "users")
@@ -230,6 +233,7 @@ class UsageCache:
             gs = dest.global_stats.find_one()
             self.max_co_uses = gs["max_co_uses"]
 
+            # Load in existing co-occurence stats from database
             for cooc in dest.co_occurence.find():
                 appname = self.appIds[cooc["application"]]
                 for otherapp in cooc["links"]:
@@ -244,6 +248,7 @@ class UsageCache:
     def defineToday(self, thedate):
         self.today = thedate
 
+    # Create a new record to store application data in
     def addNewApp(self, pkgname):
         if "\n" in pkgname:
             pdb.set_trace()
@@ -254,6 +259,8 @@ class UsageCache:
             self.apps[pkgname]["pub_indexes"] = set()
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
 
+    # Create a record of app metadata by loading from app_info.  If not found, make up some
+    # blank stuff
     def getUnknownAppInfo(self, pkgname):
         if "\n" in pkgname:
             pdb.set_trace()
@@ -276,6 +283,8 @@ class UsageCache:
                "publications" : 0 }
         return inf
 
+    # Write a new app to the database so we can get an Object Id for it,
+    # which we'll need to write to other tables that reference this app
     def writeNewApp(self, apptitle):
         if "\n" in apptitle:
             pdb.set_trace()
@@ -294,13 +303,17 @@ class UsageCache:
         return appname  
         #self.app_info.get(appname, {"title": appname})["title"]
 
+    # Add up usage of an app over all the days for which we have data
     def appUsage(self, appname): 
         return sum([self.apps[appname]["usage"][day] for day in self.apps[appname]["usage"]])
 
+    # Useful for debugging, but this makes the import very slow
     def checkCoUseInvariants(self):
         pass
         #for app in self.apps: self.checkCoUseInvariant(app)
 
+    # The # of times 2 apps are used together should be <= the number of times
+    #  one of the apps was used total.
     def checkCoUseInvariant(self, appname):
         cooc = self.apps[appname]["co_occurence"]
         for dependee in cooc:
@@ -311,6 +324,9 @@ class UsageCache:
                 print "FAIL logical check"
                 pdb.set_trace()
 
+    # Called for each record in scimapInfo.
+    # This used to be called for each incoming record from an R session, giving instant updates
+    # to the site, but that seemed unnecessarily immediate.
     def registerPacket(self, packet):
         "Update in-memory data structure with incoming packet"
 
@@ -322,22 +338,22 @@ class UsageCache:
                 self.lastRpacket = epoch
             pkgnamelist = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
             for pkgT in packet["pkgT"]:
-               pkgname = self.translateAppname(pkgT.split("/")[0])
-               if isinstance(pkgname, dict):
+                pkgname = self.translateAppname(pkgT.split("/")[0])
+                if isinstance(pkgname, dict):
                     print "pkgname is a dict!", pkgname
                     pdb.set_trace()
-               self.addNewApp(pkgname)
-               self.apps[pkgname]["usage"][dayOf(today)] = \
+                self.addNewApp(pkgname)
+                self.apps[pkgname]["usage"][dayOf(today)] = \
                     self.apps[pkgname]["usage"].get(dayOf(today), 0) + 1
-               self.apps[pkgname]["user_list"][dayOf(today)] = \
+                self.apps[pkgname]["user_list"][dayOf(today)] = \
                     list(set(self.apps[pkgname]["user_list"].get(dayOf(today), []) + [packet["user"]]))
 
-               # Fill in publications
-               if (len(self.pub_indexes) > 0 and "account" in packet):
-                   ixs = self.pub_indexes.get(packet["account"], set())
-                   #if (packet["account"] == "TG-CTS100062"):
-                       #print "Why don't we find pub info for TG-CTS10062?: ", pkgname
-                   self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
+                # Fill in publications
+                if (len(self.pub_indexes) > 0 and "account" in packet):
+                    ixs = self.pub_indexes.get(packet["account"], set())
+                    #if (packet["account"] == "TG-CTS100062"):
+                        #print "Why don't we find pub info for TG-CTS10062?: ", pkgname
+                    self.apps[pkgname]["pub_indexes"] = self.apps[pkgname]["pub_indexes"].union(ixs)
     
             # Fill in co-occurence
             roots = copy.copy(pkgnamelist)
@@ -363,6 +379,12 @@ class UsageCache:
                                      self.apps[dependee]["usage"].get(dayOf(today), 0) + 1
                                 self.apps[dependee]["user_list"][dayOf(today)] = \
                                      list(set(self.apps[dependee]["user_list"].get(dayOf(today), []) + [packet["user"]]))
+            
+            # autogenLogicalDeps = True means: count as a co-occurence any two packages that occur
+            # together in the import list and are not required by other packages in that same list
+            #
+            # (If false, then presumably the data source is supplying its own co-occurence information
+            # in "weakPackDeps")
             if (self.autogenLogicalDeps):
                 for l1 in roots:
                     for l2 in roots:
@@ -373,6 +395,9 @@ class UsageCache:
                                 pdb.set_trace()
                             self.update_max_co_use(self.apps[l1]["co_occurence"][l2])
     
+            # Used for TACC data, not R: these capture list of other packages used
+            # by the same user earlier in the day or in the same extended "job" -- useful for
+            # TACC data since parts of jobs were not all available in the same record.
             if (self.useWeakDeps and "weakPackDeps" in packet and isinstance(packet["weakPackDeps"], dict)):
                 for weakdependor in packet["weakPackDeps"]:
                     if (isinstance(packet["weakPackDeps"][weakdependor], (list, dict))):
@@ -389,6 +414,7 @@ class UsageCache:
                         self.update_max_co_use(self.apps[weakdependor]["co_occurence"][weakdependee])
             self.checkCoUseInvariants()
     
+    # Write the in-memory data structure back to the mongo db
     def saveToMongo(self):
         "Update database based on in-memory data structure"
 
@@ -475,6 +501,8 @@ class UsageCache:
             except:
                 pass
 
+            # Made this a "function" so I could use yield to structure the code.  It's
+            # technically a generator, but I'm applying "list()" immediately to the output
             def linksRecords():
                for app1 in self.apps:
                   for app2 in self.apps:
@@ -540,6 +568,21 @@ def monthOf(when):
     return date(when.year, when.month, 1).isoformat()
 
 def fillInDayWeekMonth(dayhash, zero, accum, ix, value):
+    """Fill in week and month stats given a list of day stats
+    
+    Given some type T, (usually an integer or a list of names)
+    
+    result: {"total": int, 
+              "daily": list({ix: date, value: T}*), 
+              "weekly": list({ix: date, value: T}*), "
+              monthly": list({ix: date, value: T}*) }
+    
+    dayhash: a dict mapping the date in iso format to a value of type T
+    zero: The "zero" in type T       (usually 0 or [])
+    accum: The "+" of type T         (usually + or append)
+    ix: The result dict key holding the month in iso format
+    value: The result dict key holding the accumulated value for the time period"""
+    
     delta = datetime.timedelta(days=1)
     start = ymd2date(min(dayhash.keys()))
     end = ymd2date(max(dayhash.keys()))
