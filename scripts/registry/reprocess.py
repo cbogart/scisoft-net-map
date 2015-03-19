@@ -72,3 +72,4 @@ if __name__ == "__main__":
     finalizeThreads()
 
     usecache.insertGitData(rs)
+    usecache.insertPublicationData(rs)

@@ -70,6 +70,21 @@ class Usage(Document):
     weekly = ListField(EmbeddedDocumentField(ByDateStat))
     monthly = ListField(EmbeddedDocumentField(ByDateStat))
 
+class VersionUsage(Document):
+    application = ReferenceField(Application, required=True)
+    version = StringField()
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+class VersionUsersUsage(Document):
+    application = ReferenceField(Application, required=True)
+    version = StringField()
+    daily = ListField(EmbeddedDocumentField(ByDateStat))
+    weekly = ListField(EmbeddedDocumentField(ByDateStat))
+    monthly = ListField(EmbeddedDocumentField(ByDateStat))
+
+
 """
 Same format as Usage, but records git projects, as one
 project (or subproject) per usage, and the date is the
@@ -239,14 +254,25 @@ class ByDateUsers(EmbeddedDocument):
 class PubInfo(DynamicEmbeddedDocument):
     title=StringField()
     year=StringField()
+    doi=StringField()
+    canonical=BooleanField()
     url=StringField()
-
+    
 """
 UserList: List of users by date for each app.  We need this to
 calculate the number of distinct users in each time period
 """
 class UserList(Document):
     application = ReferenceField(Application, required=True)
+    users = ListField(EmbeddedDocumentField(ByDateUsers))
+    
+"""
+VersionUserList: List of users by date for each version of
+each app.  Used to calculate VersionUsersUsage
+"""
+class VersionUserList(Document):
+    application = ReferenceField(Application, required=True)
+    version = StringField()
     users = ListField(EmbeddedDocumentField(ByDateUsers))
 
 class PubList(Document):

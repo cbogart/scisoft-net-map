@@ -40,19 +40,40 @@ class RepoScrape:
     def __init__(self, dbname):
         self.db = getConnection(dbname)
         
+    def loadCitationDetails(self):
+        """Load a list of citations to be placed in database"""
+        cites = self.db.execute("select * from citations where length(doi)>0 " +\
+                                "or length(scopus_id)>0 or canonical != 'synthetic';");
+        citations = defaultdict(list)
+        for cite in cites:
+            if cite["citations.title"].startswith("Error:"):
+                continue
+            citations[cite["citations.package_name"]].append({
+                "citation_text": cite["citations.citation"],
+                "year": cite["citations.year"],
+                "doi_given": cite["citations.doi_given"],
+                "author": cite["citations.author"],
+                "title": cite["citations.title"],
+                "doi": cite["citations.doi"],
+                "scopus_citedby_count": cite["citations.scopus_citedby_count"],
+                "scopus_url": cite["citations.scopus_url"],
+                "canonical": cite["citations.canonical"]==1})
+        return citations
+    
     def transferUsageDetails(self):
-       uses = self.db.execute("select gitprojects.*, group_concat(distinct(package_name)) deps from gitprojects " +\
+        """Load a list-of-dicts describing all R github projects"""
+        uses = self.db.execute("select gitprojects.*, group_concat(distinct(package_name)) deps from gitprojects " +\
                    " left join gitimports on gitprojects.id=gitimports.project_id where gitprojects.cb_last_scan > 0 " +\
                    " and error == '' group by gitprojects.id having deps!='';");
-       referers = []
-       for use in uses:
-           deps = filter(legalimport.match, use["deps"].split(","))
-           alldeps = calcDependencyClosure(deps, self.deps)
-           alldepscomplete = sorted(list(set(alldeps.keys() + [d for i in alldeps for d in alldeps[i]])))
+        referers = []
+        for use in uses:
+            deps = filter(legalimport.match, use["deps"].split(","))
+            alldeps = calcDependencyClosure(deps, self.deps)
+            alldepscomplete = sorted(list(set(alldeps.keys() + [d for i in alldeps for d in alldeps[i]])))
 
-           if "\n" in use["gitprojects.name"]:
+            if "\n" in use["gitprojects.name"]:
                 print "FAIL RIGHT HERE LINE 50"
-           ref = {
+            ref = {
                "url" : use["gitprojects.url"],
                "name": use["gitprojects.name"],
                "owner": use["gitprojects.owner"],
@@ -64,9 +85,9 @@ class RepoScrape:
                "stargazers_count": use["gitprojects.stargazers_count"],
                "forks_count": use["gitprojects.forks_count"],
                "dependencies": alldepscomplete  #filter(legalimport.match, use["deps"].split(","))
-           }
-           referers.append(ref)
-       return referers
+            }
+            referers.append(ref)
+        return referers
 
     def makeAppInfo(self):
        """Dump info from database into appinfo.R.json"""
@@ -104,7 +125,10 @@ class RepoScrape:
            f.write(json.dumps(self.appinfo, indent=4))
 
     def getGitCoOccurence(self):
-       """package->package->number"""
+       """How many times did every pair of packages appear together as imports in github packages?
+       
+       returns: dict(dict(int)), that is, package->package->count"""
+       
        if (not hasattr(self, 'deps')):  
            self.makeAppInfo()
        refs = self.db.execute("select project_id, group_concat(distinct(package_name)) deps, " + \
@@ -127,7 +151,9 @@ class RepoScrape:
        return (counts, cocounts)
 
     def getGitCounts(self):
-       """(lastgitproj, numgitprojs, numscraped)"""
+       """Overall statistics about git projects surveyed
+       
+       returns: (lastgitproj, numgitprojs, numscraped)"""
        counts = self.db.execute('select max(pushed_at) lastgitproj, count(*) numgitprojs, ' + \
             'count(pushed_at) numscraped from gitprojects;');
        row = counts.next()

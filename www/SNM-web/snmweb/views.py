@@ -87,7 +87,6 @@ def view_app_pubs(request):
     name = request.matchdict["name"]
     app = Application.objects(title=name).first()
     publist = PubList.objects(application=app).first()
-
     return {"app": app, "pubs": publist, "visits": count_visits(request)}
 
 @view_config(route_name="app_gitprojects",

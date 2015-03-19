@@ -77,7 +77,32 @@ class UsageCache:
         v = sorted(list(v), key=lambda k:k.split("/")[1])
         return v
         
-
+    def insertPublicationData(self, reposcrape):
+        with usageCacheLock:
+            cites = reposcrape.loadCitationDetails()
+            self.db.pub_list.remove()
+            recounts = defaultdict(int)
+            
+            for pkgname in cites:
+                if pkgname in self.apps and "id" in self.apps[pkgname]:
+                    appid = self.apps[pkgname]["id"]
+                    
+                    try:
+                        for cite in cites[pkgname]:
+                            recounts[appid] += int(cite["scopus_citedby_count"])
+                    except Exception, e:
+                        print "Recount error:", e
+                    print "Adding publications for", pkgname
+                    self.db.pub_list.insert({"application": appid, 
+                                             "publications": cites[pkgname]})
+                
+            for appid in recounts:
+                if recounts[appid] > 0:
+                    appRec = self.db.application.find_one({"_id": appid})
+                    appRec["publications"] = recounts[appid]
+                    appRec["publicationsUrl"] = ""
+                    self.db.application.save(appRec)
+           
     def insertGitData(self, reposcrape):
         with usageCacheLock:
             #print "Querying github i#mport counts"    REMOVE ME
