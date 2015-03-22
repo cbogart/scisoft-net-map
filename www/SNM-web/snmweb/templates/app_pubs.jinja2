@@ -12,12 +12,16 @@
 
 
 {% block details %}
-  <h2>Publications</h2>
+  {% if sci_platform=="R" %}
+  <h2>Publications that cite {{app.title}}</h2>
+  {% else %}
+  <h2>Publications by users of {{app.title}}</h2>
+  {% endif %}
   {% if app.publications > 0 and (pubs is none or pubs.publications|length == 0) %}
       <h2>Results from Google Scholar</h2>
       <a href="{{ app.publicationsUrl }}">{{ app.publications }} publications</a> cited a publication associated with {{ app.title }}.
   {% elif (pubs is none or pubs.publications|length == 0) %}
-      Unknown -- check back soon as we add new publication data
+      Unknown -- This package does not list a canonical citation (or it does, but we could not identify it).
   {% elif sci_platform=="TACC" %}
       Users of this package associated the following {{ app.publications }} publications with
       the XSEDE allocation/account under which they were running this software.  Thus
@@ -40,13 +44,15 @@
       <ul>
       {% for pub in pubs.publications %}
          <li style="margin:0 0 8px 0;">
-         {% if pub.scopus_citedby_count >= 0 %}
-             <a class="snm-tooltip" title="List these publications in Scopus" href="{{ pub.scopus_url }}">
-             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">{{pub.scopus_citedby_count}}</a>
+         {% if pub.scopus_citedby_count != "" %}
+             Scopus lists <a class="snm-tooltip" title="List these publications in Scopus" href="{{ pub.scopus_url }}">
+             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">{{pub.scopus_citedby_count}}</a> 
+             citations to:
          {% else %}
+             Scopus cannot locate 
              <a class="snm-tooltip" title="Look for this publication in Scopus" 
              href="http://www.scopus.com/results/results.url?&s=TITLE-ABS-KEY-AUTH%28%22{{pub.author}} {{pub.title}}%22%29&origin=searchbasic">
-             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">?</a>
+             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">any citations</a> to:
          {% endif %}
          {{ pub.citation_text }}
          {% if pub.doi %}
