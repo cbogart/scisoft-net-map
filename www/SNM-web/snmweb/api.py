@@ -24,7 +24,6 @@ class LimitedDict:
         return self.content.get(index, default)
         
     def __setitem__(self, index, value):
-        print "Memoizing ", index, " = ", value
         if index in self.content:
             self.content[index] = value
             self.keys.remove(index)
@@ -37,13 +36,8 @@ class LimitedDict:
         self.content[index] = value
         
     def memoize(self, index, fn, fnargs):
-        print "Memoizing ", index
         if index not in self.content: 
-            print "   executing fn"
-            #pdb.set_trace()
             self[index] = fn(**fnargs)
-            print "   done"
-        print " ---> ", str(self[index])
         return self[index]
 
 memoCache = LimitedDict(10)

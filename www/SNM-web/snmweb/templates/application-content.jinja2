@@ -1,7 +1,10 @@
   <h2>App profile</h2>
   <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
     {% if sci_platform == "R" and app.views != [] %}
-    <p>Task views: {{ app.views|join(', ') }}
+    <p>Task views: 
+       {% for view in app.views %}
+           <a href="{{request.route_url('browse', _query={"query-view":view})}}">{{view}}</a>{% if not loop.last %},{% endif %}
+       {% endfor %}
     {% endif %}
 
   <p>
@@ -26,7 +29,10 @@
 &nbsp;&nbsp;
 
     {% if sci_platform == "R" %}
-    <span class="snm-tooltip" title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">Github projects:</span><span> {{app.git_usage}}</span>
+    <a href="{{request.route_url('app_gitprojects', name=app.title)}}" class="snm-tooltip" 
+      title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects"
+      >Github projects:</a><span> {{app.git_usage}}</span>
+    &nbsp;&nbsp;
     {% endif %} 
 
     {% if sci_platform == "TACC" %}

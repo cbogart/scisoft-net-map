@@ -5,7 +5,9 @@
 {% block content_title  %}
   <div class="row">
     <div class="col-md-10">
-      <h1><a href="{{request.route_url('browse', _query={'order': '-usage'})}}">Applications</a> > {{ self.title()|replace("[dot]",".") }} <small><!--version {{app.version if app.version != None}} --><!-- should be taken from db --></small></h1>
+      <h1><a href="{{request.route_url('browse', _query={'order': '-usage'})}}">Applications</a> 
+      {{ self.title()|replace("[dot]",".") }} <small><!--version {{app.version if app.version != None}} -->
+      <!-- should be taken from db --></small></h1>
     </div>
     <div class="col-md-2" id="app-search">
       <div>

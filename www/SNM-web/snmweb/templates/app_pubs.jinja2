@@ -13,53 +13,54 @@
 
 {% block details %}
   {% if sci_platform=="R" %}
-  <h2>Publications that cite {{app.title}}</h2>
-  {% else %}
-  <h2>Publications by users of {{app.title}}</h2>
+          <h2>Publications that cite {{app.title}}</h2>
+        
+          {% if (pubs is none or pubs.publications|length == 0) %}
+              Unknown -- This package does not list a canonical citation (or it does, but we could not identify it).
+          {% else %}
+              Some package authors list canonical publication(s) on CRAN or Bioconductor which they
+              request that people cite if they use the package in published research:  
+              <br>
+              <p>
+              <ul>
+              {% for pub in pubs.publications %}
+                 <li style="margin:0 0 8px 0;">
+                 {% if pub.scopus_citedby_count != "" %}
+                     Scopus counts <a class="snm-tooltip" title="List these publications in Scopus" href="{{ pub.scopus_url }}">
+                     <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">{{pub.scopus_citedby_count}}</a> 
+                     citations to:
+                 {% else %}
+                     <a class="snm-tooltip" title="Look for this publication in Scopus" href="http://www.scopus.com">Scopus</a>  
+                     <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">cannot identify</a>:
+                 {% endif %}
+                 <p>
+                 {{ pub.citation_text }}
+                 {% if pub.doi %}
+                        <a href="http://dx.doi.org/{{pub.doi}}">view</a>         
+                 {% endif %}
+                 </li>
+              {% endfor %}
+              </ul>
+          {% endif %}
+
+  {% elif sci_platform == "TACC" %} 
+  
+          <h2>Publications by users of {{app.title}}</h2>
+        
+              Users of this package associated the following {{ app.publications }} publications with
+              the XSEDE allocation/account under which they were running this software.  Thus
+              the publications may have come before or after the runs of this software, but
+              the authors considered them to be related to the same line of research.
+              <br>
+              <p>
+              <ul>
+              {% for pub in pubs.publications %}
+                 <li style="margin:0 0 8px 0;">{% for auth in pub.authors %} {{ auth }}, {% endfor %}
+                     ({{pub.month}}{{ pub.year }}) "{{ pub.title }}", {{ pub.journal }} {{ pub.location }} {{ pub.volume }},
+                     {{ pub.pages }}.  <a href="{{ pub.url }}">{{ pub.url }}</a>
+              {% endfor %}
+              </ul>
+
   {% endif %}
-  {% if app.publications > 0 and (pubs is none or pubs.publications|length == 0) %}
-      <h2>Results from Google Scholar</h2>
-      <a href="{{ app.publicationsUrl }}">{{ app.publications }} publications</a> cited a publication associated with {{ app.title }}.
-  {% elif (pubs is none or pubs.publications|length == 0) %}
-      Unknown -- This package does not list a canonical citation (or it does, but we could not identify it).
-  {% elif sci_platform=="TACC" %}
-      Users of this package associated the following {{ app.publications }} publications with
-      the XSEDE allocation/account under which they were running this software.  Thus
-      the publications may have come before or after the runs of this software, but
-      the authors considered them to be related to the same line of research.
-      <br>
-      <p>
-      <ul>
-      {% for pub in pubs.publications %}
-         <li style="margin:0 0 8px 0;">{% for auth in pub.authors %} {{ auth }}, {% endfor %}
-             ({{pub.month}}{{ pub.year }}) "{{ pub.title }}", {{ pub.journal }} {{ pub.location }} {{ pub.volume }},
-             {{ pub.pages }}.  <a href="{{ pub.url }}">{{ pub.url }}</a>
-      {% endfor %}
-      </ul>
-  {% else %}
-      Some package authors list a canonical publication on CRAN or Bioconductor which they
-      request that people cite if they use the package in published research.  
-      <br>
-      <p>
-      <ul>
-      {% for pub in pubs.publications %}
-         <li style="margin:0 0 8px 0;">
-         {% if pub.scopus_citedby_count != "" %}
-             Scopus lists <a class="snm-tooltip" title="List these publications in Scopus" href="{{ pub.scopus_url }}">
-             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">{{pub.scopus_citedby_count}}</a> 
-             citations to:
-         {% else %}
-             Scopus cannot locate 
-             <a class="snm-tooltip" title="Look for this publication in Scopus" 
-             href="http://www.scopus.com/results/results.url?&s=TITLE-ABS-KEY-AUTH%28%22{{pub.author}} {{pub.title}}%22%29&origin=searchbasic">
-             <img style="width:16px; height=16px;" src="/static/img/scopus_citations.ico">any citations</a> to:
-         {% endif %}
-         {{ pub.citation_text }}
-         {% if pub.doi %}
-                <a href="http://dx.doi.org/{{pub.doi}}">view</a>         
-         {% endif %}
-         </li>
-      {% endfor %}
-      </ul>
-  {% endif %}
+  
 {% endblock %}

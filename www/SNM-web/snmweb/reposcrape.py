@@ -34,8 +34,11 @@ def getConnection(dbname):
 def iso2epoch(dt):
     return datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S").strftime("%s")
 
-legalimport = re.compile("^[a-zA-Z_0-9\._]+$")
-
+# NB: R packages must start with letter; must not end with period, and must
+# contain only letters, numbers, and periods.  
+legalimport = re.compile("^[a-zA-Z][a-zA-Z0-9\.]*[a-zA-Z0-9]$")
+    
+    
 class RepoScrape:
     def __init__(self, dbname):
         self.db = getConnection(dbname)
@@ -89,7 +92,7 @@ class RepoScrape:
             referers.append(ref)
         return referers
 
-    def makeAppInfo(self):
+    def makeAppInfo(self, includeHandEditedAppInfo=False):
        """Dump info from database into appinfo.R.json"""
        packages = self.db.execute("select packages.*, group_concat(distinct(tags.tag)) views from packages left join tags on packages.name = tags.package_name group by packages.name;")
 
@@ -97,9 +100,12 @@ class RepoScrape:
        self.appinfo = {}
        self.deps = {}
 
-       oldappinfo = json.loads(
-          open("../../data/appinfo.R.handedited.json", "r").read())
-
+       if includeHandEditedAppInfo:
+           oldappinfo = json.loads(
+                open("../../data/appinfo.R.handedited.json", "r").read())
+       else:
+           oldappinfo = {}
+           
        for pack in packages:
            name = pack["packages.name"]
            if "\n" in name:

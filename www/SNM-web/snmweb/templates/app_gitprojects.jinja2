@@ -57,7 +57,10 @@
              {%if git.description %} {{git.description}} <div >&nbsp;</div>{% endif %}
              
              <small>
-             <b>Dependencies:</b> <i>{% for dep in git.dependencies %} {{ dep }}, {% endfor %}</i>
+             <b>Dependencies:</b> <i>
+             {% for dep in git.dependencies %} 
+                <a href="{{request.route_url('application', name=dep)}}">{{dep}}</a>{% if not loop.last %},{% endif %}
+             {% endfor %}</i>
              </small>
          </div>
       {% endfor %}
