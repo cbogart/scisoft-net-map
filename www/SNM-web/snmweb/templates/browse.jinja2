@@ -252,7 +252,7 @@
                 {% endif %}
                 </p>
                 {% if sci_platform == "R" and app.views != [] %}
-                
+                   This package is part of the following task view(s): 
                     {% for view in app.views %}
                        <a href="{{request.route_url('browse', _query={"query-view":view})}}">{{view}}</a>{% if not loop.last %},{% endif %}
                     {% endfor %}
