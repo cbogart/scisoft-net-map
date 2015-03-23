@@ -231,7 +231,11 @@
                          Publications:
                          <a href="{{request.route_url('app_pubs', name=app.title)}}"
                             class="snm-tooltip"
+                            {% if sci_platform == "TACC" %}
                             title="Number of publications resulting from jobs using this application">
+                            {% else %}
+                            title="Number of scopus citations to this software">
+                            {% endif %}
                            {{app.publications}}
                            </a>
                         {% endif %}
