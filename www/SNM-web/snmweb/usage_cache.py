@@ -91,8 +91,8 @@ class UsageCache:
                         for cite in cites[pkgname]:
                             recounts[appid] += int(cite["scopus_citedby_count"])
                     except Exception, e:
-                        print "Recount error:", e
-                    print "Adding publications for", pkgname
+                        pass #print "Recount error:", e
+                    #print "Adding publications for", pkgname
                     self.db.pub_list.insert({"application": appid, 
                                              "publications": cites[pkgname]})
                 
@@ -199,10 +199,14 @@ class UsageCache:
             self.dirty = False
             self.lastRpacket = 0
             self.appIds = {}
+            self.systemUsage = defaultdict(int)
+            self.systemUserList = defaultdict(list)
             for app in dest.application.find():
                 self.apps[app["title"]] = { 
                    "id": app["_id"],
                    "usage": defaultdict(int),
+                   "version_usage": defaultdict(lambda: defaultdict(int)),
+                   "version_user_list": defaultdict(lambda: defaultdict(list)),
                    "user_list": defaultdict(list),
                    "pub_indexes": set(),
                    "co_occurence": defaultdict(lambda: {"static": 0, "logical": 0} )
@@ -229,7 +233,27 @@ class UsageCache:
             for a_user_list in dest.user_list.find():
                 appname = self.appIds[a_user_list["application"]]
                 self.apps[appname]["user_list"] = pairlist2dict(a_user_list["users"], "date", "users")
-    
+                
+            # Load in version-specific date ranges for user counts
+            for av_usage in dest.version_usage.find():
+                appname = self.appIds[av_usage["application"]]
+                self.apps[appname]["version_usage"][av_usage.version] =pairlist2dict(av_usage["daily"], "x","y")
+             
+            # load in version-specific date ranges for user lists
+            for av_user_list in dest.version_users_usage.find():
+                appname = self.appIds[av_usage["application"]]
+                self.apps[appname]["version_user_list"][av_user_list.version] =pairlist2dict(av_user_list["daily"], "x","y")
+   
+            # Load in overall usage info per day
+            for sysuse in dest.system_usage.find():
+                if sysuse.category=="R sessions":
+                    self.systemUsage = pairlist2dict(sysuse["daily"], "x", "y")
+
+            # Load in overall user lists per day        
+            for sysusers in dest.system_users_usage.find():
+                if sysusers.category=="R sessions":
+                    self.systemUserList = pairlist2dict(sysusers["daily"], "x", "y")
+                    
             gs = dest.global_stats.find_one()
             self.max_co_uses = gs["max_co_uses"]
 
@@ -256,6 +280,8 @@ class UsageCache:
             self.apps[pkgname] = dict()
             self.apps[pkgname]["usage"] = defaultdict(int)
             self.apps[pkgname]["user_list"] = defaultdict(list)
+            self.apps[pkgname]["version_usage"] = defaultdict(lambda: defaultdict(int))
+            self.apps[pkgname]["version_user_list"] = defaultdict(lambda: defaultdict(list))
             self.apps[pkgname]["pub_indexes"] = set()
             self.apps[pkgname]["co_occurence"] = defaultdict(lambda: {"static": 0, "logical": 0} )
 
@@ -337,8 +363,11 @@ class UsageCache:
             if epoch > self.lastRpacket:
                 self.lastRpacket = epoch
             pkgnamelist = [self.translateAppname(p.split("/")[0]) for p in packet["pkgT"]]  #self.apps.keys()
+            self.systemUsage[dayOf(today)] += 1 
+            self.systemUserList[dayOf(today)] = list(set(self.systemUserList.get(dayOf(today),[]) + [packet["user"]]))
             for pkgT in packet["pkgT"]:
                 pkgname = self.translateAppname(pkgT.split("/")[0])
+                pkgver = pkgT.split("/")[1] if "/" in pkgT else ""
                 if isinstance(pkgname, dict):
                     print "pkgname is a dict!", pkgname
                     pdb.set_trace()
@@ -347,6 +376,10 @@ class UsageCache:
                     self.apps[pkgname]["usage"].get(dayOf(today), 0) + 1
                 self.apps[pkgname]["user_list"][dayOf(today)] = \
                     list(set(self.apps[pkgname]["user_list"].get(dayOf(today), []) + [packet["user"]]))
+                self.apps[pkgname]["version_usage"][pkgver][dayOf(today)] = \
+                    self.apps[pkgname]["version_usage"][pkgver].get(dayOf(today), 0) + 1
+                self.apps[pkgname]["version_user_list"][pkgver][dayOf(today)] = \
+                    list(set(self.apps[pkgname]["version_user_list"][pkgver].get(dayOf(today), []) + [packet["user"]]))
 
                 # Fill in publications
                 if (len(self.pub_indexes) > 0 and "account" in packet):
@@ -420,15 +453,30 @@ class UsageCache:
 
         app_table = self.db.application
         with usageCacheLock:
-	    for appname in self.apps:
-                app = self.apps[appname]
-                if "id" not in app:
-                    app["id"] = self.writeNewApp(appname)
-
+    	    for appname in self.apps:
+                    app = self.apps[appname]
+                    if "id" not in app:
+                        app["id"] = self.writeNewApp(appname)
+    
             print "Saving", len(self.apps), "apps"
             tempUsage = {}
             appcount = 0
-	    for appname in self.apps:
+    
+                
+            susageData = fillInDayWeekMonth(self.systemUsage, 0, lambda x,y: x+y, "x", "y")
+            self.db.system_usage.insert(
+                         {"category": "R sessions",
+                          "daily":susageData["daily"],
+                          "weekly": susageData["weekly"],
+                          "monthly": susageData["monthly"] })
+            susersData = fillInDayWeekMonth(self.systemUserList, [], lambda x,y: list(set(x+y)), "date","users")
+            self.db.system_users_usage.insert(
+                         {"category": "R sessions",
+                          "daily": [{"x": i["date"], "y": len(i["users"])} for i in susersData["daily"]],
+                          "weekly": [{"x": i["date"], "y": len(i["users"])} for i in susersData["weekly"]],
+                          "monthly": [{"x": i["date"], "y": len(i["users"])} for i in susersData["monthly"]] })
+            
+            for appname in self.apps:
                 if (appcount % 100 == 0):
                     print "   #", appcount," ", appname
                 appcount = appcount + 1
@@ -444,14 +492,34 @@ class UsageCache:
                 app_usage = usageData["total"]
                 tempUsage[appname] = usageData["total"]
                 self.db.usage.save(thisusage)
-
+                
                 # Save list of users.  We won't save the weekly/monthly sets, but we'll use them a few lines down
                 #  to calculate weekly/monthly user counts
                 userListData = fillInDayWeekMonth(app["user_list"], [], lambda x,y: list(set(x+y)), "date","users")
                 thisuser_list = self.db.user_list.find_one({"application": id})
                 thisuser_list["users"] =  [ {"date": item["date"], "users": list(item["users"])} for item in userListData["daily"] ]
                 self.db.user_list.save(thisuser_list)
-
+    
+                # Save version usage counts and user lists
+                self.db.version_usage.remove({"application": id})
+                self.db.version_users_usage.remove({"application": id})
+                for ver in app["version_usage"]:
+                    vusageData = fillInDayWeekMonth(app["version_usage"][ver], 0, lambda x,y: x+y, "x", "y")
+                    self.db.version_usage.insert(
+                                 {"application": id, 
+                                  "version": ver,
+                                  "daily":vusageData["daily"],
+                                  "weekly": vusageData["weekly"],
+                                  "monthly": vusageData["monthly"] })
+                    vusersData = fillInDayWeekMonth(app["version_user_list"][ver], [], lambda x,y: list(set(x+y)), "date","users")
+                    self.db.version_users_usage.insert(
+                                 {"application": id, 
+                                  "version": ver,
+                                  "daily": [{"x": i["date"], "y": len(i["users"])} for i in vusersData["daily"]],
+                                  "weekly": [{"x": i["date"], "y": len(i["users"])} for i in vusersData["weekly"]],
+                                  "monthly": [{"x": i["date"], "y": len(i["users"])} for i in vusersData["monthly"]] })
+               
+    
                 # Calculate publication list
                 if (len(self.pub_indexes) > 0 and len(app.get("pub_indexes",set()))>0):
                     publist = self.db.pub_list.find_one({"application": id})
@@ -460,7 +528,7 @@ class UsageCache:
                     publist["publications"] = [self.pub_list[i] for i in app["pub_indexes"]]
                     self.db.pub_list.save(publist)
                 
-
+    
                 # Save counts of users.  We *do* need weekly/monthly here.
                 thisusers = self.db.users_usage.find_one({"application": id})
                 thisusers["daily"] = [{"x": i["date"], "y": len(i["users"])} for i in userListData["daily"]]
@@ -478,7 +546,7 @@ class UsageCache:
                 if (len(app["pub_indexes"]) > 0):
                     appRec["publications"] = len(app["pub_indexes"])
                 self.db.application.save(appRec)
-
+    
                 coocRec = self.db.co_occurence.find_one({"application": id})
                 for k in app["co_occurence"]:
                     if id == self.apps[k]["id"]:

@@ -265,15 +265,6 @@ calculate the number of distinct users in each time period
 class UserList(Document):
     application = ReferenceField(Application, required=True)
     users = ListField(EmbeddedDocumentField(ByDateUsers))
-    
-"""
-VersionUserList: List of users by date for each version of
-each app.  Used to calculate VersionUsersUsage
-"""
-class VersionUserList(Document):
-    application = ReferenceField(Application, required=True)
-    version = StringField()
-    users = ListField(EmbeddedDocumentField(ByDateUsers))
 
 class PubList(Document):
     application = ReferenceField(Application, required=True)
