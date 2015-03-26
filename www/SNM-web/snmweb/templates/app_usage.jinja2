@@ -28,9 +28,15 @@
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
-          stat_id : "version_usage_over_time",
-          style   : "area",
-          caption_field : "version",
+          {% if sci_platform == "R" %}
+            stat_id : "version_usage_over_time",
+            style   : "area",
+            caption_field : "version",
+           {% else %}
+            stat_id : "usage_over_time",
+            style   : "line",
+            caption_field : "title",
+           {% endif %}
           period  : "week"
         });
        var btns = $("#filters-group button");
@@ -41,10 +47,12 @@
       var selected_usage_btn = $("#usage-type-group .active");
       
       function setOptions() {
-        chart.setOption("style", selected_usage_btn.data("style"));
-        chart.setOption("stat_id", selected_usage_btn.data("statid"));
+        {% if sci_platform == "R" %}
+          chart.setOption("style", selected_usage_btn.data("style"));
+          chart.setOption("stat_id", selected_usage_btn.data("statid"));
+          chart.setOption("caption_field", selected_usage_btn.data("captionfield"));
+        {% endif %}
         chart.setOption("period", selected_filter_btn.data("period"));
-        chart.setOption("caption_field", selected_usage_btn.data("captionfield"));
       }
       setOptions()
        
@@ -66,7 +74,7 @@
         setOptions();
         chart.drawDiagram({
           group_by: selected_filter_btn.data("period"),
-          id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
+          id: app_id 
         });
       });
       
@@ -114,9 +122,9 @@
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
       {% if sci_platform == "R" %}
-      <h3><b>{{app.title}}</b> usage counts by volunteers with instrumented R installations</h3>
+      <h3>Number of uses by volunteers with instrumented R installations</h3>
       {% else %}
-      <h3>TACC job counts for {{app.title}}</h3>
+      <h3>Number of TACC jobs including {{app.title|replace("[dot]",".")}}</h3>
       {% endif %}
       <div id="chart">
         <svg></svg>
@@ -128,6 +136,7 @@
           <button data-period="week" type="button" class="btn active btn-default">Week</button>
           <button data-period="month" type="button" class="btn btn-default">Month</button>
         </div> 
+        {% if sci_platform == "R" %}
         &nbsp;
         <div id="usage-type-group" class="btn-group">
           <button type="button" class="btn disabled">Package Versions:</button>
@@ -136,6 +145,7 @@
           <button data-statid="version_usage_over_time" data-captionfield="version" 
                 data-style="area" type="button" class="btn active btn-default">Separate</button>
         </div>
+        {% endif %}
       </div>
     </div>
  

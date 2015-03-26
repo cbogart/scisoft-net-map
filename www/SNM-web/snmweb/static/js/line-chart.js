@@ -22,9 +22,14 @@
         
         var chart = {};
         if (options.style == "line") {
-                 chart = nv.models.lineChart().useInteractiveGuideline(true);
+                 chart = nv.models.lineChart()
+                    .useInteractiveGuideline(true)
+                    .noData("Insufficient data available");
         } else {
-                 chart = nv.models.stackedAreaChart().showControls(false).useInteractiveGuideline(true);
+                 chart = nv.models.stackedAreaChart()
+                    .showControls(false)
+                    .useInteractiveGuideline(true)
+                    .noData("Insufficient data available");
         }
         chart.xAxis
             .axisLabel("Date")

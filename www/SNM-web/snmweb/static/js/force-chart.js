@@ -147,7 +147,7 @@ function vizForceChart(selector, options) {
         }, function() {  // on failure
            console.log("FAILURE!");
            svg.selectAll("*").remove();
-           svg.append("text").attr("y", 150).text("No data available");
+           svg.append("text").attr("y", 150).text("Insufficient Data Available");
         });
     }
 
