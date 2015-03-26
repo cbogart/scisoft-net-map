@@ -1,0 +1,187 @@
+{% extends "base.jinja2" %}
+{% block content_title  %}<h1>Data Status</h1>{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link href="{{request.static_url('snmweb:static/css/lib/nv.d3.css')}}" rel="stylesheet">
+  <style>
+    #chart svg {
+      height: 400px;
+    }
+    #git_chart svg {
+      height: 400px;
+    }
+  </style>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{request.static_url('snmweb:static/js/lib/d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/lib/nv.d3.js')}}"></script>
+  <script src="{{request.static_url('snmweb:static/js/line-chart.js')}}"></script>
+  <script>
+    $(function main() {
+      
+      var chart = $.vizLineChart("#chart svg",
+        {
+          table   : $("#graph-data"),
+          stat_id : "system_usage"
+        });
+      var filter_btns = $("#filters-group button");
+      var usage_type_btns = $("#usage-type-group button");
+      var selected_filter_btn = $("#filters-group active");
+      var selected_usage_btn = $("#usage-type-group active");
+       
+      filter_btns.click(function() {
+        filter_btns.removeClass("active");
+        $(this).addClass("active");
+        selected_filter_btn = $(this);
+        chart.setOption("stat_id", selected_usage_btn.data("statid"));
+        chart.drawDiagram({
+          group_by: selected_filter_btn.data("period"),
+          id: selected_usage_btn.data("category")
+        });
+      });
+      
+      usage_type_btns.click(function() {
+        usage_type_btns.removeClass("active");
+        $(this).addClass("active");
+        selected_usage_btn = $(this);
+        chart.setOption("stat_id", selected_usage_btn.data("statid"));
+        chart.drawDiagram({
+          group_by: selected_filter_btn.data("period"),
+          id: selected_usage_btn.data("category")
+        });
+      });
+      
+      chart.drawDiagram({group_by: "week", id: "R sessions"});
+      
+    });
+
+    $('#myTab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+      $(window).trigger('resize');
+    })
+        
+  </script>
+{% endblock %}
+
+
+{% block content %}
+   <div class="panel-body">
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li "><a href="#stats-wrapper" role="tab" data-toggle="tab"><b>Overall</b></a></li>
+    <li><a href="#chart-wrapper" role="tab" data-toggle="tab">Usage Chart</a></li>
+    <li><a href="#graph-data-wrapper" role="tab" data-toggle="tab">Usage Data</a></li>
+    <li class="active"><a href="#desc-wrapper" role="tab" data-toggle="tab">
+      Data explanations
+    </a></li>
+  </ul>
+  
+  
+
+  <div class="tab-content">
+  
+    <div id="stats-wrapper"  class="tab-pane">
+        <h4>Status of data collection</h4>
+          Data on this site currently consists of:
+          <ul>
+          <li><b>{{r_sessions}}</b> R sessions have been recorded; last update: {{latest_r_packet}}
+          <li><b>{{git_projects}}</b> Github projects have been sampled; last update: {{latest_git_update}}
+          <li>The following repositories have been searched for package metadata:
+              <ul>
+                  {% for repo in repositories %}
+                    {% if repo!=None %}
+                    <li>{{ repo }}: <b>{{repositories[repo]}}</b> packages
+                    {% endif %}
+                  {% endfor %}
+              </ul>
+          <li>Additionally, users required/imported <b>{{repositories[None]}}</b> packages that we could not identify.
+          </ul>
+    </div>
+  
+  
+    <div id="chart-wrapper" class="tab-pane">
+      {% if sci_platform == "R" %}
+      <h3>Usage counts by volunteers with instrumented R installations</h3>
+      {% else %}
+      <h3>TACC job counts</h3>
+      {% endif %}
+      <div id="chart">
+        <svg></svg>
+      </div>
+      <div class="row" id="filters">
+        <div id="filters-group" class="btn-group">
+          <button type="button" class="btn disabled">Period:</button>
+          <button data-period="day" type="button" class="btn btn-default">Day</button>
+          <button data-period="week" type="button" class="btn active btn-default">Week</button>
+          <button data-period="month" type="button" class="btn btn-default">Month</button>
+        </div>
+        &nbsp;
+        <div id="usage-type-group" class="btn-group">
+          <button type="button" class="btn disabled">Usage Type:</button>
+          <button data-statid="system_usage" data-category="R sessions" type="button" class="btn active btn-default">Uses</button>
+          <button data-statid="system_users" data-category="R users" type="button" class="btn  btn-default">Users</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div id="graph-data-wrapper" class="tab-pane">
+      <table class="table" id="graph-data">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    
+    
+    <div id="desc-wrapper" class="tab-pane active">
+      <h3>Usage data</h3>
+    <p>The usage data currently shown comes from <a href="http://scisoft-net-map.isri.cmu.edu/static/html/installR.html">volunteers</a> who are tracking the packages they
+    use in their R analyses on their own computers. <a href="http://scisoft-net-map.isri.cmu.edu:7777">(If you are looking for the TACC supercomputer data,
+    it can be found here.)</a>
+    It is displayed using the following assumptions:
+    </p>
+    <ul>
+    <li>We assume packages with the same name are the same package.  We have distinct version information, but
+        are currently not displaying it for simplicity.
+    <li>We ignore a common baseline of R packages that are installed by default
+    <li>Two packages are considered to be "used together" if they were both used in the same run
+    </ul>
+    <h3>Github data</h3>
+    Github data comes from a random sample of R-language projects.  We used <a href="http://ghtorrent.org">ghtorrent</a> to get a list of projects,
+    and are continuing to sample them directly using <a href="https://developer.github.com/v3/">Github's API</a>.  Data uses the following
+    assumptions:
+    <ul>
+    <li>A project is assumed to "use" a package if a file named <code>*.r</code> or <code>*.R</code> contains the string <code>import(</code>package name<code>)</code>
+    or <code>require(</code>package name<code>)</code>, or if it contains a <code>DESCRIPTION</code> file that refers to it.
+    <li>If a github project contains a <code>DESCRIPTION</code> file, we treat it as a package, as well as a project that may use packages.  However
+    if there is a CRAN or Bioconductor package by the same name, we assume projects are referring to those repositories, not the Github project.
+    <li>Dates listed for Github projects are date of last modification.
+    <li>We are currently sampling only from projects created before Jan 9, 2015 (ghtorrent's last dump date). We will start sampling newer projects
+    directly from Github after our pre-Jan-9 scrape is complete.
+    </ul>
+
+    <h3>Participate</h3>
+    To contribute your own usage data to the map, visit 
+    <a href="http://scisoft-net-map.isri.cmu.edu/static/html/installR.html">http://scisoft-net-map.isri.cmu.edu/static/html/installR.html</a> for information on how to install the R package.
+
+    <h3>Other data sources</h3>
+    <p>If you have a scientific software package or suite that you would like to track using this tool,
+    let us know. 
+    We are interested in helping
+    you to track your software's usage.  Even if you just have a small number of users, we'd like to work with you to find out how this
+    kind of tracking information can provide value to package authors.
+    </p>
+    </div>
+    
+    
+  </div>
+</div>
+{% endblock %}

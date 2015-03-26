@@ -28,18 +28,48 @@
       var chart = $.vizLineChart("#chart svg",
         {
           table   : $("#graph-data"),
-          stat_id : "usage_over_time"
+          stat_id : "version_usage_over_time",
+          style   : "area",
+          caption_field : "version",
+          period  : "week"
         });
        var btns = $("#filters-group button");
        var git_btns = $("#git-filters-group button");
+       var usage_type_btns = $("#usage-type-group button");
+       
+      var selected_filter_btn = $("#filters-group .active");
+      var selected_usage_btn = $("#usage-type-group .active");
+      
+      function setOptions() {
+        chart.setOption("style", selected_usage_btn.data("style"));
+        chart.setOption("stat_id", selected_usage_btn.data("statid"));
+        chart.setOption("period", selected_filter_btn.data("period"));
+        chart.setOption("caption_field", selected_usage_btn.data("captionfield"));
+      }
+      setOptions()
+       
+      usage_type_btns.click(function() {
+        usage_type_btns.removeClass("active");
+        $(this).addClass("active");
+        selected_usage_btn = $(this);
+        setOptions();
+        chart.drawDiagram({
+          group_by: selected_filter_btn.data("period"),
+          id: app_id,
+        });
+      });
+      
       btns.click(function() {
         btns.removeClass("active");
         $(this).addClass("active");
+        selected_filter_btn = $(this)
+        setOptions();
         chart.drawDiagram({
-          group_by: $(this).data("period"),
+          group_by: selected_filter_btn.data("period"),
           id: app_id /*This app_id should be loaded in app_base as part of client-side app information */
         });
       });
+      
       git_btns.click(function() {
         git_btns.removeClass("active");
         $(this).addClass("active");
@@ -84,9 +114,9 @@
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
       {% if sci_platform == "R" %}
-      <h3>Usage counts by volunteers with instrumented R installations</h3>
+      <h3><b>{{app.title}}</b> usage counts by volunteers with instrumented R installations</h3>
       {% else %}
-      <h3>TACC job counts</h3>
+      <h3>TACC job counts for {{app.title}}</h3>
       {% endif %}
       <div id="chart">
         <svg></svg>
@@ -97,6 +127,14 @@
           <button data-period="day" type="button" class="btn btn-default">Day</button>
           <button data-period="week" type="button" class="btn active btn-default">Week</button>
           <button data-period="month" type="button" class="btn btn-default">Month</button>
+        </div> 
+        &nbsp;
+        <div id="usage-type-group" class="btn-group">
+          <button type="button" class="btn disabled">Package Versions:</button>
+          <button data-statid="usage_over_time" data-captionfield="title" 
+                data-style="area" type="button" class="btn btn-default">Combined</button>
+          <button data-statid="version_usage_over_time" data-captionfield="version" 
+                data-style="area" type="button" class="btn active btn-default">Separate</button>
         </div>
       </div>
     </div>

@@ -13,12 +13,19 @@
             xLabel : "",
             yLabel : "",
             table  : "", //table selector
+            caption_field : "title",
+            style  : "line",
             stat_id: ""  // api/stat/{stat_id}
         }, options);
-
+        
         var tab = $(options.table);
-        var chart = nv.models.lineChart().useInteractiveGuideline(true);
-
+        
+        var chart = {};
+        if (options.style == "line") {
+                 chart = nv.models.lineChart().useInteractiveGuideline(true);
+        } else {
+                 chart = nv.models.stackedAreaChart().showControls(false).useInteractiveGuideline(true);
+        }
         chart.xAxis
             .axisLabel("Date")
             .tickFormat(function(d) {
@@ -73,7 +80,7 @@
                                 }
                             );
 
-                            appData.push({values: d, key: r.data[i].title});
+                            appData.push({values: d, key: r.data[i][options.caption_field]});
                         }
                     });
             }

@@ -3,7 +3,7 @@ import json
 import sys
 import pdb
 from db_objects import *
-from pymongo import Connection
+from pymongo import Connection, MongoClient
 from tarjan import clusteringOrder
 
 from pyramid.view import (
@@ -163,6 +163,48 @@ class ApiViews:
                                "title": entry.application.title.replace("[dot]",".")})
             return result
 
+        def version_data_over_time(group_by, id, stat_type):
+            d = {"day": "daily",
+                 "week": "weekly",
+                 "month": "monthly"}
+            group = d.get(group_by)
+            if group is None:
+                raise Exception("Group_by argument "
+                                "should be one of {}".format(
+                                    ",".join(d.keys())))
+
+            if id is None:
+                raise Exception("Please specify application id")
+
+            result = []
+            stat_object = globals()[stat_type]
+            for entry in sorted(stat_object.objects(application__in=id.split(",")).all(), key=lambda o: o.version):
+                result.append({"data": entry.to_mongo()[group],
+                               "version": entry.version,
+                               "title": entry.application.title.replace("[dot]",".")})
+            return result
+        
+        def system_data_over_time(group_by, category, stat_type):
+            d = {"day": "daily",
+                 "week": "weekly",
+                 "month": "monthly"}
+            group = d.get(group_by)
+            if group is None:
+                raise Exception("Group_by argument "
+                                "should be one of {}".format(
+                                    ",".join(d.keys())))
+
+            if category is None:
+                category = "R sessions"
+                #raise Exception("Please specify category id")
+
+            result = []
+            stat_object = globals()[stat_type]
+            for entry in stat_object.objects(category__in=category.split(",")).all():
+                result.append({"data": entry.to_mongo()[group],
+                               "title": category})
+            return result
+
         def user_vector(id):
            result = dict()
            maxuse = 0
@@ -201,11 +243,38 @@ class ApiViews:
         def usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "Usage")
            
+        def version_usage_over_time(group_by="day", id=None):
+           return version_data_over_time(group_by, id, "VersionUsage")
+           
+        def version_users_over_time(group_by="day", id=None):
+           return version_data_over_time(group_by, id, "VersionUsersUsage")
+           
+        def system_usage(group_by="day", id=None):
+           print "system_usage:", group_by, id
+           return system_data_over_time(group_by, id, "SystemUsage")
+           
+        def system_users(group_by="day", id=None):
+           print "system_users:", group_by, id
+           return system_data_over_time(group_by, id, "SystemUsersUsage")
+           
         def git_usage_over_time(group_by="day", id=None):
            return data_over_time(group_by, id, "GitUsage")
 
         def users_over_time(group_by="day", id=None):
             return data_over_time(group_by, id, "UsersUsage")
+        
+        def overall_stats():
+            gs = GlobalStats.objects().first()
+            return {
+                "git_projects": gs.num_git_projects_scraped,
+                "r_sessions": RawRecords.objects().count(),
+                #"r_users": 6,
+                "repositories": Application.objects().item_frequencies('repository'),                          
+                #"earliest_git_update": "Mon Mar 23 2015",
+                #"earliest_r_update": RawRecords.objects().first()["receivedEpoch"],
+                "latest_git_update": gs.last_git_project,
+                "latest_r_packet": gs.last_r_packet
+                    }
 
         def dictsum(d1, d2):
             for k in d2:
@@ -254,6 +323,9 @@ class ApiViews:
         if type is None:
             return [{"id": "usage_over_time"},
                     {"id": "users_over_time"},
+                    {"id": "system_users"},
+                    {"id": "system_usage"},
+                    {"id": "overall_stats"},
                     {"id": "force_directed"},
                     {"id": "git_force_directed"}]
 

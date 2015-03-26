@@ -237,12 +237,12 @@ class UsageCache:
             # Load in version-specific date ranges for user counts
             for av_usage in dest.version_usage.find():
                 appname = self.appIds[av_usage["application"]]
-                self.apps[appname]["version_usage"][av_usage.version] =pairlist2dict(av_usage["daily"], "x","y")
+                self.apps[appname]["version_usage"][av_usage.version.replace("[dot]",".")] =pairlist2dict(av_usage["daily"], "x","y")
              
             # load in version-specific date ranges for user lists
             for av_user_list in dest.version_users_usage.find():
                 appname = self.appIds[av_usage["application"]]
-                self.apps[appname]["version_user_list"][av_user_list.version] =pairlist2dict(av_user_list["daily"], "x","y")
+                self.apps[appname]["version_user_list"][av_user_list.version.replace("[dot]",".")] =pairlist2dict(av_user_list["daily"], "x","y")
    
             # Load in overall usage info per day
             for sysuse in dest.system_usage.find():
@@ -251,7 +251,7 @@ class UsageCache:
 
             # Load in overall user lists per day        
             for sysusers in dest.system_users_usage.find():
-                if sysusers.category=="R sessions":
+                if sysusers.category=="R users":
                     self.systemUserList = pairlist2dict(sysusers["daily"], "x", "y")
                     
             gs = dest.global_stats.find_one()
@@ -367,7 +367,7 @@ class UsageCache:
             self.systemUserList[dayOf(today)] = list(set(self.systemUserList.get(dayOf(today),[]) + [packet["user"]]))
             for pkgT in packet["pkgT"]:
                 pkgname = self.translateAppname(pkgT.split("/")[0])
-                pkgver = pkgT.split("/")[1] if "/" in pkgT else ""
+                pkgver = pkgT.split("/")[1].replace("[dot]",".") if "/" in pkgT else ""
                 if isinstance(pkgname, dict):
                     print "pkgname is a dict!", pkgname
                     pdb.set_trace()
@@ -462,7 +462,8 @@ class UsageCache:
             tempUsage = {}
             appcount = 0
     
-                
+            self.db.system_usage.remove()
+            self.db.system_users_usage.remove()
             susageData = fillInDayWeekMonth(self.systemUsage, 0, lambda x,y: x+y, "x", "y")
             self.db.system_usage.insert(
                          {"category": "R sessions",
@@ -471,7 +472,7 @@ class UsageCache:
                           "monthly": susageData["monthly"] })
             susersData = fillInDayWeekMonth(self.systemUserList, [], lambda x,y: list(set(x+y)), "date","users")
             self.db.system_users_usage.insert(
-                         {"category": "R sessions",
+                         {"category": "R users",
                           "daily": [{"x": i["date"], "y": len(i["users"])} for i in susersData["daily"]],
                           "weekly": [{"x": i["date"], "y": len(i["users"])} for i in susersData["weekly"]],
                           "monthly": [{"x": i["date"], "y": len(i["users"])} for i in susersData["monthly"]] })
@@ -504,14 +505,15 @@ class UsageCache:
                 self.db.version_usage.remove({"application": id})
                 self.db.version_users_usage.remove({"application": id})
                 for ver in app["version_usage"]:
-                    vusageData = fillInDayWeekMonth(app["version_usage"][ver], 0, lambda x,y: x+y, "x", "y")
+                    fullrange = (thisusage["daily"][0]["x"], thisusage["daily"][-1]["x"])
+                    vusageData = fillInDayWeekMonth(app["version_usage"][ver], 0, lambda x,y: x+y, "x", "y", fullrange)
                     self.db.version_usage.insert(
                                  {"application": id, 
                                   "version": ver,
                                   "daily":vusageData["daily"],
                                   "weekly": vusageData["weekly"],
                                   "monthly": vusageData["monthly"] })
-                    vusersData = fillInDayWeekMonth(app["version_user_list"][ver], [], lambda x,y: list(set(x+y)), "date","users")
+                    vusersData = fillInDayWeekMonth(app["version_user_list"][ver], [], lambda x,y: list(set(x+y)), "date","users", fullrange)
                     self.db.version_users_usage.insert(
                                  {"application": id, 
                                   "version": ver,
@@ -635,7 +637,7 @@ def weekOf(when):
 def monthOf(when):
     return date(when.year, when.month, 1).isoformat()
 
-def fillInDayWeekMonth(dayhash, zero, accum, ix, value):
+def fillInDayWeekMonth(dayhash, zero, accum, ix, value, forcedRange = ("9999-01-01", "1720-01-01")):
     """Fill in week and month stats given a list of day stats
     
     Given some type T, (usually an integer or a list of names)
@@ -645,15 +647,16 @@ def fillInDayWeekMonth(dayhash, zero, accum, ix, value):
               "weekly": list({ix: date, value: T}*), "
               monthly": list({ix: date, value: T}*) }
     
-    dayhash: a dict mapping the date in iso format to a value of type T
-    zero: The "zero" in type T       (usually 0 or [])
-    accum: The "+" of type T         (usually + or append)
-    ix: The result dict key holding the month in iso format
-    value: The result dict key holding the accumulated value for the time period"""
+    @param dayhash: a dict mapping the date in iso format to a value of type T
+    @param zero: The "zero" in type T       (usually 0 or [])
+    @param accum: The "+" of type T         (usually + or append)
+    @param ix: The result dict key holding the month in iso format
+    @param value: The result dict key holding the accumulated value for the time period
+    @param forcedRange: (optional) a pair of days: if present, zero usage will be filled in for missing days in that range"""
     
     delta = datetime.timedelta(days=1)
-    start = ymd2date(min(dayhash.keys()))
-    end = ymd2date(max(dayhash.keys()))
+    start = ymd2date(min(min(dayhash.keys()), forcedRange[0]))
+    end = ymd2date(max(max(dayhash.keys()), forcedRange[1]))
     daily = {k:v for (k,v) in dayhash.items()}
     weekly = {}
     monthly = {}

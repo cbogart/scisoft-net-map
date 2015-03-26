@@ -15,7 +15,8 @@
 {% block content %}
 
   <div class="col-md-12">
-    <p>The data currently shown comes from <a href="http://scisoft-net-map.isri.cmu.edu/static/html/installR.html">volunteers</a> who are tracking the packages they
+    <h3>Usage data</h3>
+    <p>The usage data currently shown comes from <a href="http://scisoft-net-map.isri.cmu.edu/static/html/installR.html">volunteers</a> who are tracking the packages they
     use in their R analyses on their own computers. <a href="http://scisoft-net-map.isri.cmu.edu:7777">(If you are looking for the TACC supercomputer data,
     it can be found here.)</a>
     It is displayed using the following assumptions:
@@ -26,6 +27,19 @@
     <li>We ignore a common baseline of R packages that are installed by default
     <li>Two packages are considered to be "used together" if they were both used in the same run
     </ul>
+    <h3>Github data</h3>
+    Github data comes from a random sample of R-language projects.  We used <a href="http://ghtorrent.org">ghtorrent</a> to get a list of projects,
+    and are continuing to sample them directly using <a href="https://developer.github.com/v3/">Github's API</a>.  Data uses the following
+    assumptions:
+    <ul>
+    <li>A project is assumed to "use" a package if a file named <code>*.r</code> or <code>*.R</code> contains the string <code>import(</code>package name<code>)</code>
+    or <code>require(</code>package name<code>)</code>, or if it contains a <code>DESCRIPTION</code> file that refers to it.
+    <li>If a github project contains a <code>DESCRIPTION</code> file, we treat it as a package, as well as a project that may use packages.  However
+    if there is a CRAN or Bioconductor package by the same name, we assume projects are referring to those repositories, not the Github project.
+    <li>Dates listed for Github projects are date of last modification.
+    <li>We are currently sampling only from projects created before Jan 9, 2015 (ghtorrent's last dump date). We will start sampling newer projects
+    directly from Github after our pre-Jan-9 scrape is complete.
+    </ul>
 
     <h3>Participate</h3>
     To contribute your own usage data to the map, visit 
@@ -33,9 +47,10 @@
 
     <h3>Other data sources</h3>
     <p>If you have a scientific software package or suite that you would like to track using this tool,
-    let us know. We are interested in helping
-    you to track your software's usage, even if it is widely deployed at individual
-    researchers' sites.
+    let us know. 
+    We are interested in helping
+    you to track your software's usage.  Even if you just have a small number of users, we'd like to work with you to find out how this
+    kind of tracking information can provide value to package authors.
     </p>
 
   </div>

@@ -71,6 +71,22 @@ def view_app_usage(request):
     return {"app": app, "visits": count_visits(request)}
 
 
+@view_config(route_name="sys_usage",
+             renderer='templates/sys_usage.jinja2',
+             permission='view')
+def view_sys_usage(request):
+    gs = GlobalStats.objects().first()
+    return {"visits": count_visits(request),
+            "git_projects": gs.num_git_projects_scraped,
+            "r_sessions": RawRecords.objects().count(),
+            #"r_users": 6,
+            "repositories": Application.objects().item_frequencies('repository'),                          
+            #"earliest_git_update": "Mon Mar 23 2015",
+            #"earliest_r_update": RawRecords.objects().first()["receivedEpoch"],   #%B %d, %Y %H:%M:%S %Z"
+            "latest_git_update": time.strftime("%c %Z" , time.localtime(float(gs.last_git_project))),
+            "latest_r_packet": time.strftime("%c %Z", time.localtime(float(gs.last_r_packet)))}
+
+
 @view_config(route_name="app_users",
              renderer='templates/app_users.jinja2',
              permission='view')

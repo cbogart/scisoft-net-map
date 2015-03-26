@@ -53,9 +53,16 @@
       {% endif %}
       {% if sci_platform == "R" %}
       <li><a href="{{request.route_url('notebook')}}">Your own usage</a></li>
+      <li><a href="{{request.route_url('about')}}">About</a></li>
+      <ul >
+          <li><a href="{{request.route_url('sys_usage')}}">Data sources</a></li>
+          <li><a href="{{request.route_url('about')}}">SSNM project</a></li>
+      </ul>
+      {% else %}
+      <li><a href="{{request.route_url('data_source')}}">About the data</a></li>
+      <li><a href="{{request.route_url('about')}}">About the SSNM project</a></li>
       {% endif %}
-      <li><a href="{{request.route_url('data_source')}}">About the Data</a></li>
-      <li><a href="{{request.route_url('about')}}">About the SNM project</a></li>
+      
     </ul>
   </div>
 
