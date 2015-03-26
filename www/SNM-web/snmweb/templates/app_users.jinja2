@@ -94,9 +94,9 @@
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
       {% if sci_platform == "R" %}
-      <h3>Distinct R users who used <b>{{app.title|replace("[dot]",".")}}</b></h3>
+      <h3>Distinct users of <b>{{app.title|replace("[dot]",".")}}</b></h3>
       {% else %}
-      <h3>Number of TACC users who used {{app.title|replace("[dot]",".")}}</h3>
+      <h3>Distinct TACC users of {{app.title|replace("[dot]",".")}}</h3>
       {% endif %}
             <div id="chart">
         <svg></svg>

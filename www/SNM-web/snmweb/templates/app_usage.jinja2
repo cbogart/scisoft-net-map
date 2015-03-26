@@ -122,7 +122,7 @@
   <div class="tab-content">
     <div id="chart-wrapper" class="tab-pane active">
       {% if sci_platform == "R" %}
-      <h3>Number of uses by volunteers with instrumented R installations</h3>
+      <h3>Monitored use of {{app.title|replace("[dot]",".")}}</h3>
       {% else %}
       <h3>Number of TACC jobs including {{app.title|replace("[dot]",".")}}</h3>
       {% endif %}

@@ -28,7 +28,7 @@ queue = Queue()
 def worker(usecache): 
     while True:
         packet = queue.get()
-        print packet["startEpoch"]
+        #print packet["startEpoch"]
         usecache.registerPacket(packet)
         queue.task_done()
         if queue.empty() and usecache.dirty:
