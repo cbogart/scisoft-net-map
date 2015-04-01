@@ -239,6 +239,9 @@ def importTaccData(taccfiles):
     #dsm = numpy.zeros((n,n), dtype=numpy.int)
 
     jobsizeHist = defaultdict(int)
+    app_counts = defaultdict(int)
+    found = 0
+    not_found = 0
     counter = 0
     for job in forTaccLongJob(taccfiles):
        jobsizeHist[len(job)] += 1
@@ -276,7 +279,9 @@ def importTaccData(taccfiles):
        for j in job:
            counter = counter + 1
            app = guess1App(j)
+           app_counts[app] += 1
            if (app != ''):
+               found += 1
                rec = copy.copy(j)
                rec["endEpoch"] = int(float(rec["startEpoch"])) + int(float(rec["runTime"]))
                rec["startTime"] = ""
@@ -303,7 +308,13 @@ def importTaccData(taccfiles):
                registerParsed(c, rec, "0.0.0.0", usecache, dbraw="snm-tacc-raw")
                prevapp = app
                prevapptime = rec["endEpoch"]
+           else:
+               not_found += 1
+
     finalizeThreads()
+    for app in app_counts:
+        print app, app_counts[app]
+    print "Found", found * 100.0/(found + not_found), "% of", (found+not_found), "runs"
 
 
 def hashColor(key, selected = False):
