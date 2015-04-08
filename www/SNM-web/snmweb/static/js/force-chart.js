@@ -2,9 +2,9 @@ function vizForceChart(selector, options) {
     var options = $.extend({ //Default or expected options go here
         height  : $(selector).height(),
         width   : $(selector).width(),
-        linkDistance  : 120, //table selector
+        linkDistance  : 70, //table selector
         scimapID: "",
-        charge  : -2000,
+        charge  : -900,
         stat_id: "force_directed",  // api/stat/{stat_id},
         clickable: true
     }, options);
