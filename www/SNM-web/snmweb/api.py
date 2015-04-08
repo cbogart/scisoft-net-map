@@ -4,7 +4,6 @@ import sys
 import pdb
 from db_objects import *
 from pymongo import Connection, MongoClient
-from tarjan import clusteringOrder
 
 from pyramid.view import (
     view_config,
