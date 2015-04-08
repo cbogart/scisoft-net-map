@@ -51,6 +51,19 @@
                       src="{{request.static_url('snmweb:static/img/Farm-Fresh_bullet_star.png')}}">
                     {{git.stargazers_count}}
                  </span>
+                 {% if git.is_fork==1 %}
+                    (fork)
+                 {% endif %}
+                 <span class="pull-right" 
+                    {% if git.is_package==1 %}
+                    style="color:green;">R Package
+                    {% else %}
+                    style="color:blue;">Non-package project
+                    {% endif %}
+                 
+                    
+                 </span>
+                 
              </h4>
              
              <p class="list-group-item-text">

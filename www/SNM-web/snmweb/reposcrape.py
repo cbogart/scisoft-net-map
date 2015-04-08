@@ -23,6 +23,83 @@ def calcDependencyClosure(thesedepslist, depdictpkg2list):
 assert calcDependencyClosure(["a", "b", "c"], { "a" : ["b", "d"] })== {"a": ["b", "d"], "b": [], "c": [] }, \
         calcDependencyClosure(["a", "b", "c"], { "a" : ["b", "d"] })
 
+assert calcDependencyClosure(["a", "b", "c"], { "a" : ["b", "d"], "c" : ["a"] })== {"a": ["b", "d"], "b": [], "c": ["a"] }, \
+        calcDependencyClosure(["a", "b", "c"], { "a" : ["b", "d"], "c" : ["a"] })
+
+def wayupstream(package1, package2, closedDepList, skipFirstLevel=True, cycleCheck = 0):
+    """Semantics: Is package1 wayupstream of package2, i.e. does package 2 require stuff that requires package1?
+    Should IGNORE whether package1 is a direct parent of package2; we're ONLY looking for distant ancestry"""
+    if cycleCheck > len(closedDepList.keys()):
+        raise Exception("Dependency list is circular around " + package1 + " and " + package2)
+    #pdb.set_trace()
+    for parent in closedDepList.get(package2,[]):
+        if package1 == parent and skipFirstLevel==False: return True
+        if wayupstream(package1, parent, closedDepList, skipFirstLevel=False, cycleCheck = cycleCheck + 1): return True
+    return False
+
+def waydownstream(package1, package2, closedDepList):
+    return wayupstream(package2, package1, closedDepList)
+
+assert wayupstream("a", "b", { "b": ["a"], "a": [] }) == False
+assert wayupstream("a", "c", { "b": ["a"], "c": ["b"], "a": [] }) == True
+assert wayupstream("c", "a", { "b": ["a"], "c": ["b"], "a": [] }) == False
+
+def all_ancestors(package, deps, depth=0):
+    if depth > 200:
+        raise Exception("depth of recursion error on package " + package + " deps are " + str(deps[package]))
+    anc = set([])
+    for parent in deps.get(package,[]):
+        if parent != package:            
+            anc.add(parent)
+            anc = anc.union(all_ancestors(parent, deps, depth=depth+1))
+    return anc
+
+def all_paths(deps):
+    return { k : all_ancestors(k,deps) for k in deps }
+
+def canonicalize_dep_tree(deps):
+    print "building closure"
+    paths = all_paths(deps)
+    print "reducing excess links"
+    for down in deps:
+        print down
+        dontneed = set([])
+        for up in deps[down]:
+            for otherup in deps.get(down,[]):
+                if otherup != up:
+                    if up in paths.get(otherup,[]):
+                        dontneed.add(up)
+                        break
+        deps[down] = list(set(deps[down])-dontneed)
+    return deps
+                    
+def old_canonicalize_dep_tree(deps):
+    # first, make the references unique
+    changed = 1
+    while(changed == 1):
+        changed = 0
+        print "-------canonicalizing pass"
+        #pdb.set_trace()
+        for d1 in deps:
+            print d1
+            cands = list(set(deps[d1]))
+            newdeps = []
+            #pdb.set_trace()
+            for d2 in cands:
+                if not wayupstream(d2,d1,deps):
+                    newdeps.append(d2)
+            deps[d1] = newdeps
+            if len(newdeps) < len(cands):
+                changed =1 
+                print "\tchanged from", cands, "to", newdeps
+    return deps
+    
+deptest = { "a": ["b","c","d"], "b": ["c"], "c": [], "d": [] }
+deptest = canonicalize_dep_tree(deptest)
+assert deptest["a"] == ["b","d"], "Deptest = " + str(deptest)
+assert deptest["b"] == ["c"]
+assert deptest["c"] == []
+
 def getConnection(dbname):
     # Open the database
     conn = sqlite3.connect(dbname)
@@ -65,9 +142,14 @@ class RepoScrape:
     
     def transferUsageDetails(self):
         """Load a list-of-dicts describing all R github projects"""
-        uses = self.db.execute("select gitprojects.*, group_concat(distinct(package_name)) deps from gitprojects " +\
-                   " left join gitimports on gitprojects.id=gitimports.project_id where gitprojects.cb_last_scan > 0 " +\
-                   " and error == '' group by gitprojects.id having deps!='';");
+        uses = self.db.execute("""
+            select gitprojects.*, group_concat(distinct(package_name)) deps, count(distinct(gitfiles.path)) descfiles from gitprojects 
+            left join gitimports on gitprojects.id=gitimports.project_id 
+            left join gitfiles on gitprojects.id=gitfiles.project_id and path like "%DESCRIPTION"
+            where gitprojects.cb_last_scan > 0 
+                   and gitprojects.error = '' and gitprojects.deleted = '0'
+            group by gitprojects.id having deps!='';
+            """);
         referers = []
         for use in uses:
             deps = filter(legalimport.match, use["deps"].split(","))
@@ -82,19 +164,24 @@ class RepoScrape:
                "owner": use["gitprojects.owner"],
                "description": use["gitprojects.description"],
                "created_at": use["gitprojects.created_at"],
+               "is_package": 1 if use["descfiles"] > 0 else 0,
+               "is_fork": 1 if use["gitprojects.forked_from"] != "" else 0,
                "cb_last_scan": use["gitprojects.cb_last_scan"],
                "pushed_at": use["gitprojects.pushed_at"],
                "watchers_count": use["gitprojects.watchers_count"],
                "stargazers_count": use["gitprojects.stargazers_count"],
                "forks_count": use["gitprojects.forks_count"],
-               "dependencies": alldepscomplete  #filter(legalimport.match, use["deps"].split(","))
+               "dependencies": deps  #filter(legalimport.match, use["deps"].split(","))
             }
             referers.append(ref)
         return referers
 
     def makeAppInfo(self, includeHandEditedAppInfo=False):
        """Dump info from database into appinfo.R.json"""
-       packages = self.db.execute("select packages.*, group_concat(distinct(tags.tag)) views from packages left join tags on packages.name = tags.package_name group by packages.name;")
+       packages = self.db.execute("""
+           select packages.*, group_concat(distinct(tags.tag)) views from packages 
+           left join tags on packages.name = tags.package_name group by packages.name;
+       """)
 
         # prefer cran to bioc to github
        self.appinfo = {}
@@ -125,6 +212,8 @@ class RepoScrape:
            if "\n" in dep["staticdeps.package_name"] or "\n" in dep["staticdeps.depends_on"]:
                 print "FAIL RIGHT HERE line 90"
            self.deps[dep["staticdeps.package_name"]].append(dep["staticdeps.depends_on"])
+           
+       canonicalize_dep_tree(self.deps)
 
     def writeAppInfo(self, appInfoFileName):
        with open(appInfoFileName, "w") as f: 
@@ -141,20 +230,31 @@ class RepoScrape:
                "substr(pushed_at,0,11) lastcommit  from " + \
                "gitimports left join gitprojects on id=project_id group by project_id");
        cocounts = defaultdict(lambda: defaultdict(lambda: ("", 0)))
-       counts = defaultdict(lambda: defaultdict(int))
+       allcounts = defaultdict(lambda: defaultdict(int))
+       directcounts = defaultdict(lambda: defaultdict(int))
        for r in refs:
            deps = filter(legalimport.match, (r["deps"] or "").split(","))
            alldeps = calcDependencyClosure(deps, self.deps)
-           alldepscomplete = set(alldeps.keys() + [d for i in alldeps for d in alldeps[i]])
+           upstreams = [d for i in alldeps for d in alldeps[i]]
+           
+           # logical_codeps = things they explicitly included, but excluding anything they 
+           #   didn't really have to include (because R would have inferred it as a dependency)
+           logical_codeps = set(deps) - set(upstreams)   
+           alldepscomplete = set(alldeps.keys() + upstreams)
            for d1 in alldepscomplete:
-               counts[d1][r["lastcommit"]] += 1
+               allcounts[d1][r["lastcommit"]] += 1
+               if d1 in alldeps:
+                   directcounts[d1][r["lastcommit"]] += 1
                for d2 in alldepscomplete:
                    if (d1 != d2):
                        if d2 in alldeps.get(d1, []):   linktype = "upstream"
                        elif d1 in alldeps.get(d2, []): linktype = "downstream"
-                       else:                   linktype = "usedwith"
-                       cocounts[d1][d2] = (linktype, cocounts[d1][d2][1]+1)
-       return (counts, cocounts)
+                       elif d1 in logical_codeps and d2 in logical_codeps: linktype = "usedwith"
+                       else: linktype="ancestry"
+                       
+                       if linktype != "ancestry":
+                           cocounts[d1][d2] = (linktype, cocounts[d1][d2][1]+1)
+       return (allcounts, directcounts, cocounts)
 
     def getGitCounts(self):
        """Overall statistics about git projects surveyed

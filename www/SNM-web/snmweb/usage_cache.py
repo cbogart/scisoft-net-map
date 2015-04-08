@@ -52,6 +52,21 @@ def readPubInfo(sci_platform):
         print "ERROR: ", str(e)
     return (byproject, inf)
 
+def hashColor(key, selected = False):
+    """Return a color unique for this key, brigher if selected.
+
+    Of course the color can't really be unique because there are more keys
+    in the world than colors; but the algorithm tries to make similar strings
+    come out different colors so they can be distinguished in a chart or graph"""
+
+    def tw(t): return t ^ (t << (t%5)) ^ (t << (6+(t%7))) ^ (t << (13+(t%11)))
+    theHash = tw(hash(key) % 5003)
+    ifsel = 0x00 if selected else 0x80
+    (r,g,b) = (ifsel |  (theHash & 0x7f),
+               ifsel | ((theHash>>8) & 0x7F),
+               ifsel | ((theHash>>16) & 0x7F))
+    return "#{0:02x}{1:02x}{2:02x}".format(r,g,b)
+
 
 def calcCentrality(linkrecords):
     """Calculate betweenness centrality measure for each package or application
@@ -63,9 +78,11 @@ def calcCentrality(linkrecords):
         G.add_node(link["focal"])
         G.add_node(link["other"])
         G.add_edge(link["focal"], link["other"], weight=link["raw_count"])
+        
+    
     from networkx.algorithms.centrality import eigenvector_centrality
     #centralities = betweenness_centrality(G, k=G.number_of_nodes(), weight="weight", endpoints=True)
-    centralities = eigenvector_centrality(G)
+    centralities = eigenvector_centrality(G, max_iter=1000)
     return centralities
 
 class UsageCache:
@@ -114,7 +131,7 @@ class UsageCache:
             self.db.git_referers.insert(recs)
 
             print "Querying github co-usage counts"
-            (git_imports, git_co_use) = reposcrape.getGitCoOccurence() #  package -> package -> number
+            (git_imports, git_direct_imports, git_co_use) = reposcrape.getGitCoOccurence() #  package -> package -> number
             print "Querying github overall counts"
             (lastGitProject, numGitProjectsTotal, numGitProjectsScraped) = reposcrape.getGitCounts()
 
@@ -148,6 +165,7 @@ class UsageCache:
                   for app2 in git_co_use[app1]:
                      if app1 != app2:
                         linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
+                        
                         if (linkinf[1] > threshold and self.apps[app1]["git_usage"] > threshold and self.apps[app2]["git_usage"] > threshold):
                             yield { 
                                 "focal": self.apps[app1]["id"],

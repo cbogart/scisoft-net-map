@@ -107,6 +107,8 @@ class GitReferers(Document):
     description = StringField()
     created_at= StringField()
     forked_from= StringField()
+    is_fork = IntField()
+    is_package = IntField()
     cb_last_scan= StringField()
     pushed_at= StringField()
     watchers_count= StringField()
