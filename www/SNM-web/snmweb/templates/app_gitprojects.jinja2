@@ -51,17 +51,23 @@
                       src="{{request.static_url('snmweb:static/img/Farm-Fresh_bullet_star.png')}}">
                     {{git.stargazers_count}}
                  </span>
-                 {% if git.is_fork==1 %}
-                    (fork)
-                 {% endif %}
+                 
                  <span class="pull-right" 
+                    
                     {% if git.is_package==1 %}
                     style="color:green;">R Package
                     {% else %}
                     style="color:blue;">Non-package project
                     {% endif %}
-                 
                     
+                    
+                 </span>
+                 
+                 <span class="pull-right">
+                    {% if git.is_fork==1 %}
+                    (fork) <img title="This project is a fork (a copy) of another project" style="width:20px; height=20px;" 
+                      src="{{request.static_url('snmweb:static/img/gitfork.png')}}">&nbsp;&nbsp;
+                    {% endif %}
                  </span>
                  
              </h4>
