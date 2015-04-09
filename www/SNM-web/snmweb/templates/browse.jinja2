@@ -218,7 +218,7 @@
                           <br/>Github Projects:
                           <a href="{{request.route_url('app_gitprojects', name=app.title)}}"
                              class="snm-tooltip"
-                             title="Number of github projects using this package, out of a random sample of {{global_stats.num_git_projects_scraped}} R projects">
+                             title="Number of github projects using this package, out of {{global_stats.num_git_projects_scraped}} known R projects">
                             {{app.git_usage}}</a>
                           &nbsp;&nbsp;Centrality:
                           <a href="{{request.route_url('app_used_with', name=app.title)}}"

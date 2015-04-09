@@ -28,7 +28,7 @@
     <li>Two packages are considered to be "used together" if they were both used in the same run
     </ul>
     <h3>Github data</h3>
-    Github data comes from a random sample of R-language projects.  We used <a href="http://ghtorrent.org">ghtorrent</a> to get a list of projects,
+    Github data comes from an analysis of all its R-language projects.  We used <a href="http://ghtorrent.org">ghtorrent</a> to get a list of projects,
     and are continuing to sample them directly using <a href="https://developer.github.com/v3/">Github's API</a>.  Data uses the following
     assumptions:
     <ul>
@@ -37,8 +37,8 @@
     <li>If a github project contains a <code>DESCRIPTION</code> file, we treat it as a package, as well as a project that may use packages.  However
     if there is a CRAN or Bioconductor package by the same name, we assume projects are referring to those repositories, not the Github project.
     <li>Dates listed for Github projects are date of last modification.
-    <li>We are currently sampling only from projects created before Jan 9, 2015 (ghtorrent's last dump date). We will start sampling newer projects
-    directly from Github after our pre-Jan-9 scrape is complete.
+    <li>We have examined projects created before Jan 9, 2015 (<a href="http://ghtorrent.org">ghtorrent</a>'s last dump date). We will start sampling newer projects
+    directly from Github soon.
     </ul>
 
     <h3>Participate</h3>
