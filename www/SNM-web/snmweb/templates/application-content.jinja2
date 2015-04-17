@@ -1,6 +1,10 @@
   <h2>App profile</h2>
   <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
-  <p>RDocumentation: <a href="http://www.rdocumentation.org/packages/{{app.title}}">Rstudio download stats and documentation</a>
+    
+    {% if sci_platform == "R" and (app.repository == "cran" or app.repository == "bioconductor") %}
+  <p>RDocumentation: <a href="http://www.rdocumentation.org/packages/{{app.title}}">Documentation and Rstudio download stats</a>
+    {% endif %}
+    
     {% if sci_platform == "R" and app.views != [] %}
        <p>In collections (such as CRAN task views): 
        {% for view in app.views %}
