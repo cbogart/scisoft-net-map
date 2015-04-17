@@ -123,12 +123,14 @@ def view_app_gitprojects(request):
         start_at = per_page*int(total_git_referers/per_page)+1
 
     git_referers = GitReferers.objects(dependencies= name.replace("[dot]",".")).order_by("-stargazers_count").skip(start_at-1).limit(50)
+    gs = GlobalStats.objects().first()
     
     return {"app": app, 
             "git_referers": git_referers, 
             "start_at": start_at,
             "end_at": min(start_at+per_page-1,total_git_referers),
             "per_page": per_page,
+            "latest_git_update": time.strftime("%Y-%m-%d" , time.localtime(float(gs.last_git_project))),
             "app_count": total_git_referers,
             "visits": count_visits(request)}
 

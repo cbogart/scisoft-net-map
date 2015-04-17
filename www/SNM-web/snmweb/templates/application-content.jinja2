@@ -2,7 +2,7 @@
   <p>Website: <a href="{{ app.website }}">{{ app.website }}</a></p>
   <p>RDocumentation: <a href="http://www.rdocumentation.org/packages/{{app.title}}">Rstudio download stats and documentation</a>
     {% if sci_platform == "R" and app.views != [] %}
-       <p>Task views: 
+       <p>In collections (such as CRAN task views): 
        {% for view in app.views %}
            <a href="{{request.route_url('browse', _query={"query-view":view})}}">{{view}}</a>{% if not loop.last %},{% endif %}
        {% endfor %}

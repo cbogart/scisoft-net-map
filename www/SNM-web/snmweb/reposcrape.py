@@ -45,6 +45,8 @@ assert wayupstream("a", "c", { "b": ["a"], "c": ["b"], "a": [] }) == True
 assert wayupstream("c", "a", { "b": ["a"], "c": ["b"], "a": [] }) == False
 
 def all_ancestors(package, deps, depth=0):
+    if depth == 0:
+        print "finding ancestors of", package
     if depth > 200:
         raise Exception("depth of recursion error on package " + package + " deps are " + str(deps[package]))
     anc = set([])
@@ -58,11 +60,11 @@ def all_paths(deps):
     return { k : all_ancestors(k,deps) for k in deps }
 
 def canonicalize_dep_tree(deps):
-    print "building closure"
+    #print "building closure"
     paths = all_paths(deps)
-    print "reducing excess links"
+    #print "reducing excess links"
     for down in deps:
-        print down
+        #print down
         dontneed = set([])
         for up in deps[down]:
             for otherup in deps.get(down,[]):
@@ -73,27 +75,7 @@ def canonicalize_dep_tree(deps):
         deps[down] = list(set(deps[down])-dontneed)
     return deps
                     
-def old_canonicalize_dep_tree(deps):
-    # first, make the references unique
-    changed = 1
-    while(changed == 1):
-        changed = 0
-        print "-------canonicalizing pass"
-        #pdb.set_trace()
-        for d1 in deps:
-            print d1
-            cands = list(set(deps[d1]))
-            newdeps = []
-            #pdb.set_trace()
-            for d2 in cands:
-                if not wayupstream(d2,d1,deps):
-                    newdeps.append(d2)
-            deps[d1] = newdeps
-            if len(newdeps) < len(cands):
-                changed =1 
-                print "\tchanged from", cands, "to", newdeps
-    return deps
-    
+
 deptest = { "a": ["b","c","d"], "b": ["c"], "c": [], "d": [] }
 deptest = canonicalize_dep_tree(deptest)
 assert deptest["a"] == ["b","d"], "Deptest = " + str(deptest)
@@ -164,7 +146,7 @@ class RepoScrape:
                "owner": use["gitprojects.owner"],
                "description": use["gitprojects.description"],
                "created_at": use["gitprojects.created_at"],
-               "is_package": 1 if use["descfiles"] > 0 else 0,
+               "is_package": use["descfiles"],
                "is_fork": 1 if use["gitprojects.forked_from"] != "" else 0,
                "cb_last_scan": use["gitprojects.cb_last_scan"],
                "pushed_at": use["gitprojects.pushed_at"],
@@ -195,8 +177,6 @@ class RepoScrape:
            
        for pack in packages:
            name = pack["packages.name"]
-           if "\n" in name:
-               print "FAIL RIGHT HERE line 78"
            self.appinfo[name] = oldappinfo.get(name, { "image": "unknown.jpg", "publications": 0})
            self.appinfo[name]["website"]= pack["packages.url"]
            self.appinfo[name]["repository"]= pack["packages.repository"]
@@ -209,8 +189,6 @@ class RepoScrape:
 
        deps = self.db.execute("select * from staticdeps")
        for dep in deps:
-           if "\n" in dep["staticdeps.package_name"] or "\n" in dep["staticdeps.depends_on"]:
-                print "FAIL RIGHT HERE line 90"
            self.deps[dep["staticdeps.package_name"]].append(dep["staticdeps.depends_on"])
            
        canonicalize_dep_tree(self.deps)

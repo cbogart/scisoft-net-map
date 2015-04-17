@@ -141,7 +141,7 @@
         </div>
         {% if sci_platform == "R" %}
         <div class="col-md-4">
-          Find CRAN/Bioconductor task view(s):
+          Search for named collection (e.g. task view):
           <input id="query-views-input" name="query-view" type="text" class="form-control" style="margin-bottom: 5px;">
         </div>
         {% endif %}
@@ -252,7 +252,7 @@
                 {% endif %}
                 </p>
                 {% if sci_platform == "R" and app.views != [] %}
-                   This package is part of the following task view(s): 
+                   This package is part of the following collections(s): 
                     {% for view in app.views %}
                        <a href="{{request.route_url('browse', _query={"query-view":view})}}">{{view}}</a>{% if not loop.last %},{% endif %}
                     {% endfor %}

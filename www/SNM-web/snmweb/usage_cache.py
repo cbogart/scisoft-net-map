@@ -93,6 +93,14 @@ class UsageCache:
             v = v.union(set(self.app_info[app]["views"]))
         v = sorted(list(v), key=lambda k:k.split("/")[1])
         return v
+    
+    def allRelevantTaskViews(self):
+        v = set()
+        for app in self.apps:
+            if app in self.app_info:
+                v = v.union(set(self.app_info[app]["views"]))
+        v = sorted(list(v), key=lambda k:k.split("/")[1])
+        return v
         
     def insertPublicationData(self, reposcrape):
         with usageCacheLock:
@@ -155,24 +163,24 @@ class UsageCache:
 
             print "Saving task view information"
             self.db.views.remove()
-            self.db.views.insert([{"viewname": v} for v in self.allTaskViews()])
+            self.db.views.insert([{"viewname": v} for v in self.allRelevantTaskViews()])
             
             # How many projects must share two imports before it's worth mentioning them?  .1%?
-            threshold = 7; #numGitProjectsScraped/1000
+            threshold = 0; #numGitProjectsScraped/1000
             
             def linksRecords():
-               for app1 in git_co_use:
-                  for app2 in git_co_use[app1]:
-                     if app1 != app2:
-                        linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
+                for app1 in git_co_use:
+                    for app2 in git_co_use[app1]:
+                        if app1 != app2:
+                            linkinf = git_co_use[app1][app2]    # linkinf[1] is # couses, linkinf[0] = upstream,downstream,usedwith
                         
-                        if (linkinf[1] > threshold and self.apps[app1]["git_usage"] > threshold and self.apps[app2]["git_usage"] > threshold):
-                            yield { 
-                                "focal": self.apps[app1]["id"],
-                                "other": self.apps[app2]["id"],
-                                "type": linkinf[0],
-                                "raw_count": linkinf[1],
-                                "scaled_count": linkinf[1]*1.0/self.apps[app2]["git_usage"] }
+                            if (linkinf[1] > threshold and self.apps[app1]["git_usage"] > threshold and self.apps[app2]["git_usage"] > threshold):
+                                yield { 
+                                  "focal": self.apps[app1]["id"],
+                                  "other": self.apps[app2]["id"],
+                                  "type": linkinf[0],
+                                  "raw_count": linkinf[1],
+                                  "scaled_count": linkinf[1]*1.0/self.apps[app2]["git_usage"] }
 
             print "Collecting co occurence lists"
             lr = list(linksRecords())
@@ -293,7 +301,7 @@ class UsageCache:
     # Create a new record to store application data in
     def addNewApp(self, pkgname):
         if "\n" in pkgname:
-            pdb.set_trace()
+            print "Illegal package name", pkgname
         if pkgname not in self.apps:
             self.apps[pkgname] = dict()
             self.apps[pkgname]["usage"] = defaultdict(int)
@@ -307,7 +315,7 @@ class UsageCache:
     # blank stuff
     def getUnknownAppInfo(self, pkgname):
         if "\n" in pkgname:
-            pdb.set_trace()
+            print "Illegal app title", pkgname
         if (pkgname in self.app_info):
             inf = self.app_info[pkgname].copy()
             if (inf["title"] != pkgname):
@@ -331,7 +339,7 @@ class UsageCache:
     # which we'll need to write to other tables that reference this app
     def writeNewApp(self, apptitle):
         if "\n" in apptitle:
-            pdb.set_trace()
+            print "Illegal app title", apptitle
         thisappinfo = self.getUnknownAppInfo(apptitle)
 
         id = self.db.application.save(thisappinfo)

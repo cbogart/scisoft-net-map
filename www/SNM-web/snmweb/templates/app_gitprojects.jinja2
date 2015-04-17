@@ -21,7 +21,8 @@
      No project in our sample so far uses {{app.title|replace("[dot]",".")}}.
   {% else %}
       <h2>Github projects that depend on {{app.title|replace("[dot]",".")}}</h2>
-       Github projects as of 1/9/2015 whose R code or DESCRIPTION file explicitly refer to this R package.
+       Github projects as of {{latest_git_update}} whose R code or DESCRIPTION file <em>explicitly</em> refer to this R package. 
+       (Other projects may refer to it indirectly, via package dependencies).
         <nav>
               <ul  class="pagination" style="margin:0px;">
                 {% if start_at > 1 %}
