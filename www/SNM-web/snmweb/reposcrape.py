@@ -47,10 +47,13 @@ assert wayupstream("c", "a", { "b": ["a"], "c": ["b"], "a": [] }) == False
 def all_ancestors(package, deps, depth=0):
     if depth == 0:
         print "finding ancestors of", package
+    if package == "R": return []
     if depth > 200:
-        raise Exception("depth of recursion error on package " + package + " deps are " + str(deps[package]))
+        return []
+        #raise Exception("depth of recursion error on package " + package + " deps are " + str(deps[package]))
     anc = set([])
-    for parent in deps.get(package,[]):
+    for parent in set(deps.get(package,[])):
+        #print package, "lvl", depth, "checking", parent
         if parent != package:            
             anc.add(parent)
             anc = anc.union(all_ancestors(parent, deps, depth=depth+1))
@@ -214,6 +217,9 @@ class RepoScrape:
            deps = filter(legalimport.match, (r["deps"] or "").split(","))
            alldeps = calcDependencyClosure(deps, self.deps)
            upstreams = [d for i in alldeps for d in alldeps[i]]
+           #if "Biobase" in deps and "Biostrings" in deps:
+               #print r
+               #pdb.set_trace()
            
            # logical_codeps = things they explicitly included, but excluding anything they 
            #   didn't really have to include (because R would have inferred it as a dependency)
@@ -227,9 +233,12 @@ class RepoScrape:
                    if (d1 != d2):
                        if d2 in alldeps.get(d1, []):   linktype = "upstream"
                        elif d1 in alldeps.get(d2, []): linktype = "downstream"
-                       elif d1 in logical_codeps and d2 in logical_codeps: linktype = "usedwith"
-                       else: linktype="ancestry"
-                       
+                       #elif d1 in logical_codeps and d2 in logical_codeps: linktype = "usedwith"
+                       #else: linktype="ancestry"
+                       elif d1 in deps and d2 in deps: linktype="usedwith"
+                       else: linktype = "ancestry"
+                       if "Biobase" in deps and "Biostrings" in deps:
+                           print d1, d2, linktype
                        if linktype != "ancestry":
                            cocounts[d1][d2] = (linktype, cocounts[d1][d2][1]+1)
        return (allcounts, directcounts, cocounts)
