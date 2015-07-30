@@ -53,8 +53,9 @@
   </div>
   <div class="col-md-4">
     <h1>Scientific Software Network Map</h1>
+    <h2>Version 1.0</h2>
     {% if sci_platform == "R" %}
-    <h3>R package data<font size=-3>   <a href="#validity">(see validity warning!)</a></font></h3>
+    <h3>R package data<font size=-3>  </font></h3>
     {% elif sci_platform == "TACC" %}
     <h3>TACC usage data</h3>
     {% else %}
@@ -82,13 +83,7 @@
      {%if sci_platform=="R" %}
       You can participate by <a href="/static/html/installR.html">contributing your own R usage data!</a>
       <p>&nbsp;<p>
-      (<a name="validity"></a><b>Validity warning</b>: As of March, 2015, the "live usage" data is in its early stages:
-         publication data is not yet available for all packages, and usage 
-         stats do not contain a large number of use sessions.  So the numbers and relationships
-         portrayed here are not representative of overall global usage.
-         Github data is drawn from a much larger sample.<p>
-         
-         As a demonstration, you can check out a richer sample usage dataset: 
+         For another sample usage dataset: 
          <a href="http://scisoft-net-map.isri.cmu.edu:7777">click here to browse a year's worth of 
          scientific software jobs on a TACC supercomputer</a>)
       
