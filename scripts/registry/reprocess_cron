@@ -1,4 +1,8 @@
 #!/bin/bash
 source /var/www/SSNM/env/bin/activate
 cd /var/www/SSNM/scripts/registry
-bash reprocess
+echo `date` >> reprocess.cron.log
+echo "---------------" >> reprocess.cron.log
+bash reprocess >> reprocess.cron.log
+echo "" >> reprocess.cron.log
+echo "" >> reprocess.cron.log
