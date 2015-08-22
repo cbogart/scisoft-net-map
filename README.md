@@ -11,6 +11,8 @@ This Scientific Software Network Map viewer is part of an NSF-funded project (Sc
 
 ## Related projects
 [scimapClient](https://github.com/cbogart/scimapClient) is an R package that sends usage packets to SNM from users who choose to install and enable it.
+[rscraper](https://github.com/cbogart/rscraper) is a python module that scrapes Github, CRAN, Bioconductor, and Scopus to feed SNM with data on R projects
+on Github and what packages they're using.
 
 ## Related research papers
 Some academic research related to this project can be found here:
@@ -20,9 +22,9 @@ Some academic research related to this project can be found here:
 ## Contacts
 For further information contact
 
- * Jim Herbsleb  `jdh at cs dot cmu dot edu`
- * James Howison  `jhowison at ischool dot utexas dot edu`
  * Chris Bogart  `cbogart at cs dot cmu dot edu`
+ * James Howison  `jhowison at ischool dot utexas dot edu`
+ * Jim Herbsleb  `jdh at cs dot cmu dot edu`
 
 ## Development team
 The project has been developed as MSIT-SE Practicum project at CMU.
