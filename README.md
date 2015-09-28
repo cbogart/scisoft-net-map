@@ -1,5 +1,7 @@
 ## Build status:  [ ![Codeship Status for Tyumener/SNM](https://www.codeship.io/projects/4958ff80-cf5a-0131-157c-0e7557dc9589/status?branch=master)](https://www.codeship.io/projects/23047)
 
+[![Join the chat at https://gitter.im/cbogart/scisoft-net-map](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cbogart/scisoft-net-map?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 ## Disclaimer
 This material is based upon work supported by the National Science Foundation under Grant No. 1064209
