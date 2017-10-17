@@ -3,7 +3,7 @@ import json
 import sys
 import pdb
 from db_objects import *
-from pymongo import Connection, MongoClient
+from pymongo import MongoClient
 
 from pyramid.view import (
     view_config,

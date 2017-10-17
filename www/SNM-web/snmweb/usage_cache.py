@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from pymongo import MongoClient, Connection
+from pymongo import MongoClient
 import json
 import copy
 import time

@@ -27,6 +27,7 @@ class Application(Document):
     publications = IntField(default=0)
     publicationsUrl = StringField(default="")
     views = ListField(StringField())
+    match = ListField(StringField())
 
 """
 Just a list of task views; each is in the form repo/viewname,
