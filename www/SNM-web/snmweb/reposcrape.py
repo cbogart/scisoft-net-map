@@ -44,11 +44,14 @@ assert wayupstream("a", "b", { "b": ["a"], "a": [] }) == False
 assert wayupstream("a", "c", { "b": ["a"], "c": ["b"], "a": [] }) == True
 assert wayupstream("c", "a", { "b": ["a"], "c": ["b"], "a": [] }) == False
 
+ancestor_cache = dict()
 def all_ancestors(package, deps, depth=0):
+    if package in ancestor_cache: return ancestor_cache[package]
     if depth == 0:
         print "finding ancestors of", package
     if package == "R": return []
     if depth > 200:
+        ancestor_cache[package] = []
         return []
         #raise Exception("depth of recursion error on package " + package + " deps are " + str(deps[package]))
     anc = set([])
@@ -57,9 +60,12 @@ def all_ancestors(package, deps, depth=0):
         if parent != package:            
             anc.add(parent)
             anc = anc.union(all_ancestors(parent, deps, depth=depth+1))
+    ancestor_cache[package] = anc
     return anc
 
 def all_paths(deps):
+    global ancestor_cache 
+    ancestor_cache = dict()
     return { k : all_ancestors(k,deps) for k in deps }
 
 def canonicalize_dep_tree(deps):
